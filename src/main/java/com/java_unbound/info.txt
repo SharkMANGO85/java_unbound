@@ -1,0 +1,26 @@
+textures = [
+    name of the texture: path to the texture
+]
+
+geometry = [
+    name of the texture: where it is being send to
+]
+
+
+        send
+texture  ->  geometry
+
+
+example:
+
+textures = [
+    "glow": "textures/oreville/ans/glow,
+    "glow_2": "textures/oreville/ans/glow_,
+    "allay_texture": "textures/oreville/ans/allay_texture,
+]
+
+geometry = [
+    "glow": "geometry.oreville_ans.allay,
+    "glow_2": "geometry.oreville_ans.allay,
+    "allay_texture": "geometry.oreville_ans.allay,
+]
