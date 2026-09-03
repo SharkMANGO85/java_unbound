@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.java_unbound.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "resourcepack.PackRepositoryMixin",
+    "ui.LogoRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
