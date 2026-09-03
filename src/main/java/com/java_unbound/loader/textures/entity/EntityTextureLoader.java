@@ -15,5 +15,7 @@ public class EntityTextureLoader {
     }
 
     Path BaseEntityFolder = Folder.GetResourceFolder().resolve("entity");
-    Path SubpackEntityFolder0 = Folder.GetResourceFolder().resolve("")
+    Path SubpackEntityFolder0 = Folder.GetResourceFolder().resolve("subpacks").resolve("SP0");
+    Path SubpackEntityFolder1 = Folder.GetResourceFolder().resolve("subpacks").resolve("SP1");
+    Path SubpackEntityFolder2 = Folder.GetResourceFolder().resolve("subpacks").resolve("SP2");
 }
