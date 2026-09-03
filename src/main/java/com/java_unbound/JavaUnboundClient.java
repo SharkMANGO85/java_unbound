@@ -1,6 +1,7 @@
 package com.java_unbound;
 
 import com.java_unbound.loader.textures.block.BlockTextureLoader;
+import com.java_unbound.loader.textures.entity.EntityTextureLoader;
 import com.java_unbound.loader.textures.gui.Panorama;
 import com.java_unbound.loader.textures.gui.Splashes;
 import com.java_unbound.loader.textures.gui.Title;
@@ -16,6 +17,7 @@ public class JavaUnboundClient implements ClientModInitializer {
             Title.CreateTitle();
             Splashes.CreateSplashes();
             BlockTextureLoader.LoadTextures();
+            EntityTextureLoader.LoadEntityTextures();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

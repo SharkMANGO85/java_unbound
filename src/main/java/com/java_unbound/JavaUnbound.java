@@ -10,6 +10,7 @@ import java.nio.file.Path;
 public class JavaUnbound implements ModInitializer {
     public static final String MOD_ID = "java_unbound";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static final String SUBPACK = "SP2";
 
     @Override
     public void onInitialize() {
