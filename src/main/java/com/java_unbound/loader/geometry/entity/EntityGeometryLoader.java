@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class EntityGeometryLoader {
-
     private static final String GeometryNamespace = "geometry.oreville_ans.";
 
     private static final Path EntityFolder = Folder.GetResourceFolder().resolve("entity");

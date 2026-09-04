@@ -29,7 +29,7 @@ public final class PackLoader {
         return ReadLang(ResourcePack, "pack.description", "Java Unbound");
     }
 
-    private static String ReadLang(Path Root, String Key, String Fallback) {
+    public static String ReadLang(Path Root, String Key, String Fallback) {
         Path LangFile = Root.resolve("texts").resolve("en_US.lang");
 
         if (!Files.isRegularFile(LangFile)) {
