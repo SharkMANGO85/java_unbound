@@ -1,12 +1,8 @@
 package com.java_unbound;
 
 import com.java_unbound.config.ConfigManager;
-import com.java_unbound.loader.geometry.entity.EntityGeometryLoader;
-import com.java_unbound.loader.geometry.entity.WriteTextureToJsonGeometry;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.PackLoader;
-import com.java_unbound.loader.textures.block.BlockTextureLoader;
-import com.java_unbound.loader.textures.entity.EntityTextureLoader;
 import com.java_unbound.loader.textures.gui.Panorama;
 import com.java_unbound.loader.textures.gui.Splashes;
 import com.java_unbound.loader.textures.gui.Title;
@@ -50,19 +46,7 @@ public class JavaUnboundClient implements ClientModInitializer {
                     Splashes.CreateSplashes();
                     JavaUnbound.LOGGER.info("--------------------------Finished Creating Splashes--------------------------");
 
-                    JavaUnbound.LOGGER.info("--------------------------Loading Block Textures--------------------------");
-                    BlockTextureLoader.LoadTextures();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Loading Block Textures--------------------------");
-
-                    JavaUnbound.LOGGER.info("--------------------------Loading Entity Textures--------------------------");
-                    EntityTextureLoader.LoadEntityTextures();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Loading Entity Textures--------------------------");
-
-                    JavaUnbound.LOGGER.info("--------------------------Loading Entity Geometry--------------------------");
-                    EntityGeometryLoader.LoadEntityGeometries();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Loading Entity Geometry--------------------------");
-
-                    WriteTextureToJsonGeometry.WriteEntityTexturesToJsonGeometry();
+                    //WriteTextureToJsonGeometry.WriteEntityTexturesToJsonGeometry();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
