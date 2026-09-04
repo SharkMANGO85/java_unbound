@@ -1,4 +1,4 @@
-package com.java_unbound.loader.textures.gui;
+package com.java_unbound.loader.gui;
 
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.resourcepack.Folder;

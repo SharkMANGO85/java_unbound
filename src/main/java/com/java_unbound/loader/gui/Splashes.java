@@ -1,4 +1,4 @@
-package com.java_unbound.loader.textures.gui;
+package com.java_unbound.loader.gui;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

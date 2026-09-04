@@ -10,7 +10,6 @@ public final class Folder {
     private Folder() {
 
     }
-
     public static Path GetResourceFolder() {
         return FabricLoader.getInstance().getConfigDir().resolve("java_unbound");
     }

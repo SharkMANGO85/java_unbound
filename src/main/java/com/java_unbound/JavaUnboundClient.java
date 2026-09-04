@@ -3,9 +3,11 @@ package com.java_unbound;
 import com.java_unbound.config.ConfigManager;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.PackLoader;
-import com.java_unbound.loader.textures.gui.Panorama;
-import com.java_unbound.loader.textures.gui.Splashes;
-import com.java_unbound.loader.textures.gui.Title;
+import com.java_unbound.loader.gui.Panorama;
+import com.java_unbound.loader.gui.Splashes;
+import com.java_unbound.loader.gui.Title;
+import com.java_unbound.loader.entity.EntityFileReader;
+
 import net.fabricmc.api.ClientModInitializer;
 
 import java.io.File;
@@ -16,7 +18,6 @@ import java.time.temporal.ValueRange;
 import java.util.concurrent.CompletableFuture;
 
 public class JavaUnboundClient implements ClientModInitializer {
-
     @Override
     public void onInitializeClient() {
         ConfigManager.load();
@@ -28,9 +29,9 @@ public class JavaUnboundClient implements ClientModInitializer {
         String Version = ConfigManager.GetValue("LoadedVersion").toString();
         Boolean Loaded = (Boolean) ConfigManager.GetValue("Loaded");
 
-        if (!Version.equals(ResourcePackVersion) || Version.isEmpty() || Loaded == false || !Files.exists(AssetsFolder)) {
-            ConfigManager.ChangeValue("Loaded", true);
-            ConfigManager.ChangeValue("LoadedVersion", ResourcePackVersion);
+        //if (!Version.equals(ResourcePackVersion) || Version.isEmpty() || Loaded == false || !Files.exists(AssetsFolder)) {
+        //ConfigManager.ChangeValue("Loaded", true);
+        //ConfigManager.ChangeValue("LoadedVersion", ResourcePackVersion);
 
             CompletableFuture.runAsync(() -> {
                 try {
@@ -46,11 +47,13 @@ public class JavaUnboundClient implements ClientModInitializer {
                     Splashes.CreateSplashes();
                     JavaUnbound.LOGGER.info("--------------------------Finished Creating Splashes--------------------------");
 
+                    EntityFileReader.Read();
+
                     //WriteTextureToJsonGeometry.WriteEntityTexturesToJsonGeometry();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             });
-        }
+        //}
     }
 }

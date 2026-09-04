@@ -19,12 +19,16 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public final class FolderResources implements PackResources {
-    private final Path ResourcePack;
+    private static Path ResourcePack;
     private final PackLocationInfo Location;
 
     public FolderResources(Path ResourcePack, PackLocationInfo Location) {
-        this.ResourcePack = ResourcePack;
+        FolderResources.ResourcePack = ResourcePack;
         this.Location = Location;
+    }
+
+    public static Path GetResourcePack() {
+        return ResourcePack;
     }
 
     @Override

@@ -1,0 +1,58 @@
+╔══════════════════════════════════════════════════════════════╗
+║                    entity/drw.json                           ║
+║                                                              ║
+║                 minecraft:skeleton                           ║
+╚══════════════════════════╤═══════════════════════════════════╝
+                           │
+          ┌────────────────┼─────────────────┐
+          │                │                 │
+          ▼                ▼                 ▼
+      GEOMETRY          TEXTURES        ANIMATIONS
+          │                │                 │
+          │                │                 │
+          ▼                ▼                 ▼
+  geometry.*         textures/*       animation.*
+          │                │                 │
+          ▼                │                 ▼
+ models/entity/*.json      │        animations/*.json
+          │                │                 │
+          ▼                │                 ▼
+      BONES + CUBES        │          BONE TRANSFORMS
+          │                │                 │
+          │                │                 │
+          └────────────────┼─────────────────┘
+                           │
+                           ▼
+                  ANIMATION CONTROLLER
+                           │
+                           │
+                    Entity variables
+                           │
+                  ┌────────┴────────┐
+                  │                 │
+                  ▼                 ▼
+              q.is...          v.variable
+                  │                 │
+                  └────────┬────────┘
+                           ▼
+                  Render Controller
+                           │
+            ┌──────────────┼──────────────┐
+            │              │              │
+            ▼              ▼              ▼
+         Geometry       Material       Texture
+            │              │              │
+            │              │              │
+            └──────────────┼──────────────┘
+                           ▼
+                     Java In Motion
+                       renderer
+                           │
+                           ▼
+                  Minecraft RenderType
+                           │
+                           ▼
+                         GPU
+                           │
+                           ▼
+                    SKELETON ON SCREEN
