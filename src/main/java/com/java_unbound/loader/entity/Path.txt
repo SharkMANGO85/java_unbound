@@ -1,0 +1,263 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         RESOURCE PACK LOADING                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+                                      │
+                                      │ Java In Motion scans / accesses
+                                      │ resource-pack resources
+                                      ▼
+                         ┌──────────────────────────┐
+                         │ entity/drw.json          │
+                         │                          │
+                         │ minecraft:client_entity  │
+                         └────────────┬─────────────┘
+                                      │
+                                      │ read "description"
+                                      ▼
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                         SKELETON DEFINITION                                  ║
+║                                                                              ║
+║  identifier:                                                                 ║
+║      minecraft:skeleton                                                      ║
+║                                                                              ║
+║  geometry:                                                                   ║
+║      default → geometry.oreville_ans.qpxghj                                  ║
+║                                                                              ║
+║  textures:                                                                   ║
+║      default → textures/entity/skeleton/skeleton                             ║
+║      eaifot  → textures/oreville/ans/bff                                     ║
+║      vaznlz  → textures/oreville/ans/bfg                                     ║
+║      vzvvpd  → textures/oreville/ans/mzm                                     ║
+║      ...                                                                     ║
+║                                                                              ║
+║  animations:                                                                 ║
+║      idle / move / run / jump / fall / ...                                   ║
+║                                                                              ║
+║  scripts:                                                                    ║
+║      initialize                                                              ║
+║      pre_animation                                                           ║
+║      animate                                                                 ║
+║                                                                              ║
+║  render_controllers:                                                         ║
+║      controller.render.oreville_ans.jpooxn                                   ║
+║      controller.render.oreville_ans.ndapcv                                   ║
+║      controller.render.oreville_ans.xulevm                                   ║
+║      ...                                                                     ║
+╚═══════════════════════════════╤══════════════════════════════════════════════╝
+                                │
+             ┌──────────────────┼────────────────────────┐
+             │                  │                        │
+             ▼                  ▼                        ▼
+       GEOMETRY BRANCH     TEXTURE BRANCH          ANIMATION BRANCH
+             │                  │                        │
+             │                  │                        │
+             ▼                  ▼                        ▼
+
+             ┌──────────────────────────────────────────────────────────────────────────────┐
+             │                           GEOMETRY BRANCH                                     │
+             └──────────────────────────────────────────────────────────────────────────────┘
+
+             entity/drw.json
+                    │
+                    │ "geometry"
+                    │
+                    ▼
+             "geometry.oreville_ans.qpxghj"
+                    │
+                    │ Geometry identifier
+                    ▼
+             ┌───────────────────────────────────────┐
+             │ Java In Motion geometry lookup        │
+             │                                       │
+             │ Search geometry resources             │
+             └──────────────────┬────────────────────┘
+                                │
+                                ▼
+                       models/entity/*.json
+                                │
+                                │ find matching geometry identifier
+                                ▼
+                       minecraft:geometry
+                                │
+                                ▼
+             ┌───────────────────────────────────────┐
+             │           GEOMETRY DATA               │
+             │                                       │
+             │ description                           │
+             │                                       │
+             │ texture_width                         │
+             │ texture_height                        │
+             │                                       │
+             │ bones[]                               │
+             └──────────────────┬────────────────────┘
+                                │
+                                ▼
+                          ┌────────────┐
+                          │   BONES    │
+                          └─────┬──────┘
+                                │
+                    ┌───────────┼───────────────┐
+                    │           │               │
+                    ▼           ▼               ▼
+                  head         body           right_arm
+                    │           │               │
+                    ▼           ▼               ▼
+                  cubes[]     cubes[]         cubes[]
+                    │           │               │
+                    ▼           ▼               ▼
+              ┌──────────┐ ┌──────────┐   ┌──────────┐
+              │ origin   │ │ origin   │   │ origin   │
+              │ size     │ │ size     │   │ size     │
+              │ UV       │ │ UV       │   │ UV       │
+              └──────────┘ └──────────┘   └──────────┘
+                    │
+                    ▼
+             ┌───────────────────────────────────────┐
+             │       JAVA MODEL / GEOMETRY OBJECT    │
+             │                                       │
+             │ bones                                 │
+             │ cubes                                 │
+             │ pivots                                │
+             │ vertices                              │
+             │ UV coordinates                        │
+             └──────────────────┬────────────────────┘
+                                │
+                                │
+                                │ animation will modify
+                                │ these bones later
+                                ▼
+                          ANIMATED MODEL
+
+                          ┌──────────────────────────────────────────────────────────────────────────────┐
+                          │                            TEXTURE BRANCH                                    │
+                          └──────────────────────────────────────────────────────────────────────────────┘
+
+                          entity/drw.json
+                                 │
+                                 │ "textures"
+                                 ▼
+                          "default":
+                          "textures/entity/skeleton/skeleton"
+                                 │
+                                 ▼
+                          ┌───────────────────────────────────────┐
+                          │ Java In Motion texture resolver       │
+                          │                                       │
+                          │ textureName                           │
+                          │       │                               │
+                          │       ▼                               │
+                          │ construct resource path               │
+                          └──────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                                 textures/entity/skeleton/
+                                             │
+                                             ▼
+                                       skeleton.png
+                                             │
+                                             │
+                                             │ ResourceManager
+                                             ▼
+                          ┌───────────────────────────────────────┐
+                          │ Minecraft ResourceManager             │
+                          │                                       │
+                          │ find resource                         │
+                          └──────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                                       Identifier
+                                             │
+                                             │
+                                             │ e.g.
+                                             │ textures/entity/
+                                             │ skeleton/skeleton.png
+                                             ▼
+                          ┌───────────────────────────────────────┐
+                          │ Minecraft Texture Manager             │
+                          │                                       │
+                          │ load / cache texture                  │
+                          └──────────────────┬────────────────────┘
+                                             │
+                                             ▼
+                                       GPU texture
+
+                                       ┌──────────────────────────────────────────────────────────────────────────────┐
+                                       │                           ANIMATION BRANCH                                   │
+                                       └──────────────────────────────────────────────────────────────────────────────┘
+
+                                       entity/drw.json
+                                              │
+                                              │ "animations"
+                                              ▼
+                                       ┌───────────────────────────────────────┐
+                                       │ Animation aliases                     │
+                                       │                                       │
+                                       │ idle → animation.oreville_ans....     │
+                                       │ move → animation.oreville_ans....     │
+                                       │ run  → animation.oreville_ans....     │
+                                       │ jump → animation.oreville_ans....     │
+                                       │ fall → animation.oreville_ans....     │
+                                       │                                       │
+                                       │ Some entries point to controllers     │
+                                       │ instead of direct animations.         │
+                                       └──────────────────┬────────────────────┘
+                                                          │
+                                                          ▼
+                                                    animations/*.json
+                                                          │
+                                                          ▼
+                                       ┌───────────────────────────────────────┐
+                                       │ Animation definition                  │
+                                       │                                       │
+                                       │ bones:                                │
+                                       │                                       │
+                                       │ head                                  │
+                                       │   └── rotation                        │
+                                       │                                       │
+                                       │ body                                  │
+                                       │   └── rotation                        │
+                                       │                                       │
+                                       │ rightleg                             │
+                                       │   └── rotation                        │
+                                       │                                       │
+                                       │ leftleg                              │
+                                       │   └── rotation                        │
+                                       │                                       │
+                                       │ position / rotation / scale           │
+                                       └──────────────────┬────────────────────┘
+                                                          │
+                                                          ▼
+                                                    ANIMATION VALUES
+                                                          │
+                                                          │ may contain expressions
+                                                          ▼
+                                               ┌──────────────────────┐
+                                               │ q.* queries          │
+                                               │                      │
+                                               │ q.life_time          │
+                                               │ q.ground_speed       │
+                                               │ q.is_on_ground       │
+                                               │ q.is_riding          │
+                                               │ etc.                 │
+                                               └──────────┬───────────┘
+                                                          │
+                                                          ▼
+                                                 expression evaluation
+                                                          │
+                                                          ▼
+                                                    rotation / position
+                                                          │
+                                                          ▼
+                                                     MODIFY BONES
+                                                          │
+                                                          ▼
+                                                 ┌──────────────────┐
+                                                 │ Skeleton model  │
+                                                 │                  │
+                                                 │ head             │
+                                                 │ body             │
+                                                 │ arms             │
+                                                 │ legs             │
+                                                 └────────┬─────────┘
+                                                          │
+                                                          ▼
+                                                    FINAL MODEL POSE
