@@ -1,0 +1,27 @@
+attachable JSON
+│
+├── identifier
+│      └── minecraft:cobblestone
+│
+├── materials
+│      └── Which rendering material to use
+│
+├── animations
+│      └── Available animations/controllers
+│
+├── scripts
+│      ├── initialize      → set initial variables
+│      ├── pre_animation   → update variables every frame
+│      └── parent_setup    → configure attachment/hand position
+│
+├── render_controllers
+│      └── Decide what actually gets rendered
+│
+├── textures
+│      └── Available texture choices
+│
+├── geometry
+│      └── Available model choices
+│
+└── item
+       └── Additional item-specific condition

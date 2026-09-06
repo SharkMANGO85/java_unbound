@@ -1,0 +1,60 @@
+| Folder / File                                               | What it's generally for                                          |
+| ----------------------------------------------------------- | ---------------------------------------------------------------- |
+| `java_unbound`                                              | Root of the converted Bedrock resource pack                      |
+| `java_unbound/animation_controllers`                        | Animation controller logic — decides when animations play        |
+| `java_unbound/animations`                                   | Individual animation definitions                                 |
+| `java_unbound/attachables`                                  | Held/equipped items, armor, and other attached renderables       |
+| `java_unbound/entity`                                       | Entity rendering definitions                                     |
+| `java_unbound/materials`                                    | Materials/rendering definitions                                  |
+| `java_unbound/models`                                       | Model/geometry definitions                                       |
+| `java_unbound/particles`                                    | Particle definitions                                             |
+| `java_unbound/render_controllers`                           | Controls geometry, textures, materials, and rendering conditions |
+| `java_unbound/sounds`                                       | Sound assets/definitions                                         |
+| `java_unbound/subpacks`                                     | Contains the different Bedrock subpack variants                  |
+| `java_unbound/subpacks/SP0`                                 | Subpack 0                                                        |
+| `java_unbound/subpacks/SP1`                                 | Subpack 1                                                        |
+| `java_unbound/subpacks/SP2`                                 | Subpack 2                                                        |
+| `java_unbound/subpacks/SP2/atmospherics`                    | Atmospheric rendering/effects                                    |
+| `java_unbound/subpacks/SP2/attachables`                     | Held/equipped/attached rendering definitions                     |
+| `java_unbound/subpacks/SP2/biomes`                          | Biome-specific definitions/settings                              |
+| `java_unbound/subpacks/SP2/color_grading`                   | Color grading/post-processing configuration                      |
+| `java_unbound/subpacks/SP2/fogs`                            | Fog definitions/settings                                         |
+| `java_unbound/subpacks/SP2/lighting`                        | Lighting configuration                                           |
+| `java_unbound/subpacks/SP2/local_lighting`                  | Local/dynamic lighting definitions                               |
+| `java_unbound/subpacks/SP2/materials`                       | Materials/rendering definitions                                  |
+| `java_unbound/subpacks/SP2/models`                          | Model/geometry definitions                                       |
+| `java_unbound/subpacks/SP2/particles`                       | Particle definitions                                             |
+| `java_unbound/subpacks/SP2/pbr`                             | Physically based rendering resources                             |
+| `java_unbound/subpacks/SP2/render_controllers`              | Rendering logic/controllers                                      |
+| `java_unbound/subpacks/SP2/shadows`                         | Shadow configuration/resources                                   |
+| `java_unbound/subpacks/SP2/textures`                        | Texture root                                                     |
+| `java_unbound/subpacks/SP2/textures/blocks`                 | **Placed/world block textures**                                  |
+| `java_unbound/subpacks/SP2/textures/caustic`                | Underwater/caustic effect textures                               |
+| `java_unbound/subpacks/SP2/textures/colormap`               | Biome-dependent color maps                                       |
+| `java_unbound/subpacks/SP2/textures/entity`                 | Entity textures                                                  |
+| `java_unbound/subpacks/SP2/textures/environment`            | Sky/environment/world textures                                   |
+| `java_unbound/subpacks/SP2/textures/font`                   | Font textures                                                    |
+| `java_unbound/subpacks/SP2/textures/gui`                    | GUI textures                                                     |
+| `java_unbound/subpacks/SP2/textures/items`                  | Item/inventory textures                                          |
+| `java_unbound/subpacks/SP2/textures/map`                    | Map-related textures                                             |
+| `java_unbound/subpacks/SP2/textures/misc`                   | Miscellaneous textures                                           |
+| `java_unbound/subpacks/SP2/textures/models`                 | Textures used by models                                          |
+| `java_unbound/subpacks/SP2/textures/oreville`               | Custom/pack-specific textures                                    |
+| `java_unbound/subpacks/SP2/textures/painting`               | Painting textures                                                |
+| `java_unbound/subpacks/SP2/textures/particle`               | Particle-related textures                                        |
+| `java_unbound/subpacks/SP2/textures/particles`              | Particle textures                                                |
+| `java_unbound/subpacks/SP2/textures/trims`                  | Armor trim textures                                              |
+| `java_unbound/subpacks/SP2/textures/ui`                     | UI textures                                                      |
+| `java_unbound/subpacks/SP2/textures/flame_atlas.png`        | Flame texture atlas                                              |
+| `java_unbound/subpacks/SP2/textures/flipbook_textures.json` | Animated/flipbook texture definitions                            |
+| `java_unbound/subpacks/SP2/textures/terrain_texture.json`   | **Maps terrain/block texture identifiers to actual textures**    |
+| `java_unbound/subpacks/SP2/textures/textures_list.json`     | Texture list/texture metadata                                    |
+| `java_unbound/subpacks/SP2/water`                           | Water rendering/resources                                        |
+| `java_unbound/subpacks/SP2/blocks.json`                     | **Block definitions and block rendering configuration**          |
+| `java_unbound/texts`                                        | Localization/text resources                                      |
+| `java_unbound/textures`                                     | General/root textures                                            |
+| `java_unbound/ui`                                           | UI definitions/layouts                                           |
+| `java_unbound/manifest.json`                                | Resource-pack metadata/manifest                                  |
+| `java_unbound/pack_icon.png`                                | Resource-pack icon                                               |
+| `java_unbound/sounds.json`                                  | Sound definitions/mappings                                       |
+| `java_unbound/splashes.json`                                | Splash-screen text definitions                                   |

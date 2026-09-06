@@ -70,14 +70,12 @@ public final class PackLoader {
     public static Pack Create(Path ResourcePack) {
         String Name = GetPackName(ResourcePack);
         String Description = GetDescription(ResourcePack);
-
         PackLocationInfo Location = new PackLocationInfo("java_unbound", Component.literal(Name), PackSource.BUILT_IN, Optional.empty());
 
         Pack.ResourcesSupplier Supplier = new Pack.ResourcesSupplier() {
             @Override
             public PackResources openPrimary(PackLocationInfo Info) {
-                return new FolderResources(ResourcePack, Info
-                );
+                return new FolderResources(ResourcePack, Info);
             }
 
             @Override

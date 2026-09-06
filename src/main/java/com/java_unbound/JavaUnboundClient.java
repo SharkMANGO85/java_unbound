@@ -1,13 +1,13 @@
 package com.java_unbound;
 
 import com.java_unbound.config.ConfigManager;
+import com.java_unbound.loader.converter.TgaConverter;
+import com.java_unbound.loader.item.ItemTextureLoader;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.PackLoader;
-import com.java_unbound.loader.gui.Panorama;
-import com.java_unbound.loader.gui.Splashes;
-import com.java_unbound.loader.gui.Title;
 import com.java_unbound.loader.entity.EntityFileReader;
 
+import com.java_unbound.loader.resourcepack.ResourceMappings;
 import net.fabricmc.api.ClientModInitializer;
 
 import java.io.File;
@@ -29,31 +29,9 @@ public class JavaUnboundClient implements ClientModInitializer {
         String Version = ConfigManager.GetValue("LoadedVersion").toString();
         Boolean Loaded = (Boolean) ConfigManager.GetValue("Loaded");
 
-        //if (!Version.equals(ResourcePackVersion) || Version.isEmpty() || Loaded == false || !Files.exists(AssetsFolder)) {
-        //ConfigManager.ChangeValue("Loaded", true);
-        //ConfigManager.ChangeValue("LoadedVersion", ResourcePackVersion);
+        TgaConverter.ConvertAll(Folder.GetResourceFolder());
 
-            CompletableFuture.runAsync(() -> {
-                try {
-                    JavaUnbound.LOGGER.info("--------------------------Creating Panorama--------------------------");
-                    Panorama.CreatePanorama();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Creating Panorama--------------------------");
-
-                    JavaUnbound.LOGGER.info("--------------------------Creating Title--------------------------");
-                    Title.CreateTitle();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Creating Title--------------------------");
-
-                    JavaUnbound.LOGGER.info("--------------------------Creating Splashes--------------------------");
-                    Splashes.CreateSplashes();
-                    JavaUnbound.LOGGER.info("--------------------------Finished Creating Splashes--------------------------");
-
-                    EntityFileReader.Read();
-
-                    //WriteTextureToJsonGeometry.WriteEntityTexturesToJsonGeometry();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        //}
+        ResourceMappings.Register();
+        CompletableFuture.runAsync(EntityFileReader::Read);
     }
 }
