@@ -1,4 +1,4 @@
-package com.java_unbound.loader.entity;
+package com.java_unbound.loader.attachables;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,21 +9,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-public class EntityTextureResolver {
-    private EntityTextureResolver() {
+public class AttachableTextureResolver {
+    private AttachableTextureResolver() {
 
     }
 
     private static final Path ResourceFolder = Folder.GetResourceFolder();
-    private static final Path SubpackFolder = ResourceFolder.resolve("subpacks").resolve(JavaUnbound.SUBPACK);
 
-    public static Path ResolveEntityTexture(JsonElement Textures) {
+    private static final Path Subpack0Folder = ResourceFolder.resolve("subpacks").resolve("SP0");
+    private static final Path Subpack1Folder = ResourceFolder.resolve("subpacks").resolve("SP1");
+    private static final Path Subpack2Folder = ResourceFolder.resolve("subpacks").resolve("SP2");
+
+    public static JsonElement ResolveAttachableTexture(JsonElement Textures) {
         if (Textures == null || !Textures.isJsonObject()) {
-            JavaUnbound.LOGGER.error("Invalid entity texture data: {}", Textures);
-            return null;
+            JavaUnbound.LOGGER.error("Invalid attachable texture data: {}", Textures);
+            return new JsonObject();
         }
 
         JsonObject TexturesObject = Textures.getAsJsonObject();
+        JsonObject ResolvedTextures = new JsonObject();
 
         for (Map.Entry<String, JsonElement> Entry : TexturesObject.entrySet()) {
             String Key = Entry.getKey();
@@ -37,13 +41,13 @@ public class EntityTextureResolver {
             Path Texture = ResolveTexture(TexturePath);
 
             if (Texture != null) {
-                return Texture;
+                ResolvedTextures.addProperty(Key, ResourceFolder.relativize(Texture).toString().replace('\\', '/'));
+            } else {
+                JavaUnbound.LOGGER.error("Attachable Texture not found: {}", TexturePath);
             }
-
-            JavaUnbound.LOGGER.error("Entity Texture not found: {}", TexturePath);
         }
 
-        return null;
+        return ResolvedTextures;
     }
 
     private static Path ResolveTexture(String TexturePath) {
@@ -59,7 +63,19 @@ public class EntityTextureResolver {
             TexturePath += ".png";
         }
 
-        Path Texture = SubpackFolder.resolve(TexturePath);
+        Path Texture = Subpack2Folder.resolve(TexturePath);
+
+        if (Files.isRegularFile(Texture)) {
+            return Texture;
+        }
+
+        Texture = Subpack1Folder.resolve(TexturePath);
+
+        if (Files.isRegularFile(Texture)) {
+            return Texture;
+        }
+
+        Texture = Subpack0Folder.resolve(TexturePath);
 
         if (Files.isRegularFile(Texture)) {
             return Texture;

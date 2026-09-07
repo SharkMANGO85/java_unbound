@@ -24,6 +24,8 @@ public class GetJsonValue {
 
         if (Current.isJsonObject() && Current.getAsJsonObject().has("minecraft:client_entity")) {
             Current = Current.getAsJsonObject().get("minecraft:client_entity");
+        } else if (Current.isJsonObject() && Current.getAsJsonObject().has("minecraft:attachable")) {
+            Current = Current.getAsJsonObject().get("minecraft:attachable");
         }
 
         for (String Key : Path.split("\\.")) {

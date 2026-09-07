@@ -1,8 +1,10 @@
 package com.java_unbound;
 
 import com.java_unbound.config.ConfigManager;
+import com.java_unbound.loader.attachables.AttachableFileReader;
+import com.java_unbound.loader.attachables.AttachableTextureResolver;
 import com.java_unbound.loader.converter.TgaConverter;
-import com.java_unbound.loader.item.ItemTextureLoader;
+import com.java_unbound.loader.definitions.Geometries;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.PackLoader;
 import com.java_unbound.loader.entity.EntityFileReader;
@@ -32,6 +34,10 @@ public class JavaUnboundClient implements ClientModInitializer {
         TgaConverter.ConvertAll(Folder.GetResourceFolder());
 
         ResourceMappings.Register();
+
+        Geometries.LoadGeometries();
+
         CompletableFuture.runAsync(EntityFileReader::Read);
+        CompletableFuture.runAsync(AttachableFileReader::Read);
     }
 }

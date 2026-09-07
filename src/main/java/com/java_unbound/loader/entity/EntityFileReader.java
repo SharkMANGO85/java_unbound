@@ -18,22 +18,16 @@ public class EntityFileReader {
 
     }
 
-    private static final Path Subpack0Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP0");
-    private static final Path Subpack1Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP1");
-    private static final Path Subpack2Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP2");
+    private static final Path SubpackFolder = Folder.GetResourceFolder().resolve("subpacks").resolve(JavaUnbound.SUBPACK);
 
     private static final Path BaseEntityFolder = Folder.GetResourceFolder().resolve("entity");
-    private static final Path Subpack0EntityFolder = Subpack0Folder.resolve("entity");
-    private static final Path Subpack1EntityFolder = Subpack1Folder.resolve("entity");
-    private static final Path Subpack2EntityFolder = Subpack2Folder.resolve("entity");
+    private static final Path SubpackEntityFolder = SubpackFolder.resolve("entity");
 
 
     public static void Read() {
         Map<String, Path> EntityFiles = new HashMap<>();
 
-        AddEntityFiles(EntityFiles, Subpack2EntityFolder);
-        AddEntityFiles(EntityFiles, Subpack1EntityFolder);
-        AddEntityFiles(EntityFiles, Subpack0EntityFolder);
+        AddEntityFiles(EntityFiles, SubpackEntityFolder);
         AddEntityFiles(EntityFiles, BaseEntityFolder);
 
 
@@ -52,7 +46,7 @@ public class EntityFileReader {
             return;
         }
 
-        List<Path> FilesInFolder = GetJsonFilesInPath.Get(EntityFolder);
+        List<Path> FilesInFolder = GetJsonFilesInPath.GetDescendant(EntityFolder);
 
         for (Path File : FilesInFolder) {
            String RelativePath = EntityFolder.relativize(File).toString();
