@@ -5,6 +5,7 @@ import com.java_unbound.loader.attachables.AttachableFileReader;
 import com.java_unbound.loader.attachables.AttachableTextureResolver;
 import com.java_unbound.loader.converter.TgaConverter;
 import com.java_unbound.loader.definitions.Geometries;
+import com.java_unbound.loader.definitions.RenderControllers;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.PackLoader;
 import com.java_unbound.loader.entity.EntityFileReader;
@@ -36,6 +37,7 @@ public class JavaUnboundClient implements ClientModInitializer {
         ResourceMappings.Register();
 
         Geometries.LoadGeometries();
+        RenderControllers.LoadRenderControllers();
 
         CompletableFuture.runAsync(EntityFileReader::Read);
         CompletableFuture.runAsync(AttachableFileReader::Read);

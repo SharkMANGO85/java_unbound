@@ -1,7 +1,6 @@
 package com.java_unbound.loader.definitions;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.resourcepack.Folder;
@@ -15,25 +14,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RenderControllers {
+public class Animations {
     public static final Map<String, String> RenderControllerFiles = new HashMap<>();
 
-    private static final Path Subpack0Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP0");
-    private static final Path Subpack1Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP1");
-    private static final Path Subpack2Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP2");
+    private static final Path SubpackFolder = Folder.GetResourceFolder().resolve("subpacks").resolve(JavaUnbound.SUBPACK);
 
     private static final Path BaseRenderControllersFolder = Folder.GetResourceFolder().resolve("render_controllers");
-    private static final Path Subpack0RenderControllersFolder = Subpack0Folder.resolve("render_controllers");
-    private static final Path Subpack1RenderControllersFolder = Subpack1Folder.resolve("render_controllers");
-    private static final Path Subpack2RenderControllersFolder = Subpack2Folder.resolve("render_controllers");
+    private static final Path SubpackRenderControllersFolder = SubpackFolder.resolve("render_controllers");
 
     public static void LoadRenderControllers() {
         RenderControllerFiles.clear();
 
         AddRenderControllers(BaseRenderControllersFolder);
-        AddRenderControllers(Subpack0RenderControllersFolder);
-        AddRenderControllers(Subpack1RenderControllersFolder);
-        AddRenderControllers(Subpack2RenderControllersFolder);
+        AddRenderControllers(SubpackRenderControllersFolder);
     }
 
     public static JsonElement GetRenderController(String Identifier) {

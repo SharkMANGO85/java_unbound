@@ -62,7 +62,6 @@ public final class FolderResources implements PackResources {
         Path File = ResolveResource(Identifier);
 
         if (File != null && Files.isRegularFile(File)) {
-            System.out.println("[Java Unbound] Resource: " + Identifier + " -> " + File);
             return IoSupplier.create(File);
         }
 

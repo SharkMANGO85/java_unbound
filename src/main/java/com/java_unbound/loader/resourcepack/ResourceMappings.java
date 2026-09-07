@@ -18,6 +18,10 @@ public final class ResourceMappings {
         Folder.SetIdentifier("textures/gui/title/background/panorama_4.png", "subpacks/SP2/textures/ui/panorama_4.png");
         Folder.SetIdentifier("textures/gui/title/background/panorama_5.png", "subpacks/SP2/textures/ui/panorama_5.png");
         Folder.SetIdentifier("textures/gui/title/minecraft.png", "subpacks/SP2/textures/ui/title.png");
+
+
+        Folder.SetIdentifier("textures/misc/pumpkinblur.png", "subpacks/SP2/textures/misc/pumpkinblur.png");
+        Folder.SetIdentifier("textures/misc/missing_texture.png", "subpacks/SP2/textures/misc/missing_texture.png");
     }
 
     private static void RegisterItems() {

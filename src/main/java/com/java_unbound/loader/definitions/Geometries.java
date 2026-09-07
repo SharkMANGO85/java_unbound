@@ -19,16 +19,22 @@ import java.util.Map;
 public class Geometries {
     public static final Map<String, String> GeometryFiles = new HashMap<>();
 
-    private static final Path SubpackFolder = Folder.GetResourceFolder().resolve("subpacks").resolve(JavaUnbound.SUBPACK);
+    private static final Path Subpack0Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP0");
+    private static final Path Subpack1Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP1");
+    private static final Path Subpack2Folder = Folder.GetResourceFolder().resolve("subpacks").resolve("SP2");
 
     private static final Path BaseGeometriesFolder = Folder.GetResourceFolder().resolve("models");
-    private static final Path SubpackGeometriesFolder = SubpackFolder.resolve("models");
+    private static final Path Subpack0GeometriesFolder = Subpack0Folder.resolve("models");
+    private static final Path Subpack1GeometriesFolder = Subpack1Folder.resolve("models");
+    private static final Path Subpack2GeometriesFolder = Subpack2Folder.resolve("models");
 
     public static void LoadGeometries() {
         GeometryFiles.clear();
 
         AddGeometries(BaseGeometriesFolder);
-        AddGeometries(SubpackGeometriesFolder);
+        AddGeometries(Subpack0GeometriesFolder);
+        AddGeometries(Subpack1GeometriesFolder);
+        AddGeometries(Subpack2GeometriesFolder);
     }
 
     public static JsonElement GetGeometry(String Identifier) {
