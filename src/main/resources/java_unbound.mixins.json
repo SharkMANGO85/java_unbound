@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_25",
   "client": [
     "resourcepack.PackRepositoryMixin",
-    "ui.LogoRendererMixin"
+    "ui.LogoRendererMixin",
+    "ui.SplashRendererMixin",
+    "ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

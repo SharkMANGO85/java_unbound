@@ -43,7 +43,7 @@ public class AttachableTextureResolver {
             if (Texture != null) {
                 ResolvedTextures.addProperty(Key, ResourceFolder.relativize(Texture).toString().replace('\\', '/'));
             } else {
-                JavaUnbound.LOGGER.error("Attachable Texture not found: {}", TexturePath);
+                //JavaUnbound.LOGGER.error("Attachable Texture not found: {}", TexturePath);
             }
         }
 

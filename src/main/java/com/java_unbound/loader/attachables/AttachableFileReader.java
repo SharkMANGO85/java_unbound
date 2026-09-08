@@ -106,6 +106,15 @@ public class AttachableFileReader {
         List<JsonElement> ResolvedGeometries = Geometries.GetGeometries(JsonGeometries);
         List<JsonElement> ResolvedRenderControllers = RenderControllers.GetRenderControllers(JsonRenderControllers);
 
+        AttachableDefinition Definition = new AttachableDefinition();
+        Definition.Identifier = JsonIdentifier.getAsString();
+        Definition.Materials = JsonMaterials;
+        Definition.Textures = TexturePaths;
+        Definition.Geometries = ResolvedGeometries;
+        Definition.Animations = JsonAnimations;
+        Definition.Scripts = JsonScripts;
+        Definition.RenderControllers = ResolvedRenderControllers;
 
+        AttachableRegistry.Register(Definition);
     }
 }

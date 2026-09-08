@@ -34,6 +34,14 @@ public final class FolderResources implements PackResources {
 
     @Override
     public IoSupplier<InputStream> getRootResource(String... Paths) {
+        if (Paths.length == 1 && "pack.png".equals(Paths[0])) {
+            Path PackIcon = ResolvePath(ResourcePack.resolve("pack_icon.png"));
+
+            if (PackIcon != null && Files.isRegularFile(PackIcon, new LinkOption[0])) {
+                return IoSupplier.create(PackIcon);
+            }
+        }
+
         Path File = ResourcePack;
 
         for (String PathPart : Paths) {

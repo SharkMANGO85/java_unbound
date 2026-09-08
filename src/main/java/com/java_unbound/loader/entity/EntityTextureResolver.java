@@ -40,7 +40,7 @@ public class EntityTextureResolver {
                 return Texture;
             }
 
-            JavaUnbound.LOGGER.error("Entity Texture not found: {}", TexturePath);
+            //JavaUnbound.LOGGER.error("Entity Texture not found: {}", TexturePath);
         }
 
         return null;

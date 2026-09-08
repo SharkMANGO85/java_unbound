@@ -93,14 +93,16 @@ public class RenderControllers {
 
                 JsonElement RenderControllersElement = Root.getAsJsonObject().get("render_controllers");
 
-                JavaUnbound.LOGGER.info("{} -> {}", File, RenderControllersElement);
-
                 if (RenderControllersElement == null || !RenderControllersElement.isJsonObject()) {
                     continue;
                 }
 
                 for (Map.Entry<String, JsonElement> Entry : RenderControllersElement.getAsJsonObject().entrySet()) {
-                    RenderControllerFiles.put(Entry.getKey(), Entry.getValue().toString());
+                    if (!Entry.getValue().isJsonObject()) {continue;}
+
+                    JsonObject RenderController = Entry.getValue().getAsJsonObject();
+                    RenderController.addProperty("identifier", Entry.getKey());
+                    RenderControllerFiles.put(Entry.getKey(), RenderController.toString());
                 }
             } catch (IOException | RuntimeException Exception) {
                 JavaUnbound.LOGGER.error("Failed to read render controller file: {}", File, Exception);

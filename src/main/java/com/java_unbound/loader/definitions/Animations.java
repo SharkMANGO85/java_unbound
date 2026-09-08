@@ -86,8 +86,6 @@ public class Animations {
 
                 JsonElement RenderControllersElement = Root.getAsJsonObject().get("render_controllers");
 
-                JavaUnbound.LOGGER.info("{} -> {}", File, RenderControllersElement);
-
                 if (RenderControllersElement == null || !RenderControllersElement.isJsonObject()) {
                     continue;
                 }

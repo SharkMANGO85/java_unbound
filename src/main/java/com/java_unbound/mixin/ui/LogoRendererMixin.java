@@ -23,7 +23,7 @@ public class LogoRendererMixin {
         final int TextureWidth = 2374;
         final int TextureHeight = 403;
 
-        final int LogoHeight = 50;
+        final int LogoHeight = 65;
         final int LogoWidth = Math.round((float) LogoHeight * TextureWidth / TextureHeight);
 
         final int LogoX = Width / 2 - LogoWidth / 2;

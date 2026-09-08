@@ -35,6 +35,10 @@ public class Geometries {
         AddGeometries(Subpack0GeometriesFolder);
         AddGeometries(Subpack1GeometriesFolder);
         AddGeometries(Subpack2GeometriesFolder);
+
+        JavaUnbound.LOGGER.info("----------------------------------------------------------------------------------------------");
+        JavaUnbound.LOGGER.info("Geometry count: {}", GeometryFiles.size());
+        JavaUnbound.LOGGER.info("----------------------------------------------------------------------------------------------");
     }
 
     public static JsonElement GetGeometry(String Identifier) {
