@@ -60,14 +60,30 @@ public class RenderControllers {
 
         if (RenderControllerElement.isJsonArray()) {
             for (JsonElement Element : RenderControllerElement.getAsJsonArray()) {
-                if (!Element.isJsonPrimitive()) {
+                if (Element.isJsonPrimitive()) {
+                    JsonElement RenderController = GetRenderController(Element.getAsString());
+
+                    if (RenderController != null) {
+                        ResolvedRenderControllers.add(RenderController);
+                    }
+
                     continue;
                 }
 
-                JsonElement RenderController = GetRenderController(Element.getAsString());
+                if (!Element.isJsonObject()) {
+                    continue;
+                }
 
-                if (RenderController != null) {
-                    ResolvedRenderControllers.add(RenderController);
+                for (Map.Entry<String, JsonElement> Entry : Element.getAsJsonObject().entrySet()) {
+                    JsonElement RenderController = GetRenderController(Entry.getKey());
+
+                    if (RenderController == null) {
+                        continue;
+                    }
+
+                    JsonObject ResolvedController = RenderController.getAsJsonObject().deepCopy();
+                    ResolvedController.add("condition", Entry.getValue().deepCopy());
+                    ResolvedRenderControllers.add(ResolvedController);
                 }
             }
         }

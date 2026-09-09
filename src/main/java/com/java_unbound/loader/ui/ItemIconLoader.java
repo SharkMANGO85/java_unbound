@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemIconLoader {
     private static final Path SubpackFolder = Folder.GetResourceFolder().resolve("subpacks").resolve(JavaUnbound.SUBPACK);
     private static final Path SubpackItemTextureFolder = SubpackFolder.resolve("textures").resolve("items");
+    private static final Path SubpackBlockTextureFolder = SubpackFolder.resolve("textures").resolve("blocks");
     private static final Path ReportFolder = Folder.GetResourceFolder().resolve("logs");
     private static final Path UnusedTexturesFile = ReportFolder.resolve("unused_item_textures.txt");
     private static final Path ReportFile = ReportFolder.resolve("item_texture_report.txt");
@@ -52,6 +53,7 @@ public class ItemIconLoader {
         ManualMappings.put("gold_pickaxe", "golden_pickaxe");
         ManualMappings.put("gold_shovel", "golden_shovel");
         ManualMappings.put("gold_sword", "golden_sword");
+
         ManualMappings.put("beef_raw", "beef");
         ManualMappings.put("beef_cooked", "cooked_beef");
         ManualMappings.put("chicken_raw", "chicken");
@@ -87,6 +89,7 @@ public class ItemIconLoader {
         ManualMappings.put("broken_elytra", "elytra_broken");
         ManualMappings.put("fireworks", "firework_rocket");
         ManualMappings.put("fireworks_charge", "firework_star");
+
         ManualMappings.put("bucket_empty", "bucket");
         ManualMappings.put("bucket_lava", "lava_bucket");
         ManualMappings.put("bucket_water", "water_bucket");
@@ -98,10 +101,13 @@ public class ItemIconLoader {
         ManualMappings.put("bucket_tropical", "tropical_fish_bucket");
         ManualMappings.put("bucket_powder_snow", "powder_snow_bucket");
         ManualMappings.put("bucket_milk", "milk_bucket");
+        ManualMappings.put("bucket_sulfur_cube", "sulfur_cube_bucket");
+
         ManualMappings.put("seeds_beetroot", "beetroot_seeds");
         ManualMappings.put("seeds_melon", "melon_seeds");
         ManualMappings.put("seeds_pumpkin", "pumpkin_seeds");
         ManualMappings.put("seeds_wheat", "wheat_seeds");
+
         ManualMappings.put("dye_powder_black", "black_dye");
         ManualMappings.put("dye_powder_blue", "blue_dye");
         ManualMappings.put("dye_powder_brown", "brown_dye");
@@ -119,6 +125,7 @@ public class ItemIconLoader {
         ManualMappings.put("dye_powder_yellow", "yellow_dye");
         ManualMappings.put("dye_powder_white_new", "white_dye");
         ManualMappings.put("dye_powder_black_new", "black_dye");
+
         ManualMappings.put("turtle_shell_piece", "turtle_scute");
         ManualMappings.put("fishing_rod_cast", "fishing_rod_cast");
         ManualMappings.put("fishing_rod_uncast", "fishing_rod");
@@ -126,6 +133,112 @@ public class ItemIconLoader {
         ManualMappings.put("map_empty", "map");
         ManualMappings.put("map_filled", "filled_map");
 
+        ManualMappings.put("potion_bottle_absorption", "potion");
+        ManualMappings.put("potion_bottle_lingering", "lingering_potion");
+        ManualMappings.put("potion_bottle_splash", "splash_potion");
+        ManualMappings.put("potion_overlay", "potion_overlay");
+
+        ManualMappings.put("tipped_arrow_base", "tipped_arrow_base");
+        ManualMappings.put("tipped_arrow_head", "tipped_arrow_head");
+
+        ManualMappings.put("crossbow_standby", "crossbow_standby");
+        ManualMappings.put("crossbow_pulling_0", "crossbow_pulling_0");
+        ManualMappings.put("crossbow_pulling_1", "crossbow_pulling_1");
+        ManualMappings.put("crossbow_pulling_2", "crossbow_pulling_2");
+        ManualMappings.put("crossbow_arrow", "crossbow_arrow");
+
+        ManualMappings.put("bow_standby", "bow");
+        ManualMappings.put("bow_pulling_0", "bow_pulling_0");
+        ManualMappings.put("bow_pulling_1", "bow_pulling_1");
+        ManualMappings.put("bow_pulling_2", "bow_pulling_2");
+        ManualMappings.put("bow_arrow", "bow_arrow");
+
+        ManualMappings.put("redstone_dust", "redstone");
+        ManualMappings.put("sign_darkoak", "dark_oak_sign");
+
+        ManualMappings.put("blocks/activator_rail_carried", "block/activator_rail");
+        ManualMappings.put("blocks/allium_carried", "block/allium");
+        ManualMappings.put("blocks/amethyst_cluster_carried", "block/amethyst_cluster");
+        ManualMappings.put("blocks/azure_bluet_carried", "block/azure_bluet");
+        ManualMappings.put("blocks/bamboo_sapling_carried", "block/bamboo_sapling");
+        ManualMappings.put("blocks/blue_orchid_carried", "block/blue_orchid");
+        ManualMappings.put("blocks/cactus_flower_carried", "block/cactus_flower");
+        ManualMappings.put("blocks/cherry_sapling_carried", "block/cherry_sapling");
+        ManualMappings.put("blocks/copper_bars_carried", "block/copper_bars");
+        ManualMappings.put("blocks/copper_torch_carried", "block/copper_torch");
+
+        ManualMappings.put("blocks/cornflower_carried", "block/cornflower");
+        ManualMappings.put("blocks/crimson_fungus_carried", "block/crimson_fungus");
+        ManualMappings.put("blocks/crimson_roots_carried", "block/crimson_roots");
+        ManualMappings.put("blocks/dandelion_carried", "block/dandelion");
+        ManualMappings.put("blocks/deadbush_carried", "block/dead_bush");
+
+        ManualMappings.put("blocks/detector_rail_carried", "block/detector_rail");
+        ManualMappings.put("blocks/end_rod_carried", "block/end_rod");
+        ManualMappings.put("blocks/exposed_copper_bars_carried", "block/exposed_copper_bars");
+        ManualMappings.put("blocks/eyeblossom_blooming_carried", "block/open_eyeblossom");
+        ManualMappings.put("blocks/eyeblossom_dormant_carried", "block/closed_eyeblossom");
+        ManualMappings.put("blocks/frogspawn_carried", "block/frogspawn");
+        ManualMappings.put("blocks/glow_lichen_carried", "block/glow_lichen");
+        ManualMappings.put("blocks/golden_dandelion_carried", "block/golden_dandelion");
+        ManualMappings.put("blocks/hanging_roots_carried", "block/hanging_roots");
+
+        ManualMappings.put("blocks/iron_bars_carried", "block/iron_bars");
+        ManualMappings.put("blocks/ladder_carried", "block/ladder");
+        ManualMappings.put("blocks/lever_carried", "block/lever");
+        ManualMappings.put("blocks/lightning_rod_carried", "block/lightning_rod");
+        ManualMappings.put("blocks/lilac_carried", "block/lilac");
+        ManualMappings.put("blocks/lily_of_the_valley_carried", "block/lily_of_the_valley");
+
+        ManualMappings.put("blocks/mushroom_brown_carried", "block/brown_mushroom");
+        ManualMappings.put("blocks/mushroom_red_carried", "block/red_mushroom");
+        ManualMappings.put("blocks/oxeye_daisy_carried", "block/oxeye_daisy");
+        ManualMappings.put("blocks/oxidized_copper_bars_carried", "block/oxidized_copper_bars");
+
+        ManualMappings.put("blocks/pale_hanging_moss_carried", "block/pale_hanging_moss");
+        ManualMappings.put("blocks/pale_oak_sapling_carried", "block/pale_oak_sapling");
+        ManualMappings.put("blocks/poppy_carried", "block/poppy");
+
+        ManualMappings.put("blocks/powered_rail_carried", "block/powered_rail");
+        ManualMappings.put("blocks/rail_carried", "block/rail");
+        ManualMappings.put("blocks/redstone_torch_carried", "block/redstone_torch");
+        ManualMappings.put("blocks/rose_bush_carried", "block/rose_bush");
+
+        ManualMappings.put("blocks/sapling_acacia_carried", "block/acacia_sapling");
+        ManualMappings.put("blocks/sapling_birch_carried", "block/birch_sapling");
+        ManualMappings.put("blocks/sapling_jungle_carried", "block/jungle_sapling");
+        ManualMappings.put("blocks/sapling_oak_carried", "block/oak_sapling");
+        ManualMappings.put("blocks/sapling_roofed_oak_carried", "block/dark_oak_sapling");
+        ManualMappings.put("blocks/sapling_spruce_carried", "block/spruce_sapling");
+
+        ManualMappings.put("blocks/sculk_vein_carried", "block/sculk_vein");
+        ManualMappings.put("blocks/short_dry_grass_carried", "block/short_dry_grass");
+        ManualMappings.put("blocks/soul_torch_carried", "block/soul_torch");
+        ManualMappings.put("blocks/spore_blossom_carried", "block/spore_blossom");
+        ManualMappings.put("blocks/sulfur_spike_carried", "block/sulfur_spike");
+        ManualMappings.put("blocks/sunflower_carried", "block/sunflower");
+        ManualMappings.put("blocks/tall_dry_grass_carried", "block/tall_dry_grass");
+        ManualMappings.put("blocks/torch_carried", "block/torch");
+        ManualMappings.put("blocks/torchflower_carried", "block/torchflower");
+
+        ManualMappings.put("blocks/trip_wire_carried", "block/tripwire");
+
+        ManualMappings.put("blocks/tulip_orange_carried", "block/orange_tulip");
+        ManualMappings.put("blocks/tulip_pink_carried", "block/pink_tulip");
+        ManualMappings.put("blocks/tulip_red_carried", "block/red_tulip");
+        ManualMappings.put("blocks/tulip_white_carried", "block/white_tulip");
+
+        ManualMappings.put("blocks/twisting_vines_carried", "block/twisting_vines");
+        ManualMappings.put("blocks/warped_fungus_carried", "block/warped_fungus");
+        ManualMappings.put("blocks/warped_roots_carried", "block/warped_roots");
+        ManualMappings.put("blocks/weathered_copper_bars_carried", "block/weathered_copper_bars");
+        ManualMappings.put("blocks/web_carried", "block/cobweb");
+        ManualMappings.put("blocks/weeping_vines_carried", "block/weeping_vines");
+        ManualMappings.put("blocks/wither_rose_carried", "block/wither_rose");
+
+        ManualMappings.put("blocks/amethyst_bud_large_carried", "block/large_amethyst_bud");
+        ManualMappings.put("blocks/amethyst_bud_medium_carried", "block/medium_amethyst_bud");
+        ManualMappings.put("blocks/amethyst_bud_small_carried", "block/small_amethyst_bud");
 
         //ManualMappings.put("map_locked", "filled_map");
         //ManualMappings.put("map_mansion", "filled_map");
@@ -140,7 +253,7 @@ public class ItemIconLoader {
     public static void LoadItemIcons() {
         ResetCounters();
 
-        if (!Files.exists(SubpackItemTextureFolder)) {
+        if (!Files.exists(SubpackItemTextureFolder) && !Files.exists(SubpackBlockTextureFolder)) {
             SaveReport();
             return;
         }
@@ -148,101 +261,164 @@ public class ItemIconLoader {
         Set<String> JavaItemNames = GetMinecraftItemNames();
         Map<String, String> NormalizedJavaNames = BuildNormalizedNames(JavaItemNames);
 
-        try (var Stream = Files.walk(SubpackItemTextureFolder)) {
-            Stream.filter(Files::isRegularFile).filter(ItemIconLoader::IsPng).forEach(Path -> ProcessTexture(Path, JavaItemNames, NormalizedJavaNames));
+        try {
+            if (Files.exists(SubpackItemTextureFolder)) {
+                try (var Stream = Files.walk(SubpackItemTextureFolder)) {
+                    Stream.filter(Files::isRegularFile).filter(ItemIconLoader::IsPng).forEach(Path -> ProcessTexture(Path, "items", JavaItemNames, NormalizedJavaNames));
+                }
+            }
+
+            ProcessBlockMappings();
+
         } catch (IOException E) {
-            E.printStackTrace();
+            JavaUnbound.LOGGER.error("Failed to load item textures", E);
         }
 
         SaveReport();
-
-        System.out.println("========== Item Icon Loader ==========");
-        System.out.println("Subpack: " + JavaUnbound.SUBPACK);
-        System.out.println("Total textures: " + TotalTextures);
-        System.out.println("Used textures: " + UsedTextures);
-        System.out.println("Unused textures: " + UnusedTextures);
-        System.out.println("Target collisions: " + TargetCollisions.size());
-        System.out.println("======================================");
     }
 
-    private static void ProcessTexture(Path Path, Set<String> JavaItemNames, Map<String, String> NormalizedJavaNames) {
+    private static void ProcessTexture(Path Path, String TextureFolder, Set<String> JavaItemNames, Map<String, String> NormalizedJavaNames) {
         TotalTextures++;
 
         String SourceFileName = Path.getFileName().toString();
         String SourceName = RemoveExtension(SourceFileName);
-        String RelativePath = GetRelativePath(Path);
+        String RelativePath = GetRelativePath(Path, TextureFolder);
+        String MappingName = TextureFolder + "/" + SourceName;
 
         if (ShouldIgnore(SourceName)) {
-            UnusedSourceTextures.add(RelativePath);
+            UnusedSourceTextures.add(TextureFolder + "/" + RelativePath);
             UnusedTextures++;
+
             return;
         }
 
-        String TargetFileName = ResolveTargetName(SourceName, JavaItemNames, NormalizedJavaNames);
+        String TargetFileName = ResolveTargetName(MappingName, SourceName, JavaItemNames, NormalizedJavaNames);
 
         if (TargetFileName == null) {
-            UnusedSourceTextures.add(RelativePath);
+            UnusedSourceTextures.add(TextureFolder + "/" + RelativePath);
             UnusedTextures++;
-            JavaUnbound.LOGGER.warn("Unused item texture: " + RelativePath);
+
             return;
         }
 
-        String SourcePath = "subpacks/" + JavaUnbound.SUBPACK + "/textures/items/" + RelativePath;
+        String SourcePath = "subpacks/" + JavaUnbound.SUBPACK + "/textures/" + TextureFolder + "/" + RelativePath;
         String TargetPath = "textures/item/" + TargetFileName + ".png";
-
         List<String> Sources = TargetCollisions.computeIfAbsent(TargetPath, Key -> new ArrayList<>());
-        Sources.add(RelativePath);
 
-        boolean IsManualMapping = ManualMappings.containsKey(SourceName);
+        Sources.add(TextureFolder + "/" + RelativePath);
 
-        if (!IsManualMapping && Sources.size() > 1) {
-            UnusedSourceTextures.add(RelativePath);
+        boolean IsManualMapping = ManualMappings.containsKey(MappingName) || ManualMappings.containsKey(SourceName);
+
+        if (!IsManualMapping && Sources.size() > 1) {UnusedSourceTextures.add(TextureFolder + "/" + RelativePath);
             UnusedTextures++;
+
             return;
         }
 
         Folder.SetIdentifier(TargetPath, SourcePath);
+        UsedSourceTextures.add(TextureFolder + "/" + RelativePath);
 
-        UsedSourceTextures.add(RelativePath);
         UsedTextures++;
+
+        JavaUnbound.LOGGER.info("Loaded item texture: " + SourcePath + " -> " + TargetPath);
     }
 
-    private static String ResolveTargetName(String SourceName, Set<String> JavaItemNames, Map<String, String> NormalizedJavaNames) {
-        String Cached = ResolvedCache.get(SourceName);
-        if (Cached != null) return Cached;
-
-        if (JavaItemNames.contains(SourceName)) {
-            ResolvedCache.put(SourceName, SourceName);
-            return SourceName;
+    private static void ProcessBlockMappings() {
+        if (!Files.exists(SubpackBlockTextureFolder)) {
+            JavaUnbound.LOGGER.warn("Block texture folder does not exist: " + SubpackBlockTextureFolder);
+            return;
         }
 
-        String Manual = ManualMappings.get(SourceName);
+        for (Map.Entry<String, String> Entry : ManualMappings.entrySet()) {
+            String MappingName = Entry.getKey();
+
+            if (!MappingName.startsWith("blocks/")) {
+                continue;
+            }
+
+            String TargetName = Entry.getValue();
+            Path SourcePath = FindBlockTexture(MappingName);
+
+            if (SourcePath == null) {
+                JavaUnbound.LOGGER.warn("Could not find block texture for mapping: " + MappingName);
+                continue;
+            }
+
+            String RelativePath = GetRelativePath(SourcePath, "blocks");
+            String SourceIdentifier = "subpacks/" + JavaUnbound.SUBPACK + "/textures/blocks/" + RelativePath;
+            String TargetPath = "textures/" + TargetName + ".png";
+
+            Folder.SetIdentifier(TargetPath, SourceIdentifier);
+            UsedSourceTextures.add("blocks/" + RelativePath);
+            JavaUnbound.LOGGER.info("Loaded block mapping: " + MappingName + " -> " + SourceIdentifier + " -> " + TargetPath);
+        }
+    }
+
+    private static Path FindBlockTexture(String MappingName) {
+        final String SearchName = RemoveExtension(MappingName.substring("blocks/".length()));
+
+        if (SearchName.isEmpty()) {
+            return null;
+        }
+
+        try (var Stream = Files.walk(SubpackBlockTextureFolder)) {
+            return Stream.filter(Files::isRegularFile).filter(ItemIconLoader::IsPng).filter(FilePath -> {
+                        String FileName = FilePath.getFileName().toString();
+                        String FileNameWithoutExtension = RemoveExtension(FileName);
+
+                        return FileNameWithoutExtension.equalsIgnoreCase(SearchName);
+                    }).sorted(Comparator.comparing(FilePath -> FilePath.toString().toLowerCase(Locale.ROOT))).findFirst().orElse(null);
+        } catch (IOException E) {
+            JavaUnbound.LOGGER.error("Failed to search block textures for: " + MappingName, E);
+
+            return null;
+        }
+    }
+
+    private static String ResolveTargetName(String MappingName, String SourceName, Set<String> JavaItemNames, Map<String, String> NormalizedJavaNames) {
+        String Cached = ResolvedCache.get(MappingName);
+
+        if (Cached != null) {
+            return Cached;
+        }
+
+        String Manual = ManualMappings.get(MappingName);
+
         if (Manual != null) {
-            ResolvedCache.put(SourceName, Manual);
+            ResolvedCache.put(MappingName, Manual);
             return Manual;
         }
 
-        String Family = ApplyFamilyTransformation(SourceName, JavaItemNames);
-        if (Family != null) {
-            ResolvedCache.put(SourceName, Family);
-            return Family;
+        Manual = ManualMappings.get(SourceName);
+
+        if (Manual != null) {
+            ResolvedCache.put(MappingName, Manual);
+            return Manual;
+        }
+
+        if (JavaItemNames.contains(SourceName)) {
+            ResolvedCache.put(MappingName, SourceName);
+            return SourceName;
         }
 
         String Generic = ApplyGenericTransformation(SourceName);
 
         if (Generic != null) {
             if (SourceName.startsWith("bundle_") && (SourceName.endsWith("_open_back") || SourceName.endsWith("_open_front"))) {
-                ResolvedCache.put(SourceName, Generic);
+                ResolvedCache.put(MappingName, Generic);
+
                 return Generic;
             }
 
-            if (SourceName.startsWith("light_block_") || SourceName.startsWith("potion_bottle_")) {
-                ResolvedCache.put(SourceName, Generic);
+            if (SourceName.startsWith("light_block_")) {
+                ResolvedCache.put(MappingName, Generic);
+
                 return Generic;
             }
 
             if (JavaItemNames.contains(Generic)) {
-                ResolvedCache.put(SourceName, Generic);
+                ResolvedCache.put(MappingName, Generic);
+
                 return Generic;
             }
         }
@@ -250,24 +426,18 @@ public class ItemIconLoader {
         String NormalizedExact = NormalizedJavaNames.get(Normalize(SourceName));
 
         if (NormalizedExact != null) {
-            ResolvedCache.put(SourceName, NormalizedExact);
+            ResolvedCache.put(MappingName, NormalizedExact);
+
             return NormalizedExact;
         }
 
         String BestMatch = FindBestMatch(SourceName, JavaItemNames);
 
         if (BestMatch != null) {
-            ResolvedCache.put(SourceName, BestMatch);
+            ResolvedCache.put(MappingName, BestMatch);
+
             return BestMatch;
         }
-
-        return null;
-    }
-
-    private static String ApplyFamilyTransformation(String Name, Set<String> JavaItemNames) {
-        if (Name.startsWith("tipped_arrow_") && JavaItemNames.contains("tipped_arrow")) return "tipped_arrow";
-
-        if (Name.equals("tipped_arrow") && JavaItemNames.contains("tipped_arrow")) return "tipped_arrow";
 
         return null;
     }
@@ -276,29 +446,75 @@ public class ItemIconLoader {
         if (Name.startsWith("spawn_egg_")) {
             String Entity = Name.substring(10);
 
-            if (Entity.equals("tropicalfish")) Entity = "tropical_fish";
+            if (Entity.equals("tropicalfish")) {
+                Entity = "tropical_fish";
+            }
+
             return Entity + "_spawn_egg";
         }
 
-        if (Name.startsWith("egg_")) return null;
-        if (Name.startsWith("harness_")) return Name.substring(8) + "_harness";
-        if (Name.startsWith("candle_")) return Name.substring(7) + "_candle";
-        if (Name.startsWith("dye_powder_")) return Name.substring(11) + "_dye";
-        if (Name.startsWith("boat_")) return Name.substring(5) + "_boat";
-        if (Name.startsWith("door_")) return Name.substring(5) + "_door";
-        if (Name.startsWith("sign_")) return Name.substring(5) + "_sign";
-        if (Name.startsWith("bed_")) return Name.substring(4) + "_bed";
-        if (Name.equals("minecart_normal")) return "minecart";
-        if (Name.startsWith("minecart_")) return Name.substring(9) + "_minecart";
-        if (Name.startsWith("record_")) return "music_disc_" + Name.substring(7);
-        if (Name.startsWith("potion_bottle_")) return Name;
+        if (Name.startsWith("egg_")) {
+            return null;
+        }
+
+        if (Name.startsWith("harness_")) {
+            return Name.substring(8) + "_harness";
+        }
+
+        if (Name.startsWith("candle_")) {
+            return Name.substring(7) + "_candle";
+        }
+
+        if (Name.startsWith("dye_powder_")) {
+            return Name.substring(11) + "_dye";
+        }
+
+        if (Name.startsWith("boat_")) {
+            return Name.substring(5) + "_boat";
+        }
+
+        if (Name.startsWith("door_")) {
+            return Name.substring(5) + "_door";
+        }
+
+        if (Name.startsWith("sign_")) {
+            return Name.substring(5) + "_sign";
+        }
+
+        if (Name.startsWith("bed_")) {
+            return Name.substring(4) + "_bed";
+        }
+
+        if (Name.equals("minecart_normal")) {
+            return "minecart";
+        }
+
+        if (Name.startsWith("minecart_")) {
+            return Name.substring(9) + "_minecart";
+        }
+
+        if (Name.startsWith("record_")) {
+            return "music_disc_" + Name.substring(7);
+        }
+
+        if (Name.startsWith("potion_bottle_")) {
+            return Name;
+        }
 
         if (Name.startsWith("bundle_")) {
             String Value = Name.substring(7);
 
-            if (Value.endsWith("_open_back")) return Name;
-            if (Value.endsWith("_open_front")) return Name;
-            if (Value.endsWith("_open")) return null;
+            if (Value.endsWith("_open_back")) {
+                return Name;
+            }
+
+            if (Value.endsWith("_open_front")) {
+                return Name;
+            }
+
+            if (Value.endsWith("_open")) {
+                return null;
+            }
 
             return Value + "_bundle";
         }
@@ -335,9 +551,17 @@ public class ItemIconLoader {
             }
         }
 
-        if (BestMatch == null) return null;
-        if (BestScore < MinimumScore) return null;
-        if (BestScore - SecondBestScore < MinimumScoreDifference) return null;
+        if (BestMatch == null) {
+            return null;
+        }
+
+        if (BestScore < MinimumScore) {
+            return null;
+        }
+
+        if (BestScore - SecondBestScore < MinimumScoreDifference) {
+            return null;
+        }
 
         return BestMatch;
     }
@@ -357,7 +581,9 @@ public class ItemIconLoader {
     }
 
     private static double TokenSimilarity(Set<String> A, Set<String> B) {
-        if (A.isEmpty() || B.isEmpty()) return 0.0;
+        if (A.isEmpty() || B.isEmpty()) {
+            return 0.0;
+        }
 
         Set<String> Intersection = new HashSet<>(A);
         Intersection.retainAll(B);
@@ -388,7 +614,6 @@ public class ItemIconLoader {
                 case "silver" -> Result.add("lightgray");
                 case "totem" -> Result.add("undying");
                 case "nautilus" -> Result.add("shell");
-                case "arrow" -> Result.add("projectile");
                 case "fireworks" -> Result.add("firework");
             }
         }
@@ -418,8 +643,13 @@ public class ItemIconLoader {
     }
 
     private static double Similarity(String A, String B) {
-        if (A.equals(B)) return 1.0;
-        if (A.isEmpty() || B.isEmpty()) return 0.0;
+        if (A.equals(B)) {
+            return 1.0;
+        }
+
+        if (A.isEmpty() || B.isEmpty()) {
+            return 0.0;
+        }
 
         int Distance = LevenshteinDistance(A, B);
 
@@ -429,12 +659,16 @@ public class ItemIconLoader {
     private static double PrefixSimilarity(String A, String B) {
         int Length = Math.min(A.length(), B.length());
 
-        if (Length == 0) return 0.0;
+        if (Length == 0) {
+            return 0.0;
+        }
 
         int Same = 0;
 
         for (int I = 0; I < Length; I++) {
-            if (A.charAt(I) != B.charAt(I)) break;
+            if (A.charAt(I) != B.charAt(I)) {
+                break;
+            }
 
             Same++;
         }
@@ -446,7 +680,9 @@ public class ItemIconLoader {
         int[] Previous = new int[B.length() + 1];
         int[] Current = new int[B.length() + 1];
 
-        for (int J = 0; J <= B.length(); J++) Previous[J] = J;
+        for (int J = 0; J <= B.length(); J++) {
+            Previous[J] = J;
+        }
 
         for (int I = 1; I <= A.length(); I++) {
             Current[0] = I;
@@ -470,7 +706,9 @@ public class ItemIconLoader {
         BuiltInRegistries.ITEM.keySet().forEach(Key -> {
             String Value = Key.toString();
 
-            if (Value.startsWith("minecraft:")) Names.add(Value.substring("minecraft:".length()));
+            if (Value.startsWith("minecraft:")) {
+                Names.add(Value.substring("minecraft:".length()));
+            }
         });
 
         return Names;
@@ -479,7 +717,9 @@ public class ItemIconLoader {
     private static Map<String, String> BuildNormalizedNames(Set<String> Names) {
         Map<String, String> Result = new HashMap<>();
 
-        for (String Name : Names) Result.putIfAbsent(Normalize(Name), Name);
+        for (String Name : Names) {
+            Result.putIfAbsent(Normalize(Name), Name);
+        }
 
         return Result;
     }
@@ -496,14 +736,18 @@ public class ItemIconLoader {
         return Name.toLowerCase(Locale.ROOT).endsWith(".png") ? Name.substring(0, Name.length() - 4) : Name;
     }
 
-    private static String GetRelativePath(Path Path) {
-        return SubpackItemTextureFolder.relativize(Path).toString().replace(File.separator, "/");
+    private static String GetRelativePath(Path Path, String TextureFolder) {
+        Path Root = TextureFolder.equals("blocks") ? SubpackBlockTextureFolder : SubpackItemTextureFolder;
+
+        return Root.relativize(Path).toString().replace(File.separator, "/");
     }
 
     private static void ResetCounters() {
         TotalTextures = 0;
         UsedTextures = 0;
         UnusedTextures = 0;
+
+        ResolvedCache.clear();
         UsedSourceTextures.clear();
         UnusedSourceTextures.clear();
         TargetCollisions.clear();
@@ -514,6 +758,7 @@ public class ItemIconLoader {
             Files.createDirectories(ReportFolder);
 
             List<String> Report = new ArrayList<>();
+
             Report.add("Java Unbound Item Texture Report");
             Report.add("================================");
             Report.add("Subpack: " + JavaUnbound.SUBPACK);
@@ -539,17 +784,23 @@ public class ItemIconLoader {
             boolean HasCollision = false;
 
             for (Map.Entry<String, List<String>> Entry : TargetCollisions.entrySet()) {
-                if (Entry.getValue().size() <= 1) continue;
+                if (Entry.getValue().size() <= 1) {
+                    continue;
+                }
 
                 HasCollision = true;
                 Report.add(Entry.getKey());
 
-                for (String Source : Entry.getValue()) Report.add("  <- " + Source);
+                for (String Source : Entry.getValue()) {
+                    Report.add("  <- " + Source);
+                }
 
                 Report.add("");
             }
 
-            if (!HasCollision) Report.add("None");
+            if (!HasCollision) {
+                Report.add("None");
+            }
 
             Files.write(UnusedTexturesFile, UnusedSourceTextures, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
             Files.write(ReportFile, Report, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);

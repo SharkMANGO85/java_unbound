@@ -11,7 +11,6 @@ import com.java_unbound.loader.resourcepack.PackLoader;
 import com.java_unbound.loader.entity.EntityFileReader;
 
 import com.java_unbound.loader.resourcepack.ResourceMappings;
-import com.java_unbound.loader.ui.BlockIconLoader;
 import com.java_unbound.loader.ui.ItemIconLoader;
 import net.fabricmc.api.ClientModInitializer;
 
@@ -45,6 +44,5 @@ public class JavaUnboundClient implements ClientModInitializer {
         CompletableFuture.runAsync(AttachableFileReader::Read);
 
         ItemIconLoader.LoadItemIcons();
-        BlockIconLoader.LoadBlockIcons();
     }
 }

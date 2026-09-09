@@ -4,24 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class AttachableRegistry {
-    private static final Map<String, AttachableDefinition> Attachables = new HashMap<>();
+    private static final Map<String, AttachableDefinition> Loaded = new HashMap<>();
 
-    private AttachableRegistry() {
-    }
+    private AttachableRegistry() {}
 
     public static void Register(AttachableDefinition Attachable) {
-        if (Attachable == null || Attachable.Identifier == null) {
-            return;
-        }
+        if (Attachable == null || Attachable.Identifier == null) {return;}
 
-        Attachables.put(Attachable.Identifier, Attachable);
+        Loaded.put(Attachable.Identifier, Attachable);
     }
 
     public static AttachableDefinition Get(String Identifier) {
-        return Attachables.get(Identifier);
+        return Loaded.get(Identifier);
+    }
+
+    public static Map<String, AttachableDefinition> GetAll() {
+        return Loaded;
     }
 
     public static void Clear() {
-        Attachables.clear();
+        Loaded.clear();
     }
 }

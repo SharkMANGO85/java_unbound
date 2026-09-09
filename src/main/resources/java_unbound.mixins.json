@@ -5,8 +5,7 @@
   "client": [
     "resourcepack.PackRepositoryMixin",
     "ui.LogoRendererMixin",
-    "ui.SplashRendererMixin",
-    "ItemInHandRendererMixin"
+    "ui.SplashRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

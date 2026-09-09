@@ -114,6 +114,9 @@ public class AttachableFileReader {
         Definition.Animations = JsonAnimations;
         Definition.Scripts = JsonScripts;
         Definition.RenderControllers = ResolvedRenderControllers;
+        Definition.Content = Content;
+
+        Definition.Debug();
 
         AttachableRegistry.Register(Definition);
     }
