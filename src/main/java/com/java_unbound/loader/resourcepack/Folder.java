@@ -10,16 +10,16 @@ public final class Folder {
     private Folder() {
     }
 
-    public static Path GetResourceFolder() {
+    public static Path GetConfigFolder() {
         return FabricLoader.getInstance().getConfigDir().resolve("java_unbound");
     }
 
     public static void EnsureExists() throws IOException {
-        Files.createDirectories(GetResourceFolder());
+        Files.createDirectories(GetConfigFolder());
     }
 
     public static Path GetSubpackFolder() {
-        return GetResourceFolder().resolve("subpacks").resolve(com.java_unbound.JavaUnbound.SUBPACK);
+        return GetConfigFolder().resolve("subpacks").resolve(com.java_unbound.JavaUnbound.SUBPACK);
     }
 
     public static void SetIdentifier(String MinecraftPath, String ResourcePath) {

@@ -14,9 +14,7 @@ public final class Splashes {
         Path File = ResourcePack.resolve("splashes.json");
         File = ResolvePath(ResourcePack, File);
 
-        if (File == null || !Files.isRegularFile(File)) {
-            return null;
-        }
+        if (File == null || !Files.isRegularFile(File)) {return null;}
 
         try {
             String Json = Files.readString(File);

@@ -1,48 +1,74 @@
 package com.java_unbound;
 
-import com.java_unbound.config.ConfigManager;
-import com.java_unbound.loader.attachables.AttachableFileReader;
-import com.java_unbound.loader.attachables.AttachableTextureResolver;
 import com.java_unbound.loader.converter.TgaConverter;
-import com.java_unbound.loader.definitions.Geometries;
-import com.java_unbound.loader.definitions.RenderControllers;
+import com.java_unbound.loader.definitions.AnimationControllerDefinition;
+import com.java_unbound.loader.definitions.GeometriesDefinition;
+import com.java_unbound.loader.definitions.RenderControllersDefinition;
+import com.java_unbound.loader.definitions.TexturesDefinition;
 import com.java_unbound.loader.resourcepack.Folder;
-import com.java_unbound.loader.resourcepack.PackLoader;
-import com.java_unbound.loader.entity.EntityFileReader;
 
+import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
-import com.java_unbound.loader.ui.ItemIconLoader;
 import net.fabricmc.api.ClientModInitializer;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.temporal.ValueRange;
-import java.util.concurrent.CompletableFuture;
 
 public class JavaUnboundClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ConfigManager.load();
-
-        Path ResourcePack = Folder.GetResourceFolder();
-        String ResourcePackVersion = PackLoader.GetPackName(ResourcePack);
-        Path AssetsFolder = ResourcePack.resolve("assets");
-
-        String Version = ConfigManager.GetValue("LoadedVersion").toString();
-        Boolean Loaded = (Boolean) ConfigManager.GetValue("Loaded");
-
-        TgaConverter.ConvertAll(Folder.GetResourceFolder());
-
+        ResourceMapper.Clear();
+        TgaConverter.ConvertAll(Folder.GetConfigFolder());
         ResourceMappings.Register();
 
-        Geometries.LoadGeometries();
-        RenderControllers.LoadRenderControllers();
+        //Loading Definitions
+        JavaUnbound.LOGGER.error("-------------------------Definitions-------------------------");
+        JavaUnbound.LOGGER.error("");
+        JavaUnbound.LOGGER.error("---------------------------Textures---------------------------");
+        JavaUnbound.LOGGER.error("Loading Textures");
 
-        CompletableFuture.runAsync(EntityFileReader::Read);
-        CompletableFuture.runAsync(AttachableFileReader::Read);
+        try {
+            TexturesDefinition.LoadTextures();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        ItemIconLoader.LoadItemIcons();
+        JavaUnbound.LOGGER.error("Finished Loading Textures");
+        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
+        JavaUnbound.LOGGER.error("");
+        JavaUnbound.LOGGER.error("--------------------------Geometries--------------------------");
+        JavaUnbound.LOGGER.error("Loading Geometries");
+
+        try {
+            GeometriesDefinition.LoadGeometries();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JavaUnbound.LOGGER.error("Finished Loading Geometries");
+        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
+        JavaUnbound.LOGGER.error("");
+        JavaUnbound.LOGGER.error("---------------------Animation Controllers---------------------");
+        JavaUnbound.LOGGER.error("Loading Animation Controllers");
+
+        try {
+            AnimationControllerDefinition.LoadAnimationControllers();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JavaUnbound.LOGGER.error("Finished Loading Animation Controllers");
+        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
+        JavaUnbound.LOGGER.error("");
+        JavaUnbound.LOGGER.error("---------------------Render Controllers---------------------");
+        JavaUnbound.LOGGER.error("Loading Render Controllers");
+
+        try {
+            RenderControllersDefinition.LoadRenderControllers();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JavaUnbound.LOGGER.error("Finished Loading Render Controllers");
+        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
     }
 }

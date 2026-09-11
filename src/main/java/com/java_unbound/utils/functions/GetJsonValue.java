@@ -10,9 +10,7 @@ public class GetJsonValue {
     }
 
     public static JsonElement GetValue(String Content, String Path) {
-        if (Content == null || Content.isEmpty() || Path == null || Path.isEmpty()) {
-            return null;
-        }
+        if (Content == null || Content.isEmpty() || Path == null || Path.isEmpty()) {return null;}
 
         JsonElement Current;
 
@@ -29,15 +27,11 @@ public class GetJsonValue {
         }
 
         for (String Key : Path.split("\\.")) {
-            if (!Current.isJsonObject()) {
-                return null;
-            }
+            if (!Current.isJsonObject()) {return null;}
 
             JsonObject Object = Current.getAsJsonObject();
 
-            if (!Object.has(Key)) {
-                return null;
-            }
+            if (!Object.has(Key)) {return null;}
 
             Current = Object.get(Key);
         }

@@ -42,13 +42,8 @@ public final class PackLoader {
             while ((Line = Reader.readLine()) != null) {
                 Line = Line.trim();
 
-                if (Line.isEmpty() || Line.startsWith("#")) {
-                    continue;
-                }
-
-                if (!Line.startsWith(Key + "=")) {
-                    continue;
-                }
+                if (Line.isEmpty() || Line.startsWith("#")) {continue;}
+                if (!Line.startsWith(Key + "=")) {continue;}
 
                 String Value = Line.substring((Key + "=").length()).trim();
 

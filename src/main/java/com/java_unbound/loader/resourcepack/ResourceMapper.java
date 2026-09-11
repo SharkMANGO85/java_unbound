@@ -24,6 +24,7 @@ public final class ResourceMapper {
 
     public static void Clear() {
         Mappings.clear();
+        VirtualResources.Clear();
     }
 
     public static Map<String, String> GetMappings() {

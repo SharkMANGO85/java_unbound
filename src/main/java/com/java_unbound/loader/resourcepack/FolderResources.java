@@ -59,12 +59,18 @@ public final class FolderResources implements PackResources {
 
     @Override
     public IoSupplier<InputStream> getResource(PackType Type, Identifier Identifier) {
-        if (Type != PackType.CLIENT_RESOURCES) {
-            return null;
-        }
+        if (Type != PackType.CLIENT_RESOURCES) {return null;}
 
         if (Identifier.getNamespace().equals("minecraft") && Identifier.getPath().equals("texts/splashes.txt")) {
             return Splashes.GetSplashResource(this.ResourcePack);
+        }
+
+        if (Identifier.getNamespace().equals("minecraft")) {
+            byte[] Virtual = VirtualResources.Get(Identifier.getPath());
+
+            if (Virtual != null) {
+                return () -> new java.io.ByteArrayInputStream(Virtual);
+            }
         }
 
         Path File = ResolveResource(Identifier);
@@ -78,8 +84,22 @@ public final class FolderResources implements PackResources {
 
     @Override
     public void listResources(PackType Type, String Namespace, String Prefix, ResourceOutput Output) {
-        if (Type != PackType.CLIENT_RESOURCES) {
-            return;
+        if (Type != PackType.CLIENT_RESOURCES) {return;}
+
+        if (Namespace.equals("minecraft")) {
+            for (Map.Entry<String, byte[]> Entry : VirtualResources.GetResources().entrySet()) {
+                String ResourcePath = Entry.getKey();
+
+                if (!ResourcePath.startsWith(Prefix)) {continue;}
+
+                Identifier ResourceIdentifier = Identifier.tryParse("minecraft:" + ResourcePath);
+
+                if (ResourceIdentifier == null) {continue;}
+
+                byte[] Data = Entry.getValue();
+
+                Output.accept(ResourceIdentifier, () -> new java.io.ByteArrayInputStream(Data));
+            }
         }
 
         Path NamespaceFolder = ResolvePath(ResourcePack.resolve("assets").resolve(Namespace));
@@ -104,28 +124,20 @@ public final class FolderResources implements PackResources {
             }
         }
 
-        if (!Namespace.equals("minecraft")) {
-            return;
-        }
+        if (!Namespace.equals("minecraft")) {return;}
 
         for (Map.Entry<String, String> Mapping : ResourceMapper.GetMappings().entrySet()) {
             String MinecraftPath = Mapping.getKey();
 
-            if (!MinecraftPath.startsWith(Prefix)) {
-                continue;
-            }
+            if (!MinecraftPath.startsWith(Prefix)) {continue;}
 
             Path File = ResolvePath(ResourcePack.resolve(Mapping.getValue()));
 
-            if (File == null || !Files.isRegularFile(File)) {
-                continue;
-            }
+            if (File == null || !Files.isRegularFile(File)) {continue;}
 
             Identifier ResourceIdentifier = Identifier.tryParse("minecraft:" + MinecraftPath);
 
-            if (ResourceIdentifier == null) {
-                continue;
-            }
+            if (ResourceIdentifier == null) {continue;}
 
             Output.accept(ResourceIdentifier, IoSupplier.create(File));
         }
@@ -133,9 +145,7 @@ public final class FolderResources implements PackResources {
 
     @Override
     public Set<String> getNamespaces(PackType Type) {
-        if (Type != PackType.CLIENT_RESOURCES) {
-            return Set.of();
-        }
+        if (Type != PackType.CLIENT_RESOURCES) {return Set.of();}
 
         Set<String> Namespaces = new HashSet<>();
         Namespaces.add("minecraft");
@@ -187,9 +197,7 @@ public final class FolderResources implements PackResources {
         return ResolvePath(ResourcePack.resolve("assets").resolve(Namespace).resolve(Path));
     }
 
-    public Path ResolvePath(Path File) {
-        if (Files.exists(File, new LinkOption[0])) {
-            return File;
+    public Path ResolvePath(Path File) {if (Files.exists(File, new LinkOption[0])) {return File;
         }
 
         Path RelativePath;
@@ -219,9 +227,7 @@ public final class FolderResources implements PackResources {
                 return null;
             }
 
-            if (Match == null) {
-                return null;
-            }
+            if (Match == null) {return null;}
 
             Current = Match;
         }

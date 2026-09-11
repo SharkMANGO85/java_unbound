@@ -22,7 +22,6 @@ import java.util.Set;
 
 @Mixin(PackRepository.class)
 public abstract class PackRepositoryMixin {
-
     @Shadow
     @Final
     @Mutable
@@ -36,7 +35,7 @@ public abstract class PackRepositoryMixin {
             try {
                 Folder.EnsureExists();
 
-                Path ResourcePack = Folder.GetResourceFolder();
+                Path ResourcePack = Folder.GetConfigFolder();
                 Pack Pack = PackLoader.Create(ResourcePack);
 
                 Consumer.accept(Pack);

@@ -41,12 +41,6 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	compileOnly "maven.modrinth:4I1XuqiY:${project.entity_model_features_version}"
-	compileOnly "maven.modrinth:BVzZfTc1:${project.entity_texture_features_version}"
-
-	implementation "maven.modrinth:4I1XuqiY:${project.entity_model_features_version}"
-	implementation "maven.modrinth:BVzZfTc1:${project.entity_texture_features_version}"
-
 	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 

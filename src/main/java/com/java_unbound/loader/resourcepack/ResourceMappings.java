@@ -5,12 +5,10 @@ public final class ResourceMappings {
     }
 
     public static void Register() {
-        RegisterUI();
-        RegisterItems();
-        RegisterBlocks();
+        RegisterLoadingScreen();
     }
 
-    private static void RegisterUI() {
+    private static void RegisterLoadingScreen() {
         Folder.SetIdentifier("textures/gui/title/background/panorama_0.png", "subpacks/SP2/textures/ui/panorama_0.png");
         Folder.SetIdentifier("textures/gui/title/background/panorama_1.png", "subpacks/SP2/textures/ui/panorama_1.png");
         Folder.SetIdentifier("textures/gui/title/background/panorama_2.png", "subpacks/SP2/textures/ui/panorama_2.png");
@@ -18,13 +16,5 @@ public final class ResourceMappings {
         Folder.SetIdentifier("textures/gui/title/background/panorama_4.png", "subpacks/SP2/textures/ui/panorama_4.png");
         Folder.SetIdentifier("textures/gui/title/background/panorama_5.png", "subpacks/SP2/textures/ui/panorama_5.png");
         Folder.SetIdentifier("textures/gui/title/minecraft.png", "subpacks/SP2/textures/ui/title.png");
-    }
-
-    private static void RegisterItems() {
-
-    }
-
-    private static void RegisterBlocks() {
-
     }
 }

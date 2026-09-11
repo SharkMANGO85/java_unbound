@@ -27,11 +27,11 @@ public final class TgaConverter {
                 try {
                     Convert(File);
                 } catch (Exception Exception) {
-                    Exception.printStackTrace();
+                    //Exception.printStackTrace();
                 }
             });
         } catch (IOException Exception) {
-            Exception.printStackTrace();
+            //Exception.printStackTrace();
         }
     }
 
@@ -39,15 +39,11 @@ public final class TgaConverter {
         byte[] Data = Files.readAllBytes(TgaFile);
         BufferedImage Image = Decode(Data);
 
-        if (Image == null) {
-            throw new IOException("Could not decode TGA");
-        }
+        if (Image == null) {throw new IOException("Could not decode TGA");}
 
         Path PngFile = TgaFile.resolveSibling(GetPngName(TgaFile));
 
-        if (!ImageIO.write(Image, "png", PngFile.toFile())) {
-            throw new IOException("No PNG writer available");
-        }
+        if (!ImageIO.write(Image, "png", PngFile.toFile())) {throw new IOException("No PNG writer available");}
 
         Files.delete(TgaFile);
     }
@@ -64,9 +60,7 @@ public final class TgaConverter {
     }
 
     private static BufferedImage Decode(byte[] Data) throws IOException {
-        if (Data.length < 18) {
-            throw new IOException("TGA file is too small");
-        }
+        if (Data.length < 18) {throw new IOException("TGA file is too small");}
 
         int IdLength = U8(Data, 0);
         int ColorMapType = U8(Data, 1);
@@ -83,22 +77,15 @@ public final class TgaConverter {
         int PixelDepth = U8(Data, 16);
         int ImageDescriptor = U8(Data, 17);
 
-        if (Width <= 0 || Height <= 0) {
-            throw new IOException("Invalid TGA dimensions: " + Width + "x" + Height);
-        }
-
-        if (PixelDepth != 8 && PixelDepth != 15 && PixelDepth != 16 && PixelDepth != 24 && PixelDepth != 32) {
-            throw new IOException("Unsupported TGA color depth: " + PixelDepth + " (image type " + ImageType + ", descriptor " + ImageDescriptor + ")");
-        }
+        if (Width <= 0 || Height <= 0) {throw new IOException("Invalid TGA dimensions: " + Width + "x" + Height);}
+        if (PixelDepth != 8 && PixelDepth != 15 && PixelDepth != 16 && PixelDepth != 24 && PixelDepth != 32) {throw new IOException("Unsupported TGA color depth: " + PixelDepth + " (image type " + ImageType + ", descriptor " + ImageDescriptor + ")");}
 
         int Offset = 18 + IdLength;
 
         int[] Palette = null;
 
         if (ColorMapType != 0) {
-            if (ColorMapLength <= 0) {
-                throw new IOException("Invalid color map length");
-            }
+            if (ColorMapLength <= 0) {throw new IOException("Invalid color map length");}
 
             Palette = ReadPalette(Data, Offset, ColorMapFirst, ColorMapLength, ColorMapDepth);
             Offset += (ColorMapDepth + 7) / 8 * ColorMapLength;
@@ -107,9 +94,7 @@ public final class TgaConverter {
         boolean Rle = ImageType == 9 || ImageType == 10 || ImageType == 11;
         int BaseImageType = ImageType & 7;
 
-        if (BaseImageType != 1 && BaseImageType != 2 && BaseImageType != 3) {
-            throw new IOException("Unsupported TGA image type: " + ImageType);
-        }
+        if (BaseImageType != 1 && BaseImageType != 2 && BaseImageType != 3) {throw new IOException("Unsupported TGA image type: " + ImageType);}
 
         BufferedImage Image = new BufferedImage(Width, Height, BufferedImage.TYPE_INT_ARGB);
 
@@ -137,9 +122,7 @@ public final class TgaConverter {
         int BytesPerPixel = (PixelDepth + 7) / 8;
 
         for (int Index = 0; Index < Count; Index++) {
-            if (Offset + BytesPerPixel > Data.length) {
-                throw new IOException("Unexpected end of TGA pixel data");
-            }
+            if (Offset + BytesPerPixel > Data.length) {throw new IOException("Unexpected end of TGA pixel data");}
 
             Pixels.add(ReadPixel(Data, Offset, PixelDepth, Palette, ImageType));
             Offset += BytesPerPixel;
@@ -153,17 +136,13 @@ public final class TgaConverter {
         int BytesPerPixel = (PixelDepth + 7) / 8;
 
         while (Pixels.size() < Count) {
-            if (Offset >= Data.length) {
-                throw new IOException("Unexpected end of TGA RLE data");
-            }
+            if (Offset >= Data.length) {throw new IOException("Unexpected end of TGA RLE data");}
 
             int Packet = U8(Data, Offset++);
             int PixelCount = (Packet & 0x7F) + 1;
 
             if ((Packet & 0x80) != 0) {
-                if (Offset + BytesPerPixel > Data.length) {
-                    throw new IOException("Unexpected end of TGA RLE packet");
-                }
+                if (Offset + BytesPerPixel > Data.length) {throw new IOException("Unexpected end of TGA RLE packet");}
 
                 int Pixel = ReadPixel(Data, Offset, PixelDepth, Palette, ImageType);
                 Offset += BytesPerPixel;
@@ -171,22 +150,16 @@ public final class TgaConverter {
                 for (int Index = 0; Index < PixelCount; Index++) {
                     Pixels.add(Pixel);
 
-                    if (Pixels.size() > Count) {
-                        throw new IOException("TGA RLE packet exceeds image size");
-                    }
+                    if (Pixels.size() > Count) {throw new IOException("TGA RLE packet exceeds image size");}
                 }
             } else {
                 for (int Index = 0; Index < PixelCount; Index++) {
-                    if (Offset + BytesPerPixel > Data.length) {
-                        throw new IOException("Unexpected end of TGA raw packet");
-                    }
+                    if (Offset + BytesPerPixel > Data.length) {throw new IOException("Unexpected end of TGA raw packet");}
 
                     Pixels.add(ReadPixel(Data, Offset, PixelDepth, Palette, ImageType));
                     Offset += BytesPerPixel;
 
-                    if (Pixels.size() > Count) {
-                        throw new IOException("TGA RLE packet exceeds image size");
-                    }
+                    if (Pixels.size() > Count) {throw new IOException("TGA RLE packet exceeds image size");}
                 }
             }
         }
@@ -208,9 +181,7 @@ public final class TgaConverter {
 
             int PaletteOffset = PaletteIndex;
 
-            if (Palette == null || PaletteOffset < 0 || PaletteOffset >= Palette.length) {
-                throw new IOException("Invalid TGA palette index: " + PaletteIndex);
-            }
+            if (Palette == null || PaletteOffset < 0 || PaletteOffset >= Palette.length) {throw new IOException("Invalid TGA palette index: " + PaletteIndex);}
 
             return Palette[PaletteOffset];
         }
@@ -256,9 +227,7 @@ public final class TgaConverter {
         int[] Palette = new int[FirstIndex + Length];
 
         for (int Index = 0; Index < Length; Index++) {
-            if (Offset + BytesPerEntry > Data.length) {
-                throw new IOException("Unexpected end of TGA color map");
-            }
+            if (Offset + BytesPerEntry > Data.length) {throw new IOException("Unexpected end of TGA color map");}
 
             Palette[FirstIndex + Index] = ReadPaletteColor(Data, Offset, Depth);
             Offset += BytesPerEntry;
