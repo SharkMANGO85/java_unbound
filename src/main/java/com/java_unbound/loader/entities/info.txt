@@ -1,0 +1,2 @@
+Entity Registry --> Sava textures, etc. of the entity there
+Entity Resolver --> Get the textures, etc. of the entity

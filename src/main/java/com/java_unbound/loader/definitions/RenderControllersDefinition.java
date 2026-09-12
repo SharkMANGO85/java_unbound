@@ -4,19 +4,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
+import com.java_unbound.global.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 public class RenderControllersDefinition {
-    private static final Map<String, JsonElement> RenderControllerFiles = new HashMap<>();
-
     private static final Path BaseRenderControllerFolder = Folder.GetConfigFolder().resolve("render_controllers");
+
     private static final Path SubpackRenderControllerFolder0 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP0").resolve("render_controllers");
     private static final Path SubpackRenderControllerFolder1 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP1").resolve("render_controllers");
     private static final Path SubpackRenderControllerFolder2 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP2").resolve("render_controllers");
@@ -34,13 +33,14 @@ public class RenderControllersDefinition {
             }
 
             JsonObject RootObject = Root.getAsJsonObject();
+            JsonElement RenderControllersElement = RootObject.get("render_controllers");
 
-            if (!RootObject.has("render_controllers") || !RootObject.get("render_controllers").isJsonObject()) {
+            if (RenderControllersElement == null || !RenderControllersElement.isJsonObject()) {
                 JavaUnbound.LOGGER.error("RenderController file has no render_controllers object: " + RenderControllerPath);
                 return;
             }
 
-            JsonObject RenderControllers = RootObject.getAsJsonObject("render_controllers");
+            JsonObject RenderControllers = RenderControllersElement.getAsJsonObject();
 
             for (Map.Entry<String, JsonElement> Entry : RenderControllers.entrySet()) {
                 String Identifier = Entry.getKey();
@@ -48,7 +48,7 @@ public class RenderControllersDefinition {
 
                 if (!RenderController.isJsonObject()) {continue;}
 
-                RenderControllerFiles.putIfAbsent(Identifier, RenderController);
+                HashMaps.RenderControllerFiles.putIfAbsent(Identifier, RenderController);
             }
 
         } catch (IOException | RuntimeException Exception) {
@@ -57,47 +57,14 @@ public class RenderControllersDefinition {
     }
 
     public static void LoadRenderControllers() throws IOException {
-        RenderControllerFiles.clear();
+        HashMaps.RenderControllerFiles.clear();
 
         for (Path RenderControllerFolder : RenderControllerPriorityOrder) {
             if (!Files.isDirectory(RenderControllerFolder)) {continue;}
 
             try (Stream<Path> Paths = Files.walk(RenderControllerFolder)) {
-
                 Paths.filter(Files::isRegularFile).filter(Path -> Path.getFileName().toString().toLowerCase().endsWith(".json")).forEach(RenderControllersDefinition::AddJsonToFiles);
             }
         }
-    }
-
-    public static String GetJavaUnboundPath(Path RenderControllerPath) {
-        Path JavaUnboundFolder = Folder.GetConfigFolder();
-
-        return JavaUnboundFolder.relativize(RenderControllerPath).toString().replace('\\', '/');
-    }
-
-    public static Path GetRenderControllerByName(String RenderControllerName) {
-        JsonElement RenderController = RenderControllerFiles.get(RenderControllerName);
-
-        if (RenderController == null) {return null;}
-
-        return Path.of(RenderControllerName);
-    }
-
-    public static Path GetRenderControllerByOrevillePath(String RenderControllerName) {
-        int LastSlash = RenderControllerName.lastIndexOf('/');
-
-        if (LastSlash != -1) {
-            RenderControllerName = RenderControllerName.substring(LastSlash + 1);
-        }
-
-        JsonElement RenderController = RenderControllerFiles.get(RenderControllerName);
-
-        if (RenderController == null) {return null;}
-
-        return Path.of(RenderControllerName);
-    }
-
-    public static Path GetRenderControllerByPath(String RenderControllerPath) {
-        return Path.of(RenderControllerPath);
     }
 }

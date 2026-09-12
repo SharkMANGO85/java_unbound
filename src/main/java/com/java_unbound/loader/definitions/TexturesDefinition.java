@@ -1,18 +1,15 @@
 package com.java_unbound.loader.definitions;
 
+import com.java_unbound.global.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Stream;
 
 public class TexturesDefinition {
-    private static final Map<String, String> TextureFiles = new HashMap<>();
-
     private static final Path BaseTextureFolder = Folder.GetConfigFolder().resolve("textures");
     private static final Path SubpackTextureFolder0 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP0").resolve("textures");
     private static final Path SubpackTextureFolder1 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP1").resolve("textures");
@@ -21,7 +18,7 @@ public class TexturesDefinition {
     private static final Path[] TexturePriorityOrder = {SubpackTextureFolder2, BaseTextureFolder, SubpackTextureFolder1, SubpackTextureFolder0};
 
     public static void LoadTextures() throws IOException {
-        TextureFiles.clear();
+        HashMaps.TextureFiles.clear();
 
         for (Path TextureFolder : TexturePriorityOrder) {
             if (!Files.isDirectory(TextureFolder)) {continue;}
@@ -37,7 +34,7 @@ public class TexturesDefinition {
                             String FileName = Path.getFileName().toString();
                             String Name = FileName.substring(0, FileName.lastIndexOf('.'));
 
-                            TextureFiles.putIfAbsent(Name, Path.toString());
+                            HashMaps.TextureFiles.putIfAbsent(Name, Path.toString());
                         });
             }
         }
@@ -50,7 +47,7 @@ public class TexturesDefinition {
     }
 
     public static Path GetTextureByName(String TextureName) {
-        String TexturePath = TextureFiles.get(TextureName);
+        String TexturePath = HashMaps.TextureFiles.get(TextureName);
 
         if (TexturePath == null) {
             return null;
@@ -66,7 +63,7 @@ public class TexturesDefinition {
             TextureName = TextureName.substring(LastSlash + 1);
         }
 
-        String TexturePath = TextureFiles.get(TextureName);
+        String TexturePath = HashMaps.TextureFiles.get(TextureName);
 
         if (TexturePath == null) {
             return null;

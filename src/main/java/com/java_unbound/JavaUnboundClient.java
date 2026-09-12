@@ -1,10 +1,7 @@
 package com.java_unbound;
 
 import com.java_unbound.loader.converter.TgaConverter;
-import com.java_unbound.loader.definitions.AnimationControllerDefinition;
-import com.java_unbound.loader.definitions.GeometriesDefinition;
-import com.java_unbound.loader.definitions.RenderControllersDefinition;
-import com.java_unbound.loader.definitions.TexturesDefinition;
+import com.java_unbound.loader.definitions.*;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import com.java_unbound.loader.resourcepack.ResourceMapper;
@@ -51,7 +48,7 @@ public class JavaUnboundClient implements ClientModInitializer {
         JavaUnbound.LOGGER.error("Loading Animation Controllers");
 
         try {
-            AnimationControllerDefinition.LoadAnimationControllers();
+            AnimationControllersDefinition.LoadAnimationControllers();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -69,6 +66,18 @@ public class JavaUnboundClient implements ClientModInitializer {
         }
 
         JavaUnbound.LOGGER.error("Finished Loading Render Controllers");
+        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
+        JavaUnbound.LOGGER.error("");
+        JavaUnbound.LOGGER.error("---------------------Entities---------------------");
+        JavaUnbound.LOGGER.error("Loading Entities");
+
+        try {
+            EntitiesDefinition.LoadEntities();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        JavaUnbound.LOGGER.error("Finished Loading Entities");
         JavaUnbound.LOGGER.error("--------------------------------------------------------------");
     }
 }
