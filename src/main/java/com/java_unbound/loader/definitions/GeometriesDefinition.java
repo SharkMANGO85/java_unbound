@@ -76,4 +76,10 @@ public class GeometriesDefinition {
             }
         }
     }
+
+    public static JsonElement GetGeometryByIdentifier(String Identifier) {
+        if (Identifier == null || Identifier.isEmpty()) {return null;}
+
+        return HashMaps.GeoemtryFiles.get(Identifier);
+    }
 }

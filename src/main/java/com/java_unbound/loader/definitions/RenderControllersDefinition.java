@@ -1,5 +1,6 @@
 package com.java_unbound.loader.definitions;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,6 +11,8 @@ import com.java_unbound.loader.resourcepack.Folder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -66,5 +69,43 @@ public class RenderControllersDefinition {
                 Paths.filter(Files::isRegularFile).filter(Path -> Path.getFileName().toString().toLowerCase().endsWith(".json")).forEach(RenderControllersDefinition::AddJsonToFiles);
             }
         }
+    }
+
+    public static JsonElement GetRenderControllerByIdentifier(String Identifier) {
+        if (Identifier == null || Identifier.isEmpty()) {return null;}
+
+        return HashMaps.RenderControllerFiles.get(Identifier);
+    }
+
+    public static List<JsonElement> GetRenderControllersByEntityJsonFile(JsonElement EntityJsonFile) {
+        List<JsonElement> RenderControllers = new ArrayList<>();
+
+        if (EntityJsonFile == null) {
+            return RenderControllers;
+        }
+
+        if (!EntityJsonFile.isJsonObject()) {
+            return RenderControllers;
+        }
+
+        JsonObject EntityObject = EntityJsonFile.getAsJsonObject();
+        JsonElement DescriptionElement = EntityObject.get("description");
+
+        if (DescriptionElement == null || !DescriptionElement.isJsonObject()) {
+            return RenderControllers;
+        }
+
+        JsonObject Description = DescriptionElement.getAsJsonObject();
+        JsonElement RenderControllersElement = Description.get("render_controllers");
+
+        if (RenderControllersElement == null || !RenderControllersElement.isJsonArray()) {
+            return RenderControllers;
+        }
+
+        for (JsonElement RenderControllerElement : RenderControllersElement.getAsJsonArray()) {
+            RenderControllers.add(RenderControllerElement);
+        }
+
+        return RenderControllers;
     }
 }

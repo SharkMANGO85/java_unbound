@@ -1,2 +1,23 @@
 Entity Registry --> Sava textures, etc. of the entity there
 Entity Resolver --> Get the textures, etc. of the entity
+Render Controller Resolver --> Decide if render controller enabled
+
+
+
+
+
+v. = entity/rendering variable — temporary state you or the animation scripts calculate.
+q. = query — asks the game about the entity/world.
+t. = temporary variable — generally used for temporary calculations inside Molang expressions.
+
+
+
+
+
+
+| Script               | Runs                                  |
+| -------------------- | ------------------------------------- |
+| `initialize`         | **Once on spawn**                     |
+| `pre_animation`      | **Every frame/tick before animation** |
+| `animate`            | **Every frame/tick**                  |
+| `render_controllers` | **Every render frame**                |

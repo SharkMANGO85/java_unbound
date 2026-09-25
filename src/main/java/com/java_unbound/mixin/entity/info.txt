@@ -1,0 +1,9 @@
+| What you want to change             | Target                                     | What to Mixin                         |
+| ----------------------------------- | ------------------------------------------ | ------------------------------------- |
+| Texture of a normal `Entity`        | `EntityRenderer` subclass                  | `getTexture(...)`                     |
+| Geometry/model of a normal `Entity` | Its `EntityRenderer`                       | `render(...)` / model field           |
+| Texture of a `LivingEntity`         | `LivingEntityRenderer` subclass            | `getTexture(...)`                     |
+| Geometry/model of a `LivingEntity`  | `LivingEntityRenderer` / specific renderer | `model` / rendering methods           |
+| Scale/overall size                  | `LivingEntityRenderer`                     | `scale(...)`                          |
+| Pose/rotation                       | `LivingEntityRenderer`                     | `setupTransforms(...)`                |
+| Add an additional model/overlay     | `LivingEntityRenderer`                     | `addFeature(...)` / feature renderers |

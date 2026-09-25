@@ -13,7 +13,9 @@
   },
   "license": "CC0-1.0",
   "icon": "assets/java_unbound/icon.png",
+
   "environment": "*",
+
   "entrypoints": {
     "main": [
       "com.java_unbound.JavaUnbound"
@@ -22,9 +24,11 @@
       "com.java_unbound.JavaUnboundClient"
     ]
   },
+
   "mixins": [
     "java_unbound.mixins.json"
   ],
+
   "depends": {
     "fabricloader": ">=0.19.3",
     "minecraft": "~26.2",

@@ -5,7 +5,9 @@
   "client": [
     "resourcepack.PackRepositoryMixin",
     "ui.LogoRendererMixin",
-    "ui.SplashRendererMixin"
+    "ui.SplashRendererMixin",
+    "entity.EntityMixin",
+    "entity.EntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
