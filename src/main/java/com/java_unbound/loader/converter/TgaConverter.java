@@ -14,8 +14,7 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 public final class TgaConverter {
-    private TgaConverter() {
-    }
+    private TgaConverter() {}
 
     public static void ConvertAll(Path Root) {
         if (Root == null || !Files.isDirectory(Root)) {

@@ -1,13 +1,10 @@
 package com.java_unbound;
 
-import com.java_unbound.loader.resourcepack.Folder;
+import com.java_unbound.loader.entities.on_spawn.EntityLoadHandler;
 
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Path;
-
-//https://discord.gg/AjMeTtkU7a
 
 public class JavaUnbound implements ModInitializer {
     public static final String MOD_ID = "java_unbound";
@@ -16,6 +13,6 @@ public class JavaUnbound implements ModInitializer {
 
     @Override
     public void onInitialize() {
-
+        EntityLoadHandler.Register();
     }
 }

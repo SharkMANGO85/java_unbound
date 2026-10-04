@@ -43,7 +43,7 @@ dependencies {
 
 	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 
-	implementation "maven.modrinth:76lEgqhs:${project.bedrock_skins_version}"
+	//implementation "maven.modrinth:76lEgqhs:${project.bedrock_skins_version}"
 }
 
 processResources {

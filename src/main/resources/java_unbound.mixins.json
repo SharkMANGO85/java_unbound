@@ -2,12 +2,14 @@
   "required": true,
   "package": "com.java_unbound.mixin",
   "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "entity.EntityMixin"
+  ],
   "client": [
     "resourcepack.PackRepositoryMixin",
     "ui.LogoRendererMixin",
     "ui.SplashRendererMixin",
-    "entity.EntityMixin",
-    "entity.EntityRendererMixin"
+    "entity.LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

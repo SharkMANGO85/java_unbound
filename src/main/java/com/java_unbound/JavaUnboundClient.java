@@ -99,15 +99,5 @@ public class JavaUnboundClient implements ClientModInitializer {
 
         JavaUnbound.LOGGER.error("Finished Loading Entities");
         JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-
-        ClientTickEvents.END_CLIENT_TICK.register(Client -> {
-            if (MolangTested) {return;}
-            if (Client.level == null) {return;}
-
-            JavaUnbound.LOGGER.info("[MoLang Test] Level found, starting tests.");
-
-            MolangTested = true;
-            MolangParserTest.test(Client.level);
-        });
     }
 }

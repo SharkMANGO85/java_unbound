@@ -5,12 +5,23 @@ import com.java_unbound.loader.molang.MolangExpression;
 import com.java_unbound.loader.molang.MolangParser;
 import com.java_unbound.loader.molang.types.MolangEntityParser;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.cow.Cow;
 import net.minecraft.world.level.Level;
 
 public class MolangParserTest {
+
+    private static class TestCow extends Cow {
+        public double qhhozj;
+        public double ykxvro;
+        public double sxlefg;
+        public double tsuowj;
+        public double hqvvjb;
+
+        public TestCow(Level Level) {
+            super(EntityTypes.COW, Level);
+        }
+    }
 
     public static void test(Level Level) {
         JavaUnbound.LOGGER.error("========== MOLANG TEST START ==========");
@@ -18,13 +29,10 @@ public class MolangParserTest {
         TestExpression("10");
         TestExpression("1.5");
         TestExpression("-20");
-
         TestExpression("q.is_on_ground");
         TestExpression("q.is_baby");
         TestExpression("v.speed");
-
         TestExpression("v.speed = 10");
-
         TestExpression("math.sin(query.life_time)");
 
         TestEntityMolang(Level);
@@ -41,39 +49,89 @@ public class MolangParserTest {
         }
     }
 
-    private static void TestMolangValue(Cow Entity, String Expression) {
+    private static void TestMolangValue(TestCow Entity, String Expression) {
         try {
             double Result = MolangParser.Evaluate(Entity, Expression);
-            JavaUnbound.LOGGER.error("[MoLang Test] {} -> {}", Expression, Result);
+            JavaUnbound.LOGGER.info("[MoLang Test] {} -> {}", Expression, Result);
         } catch (Exception e) {
             JavaUnbound.LOGGER.error("[MoLang Test] Failed to evaluate: " + Expression, e);
         }
     }
 
+    private static void TestEntityQuery(TestCow Entity, String Expression) {
+        try {
+            double Result = MolangEntityParser.Evaluate(Entity, Expression);
+            JavaUnbound.LOGGER.info("[Entity Query Test] {} -> {}", Expression, Result);
+        } catch (Exception e) {
+            JavaUnbound.LOGGER.error("[Entity Query Test] Failed: " + Expression, e);
+        }
+    }
+
     private static void TestEntityMolang(Level Level) {
         try {
-            Cow TestCow = EntityTypes.COW.create(Level, EntitySpawnReason.COMMAND);
-
-            if (TestCow == null) {
-                JavaUnbound.LOGGER.error("[MoLang Test] Failed to create test cow");
-                return;
-            }
+            TestCow TestCow = new TestCow(Level);
 
             TestCow.setCustomName(Component.literal("Steve"));
 
-            double Result = MolangEntityParser.Evaluate(
-                    TestCow,
-                    "q.is_name_any('Alex', 'Steve', 'Herobrine')"
-            );
-
+            JavaUnbound.LOGGER.error("========== ENTITY QUERY TESTS ==========");
             JavaUnbound.LOGGER.info("[MoLang Test] Cow name: {}", TestCow.getCustomName());
-            JavaUnbound.LOGGER.info("[MoLang Test] q.is_name_any -> {}", Result);
+
+            TestEntityQuery(TestCow, "q.is_name_any('Steve')");
+            TestEntityQuery(TestCow, "q.is_name_any('Alex')");
+            TestEntityQuery(TestCow, "q.is_name_any('Alex', 'Steve', 'Herobrine')");
+            TestEntityQuery(TestCow, "q.is_name_any('steve')");
+            TestEntityQuery(TestCow, "q.is_name_any('Steve', 'Alex')");
+
+            TestEntityQuery(TestCow, "q.is_baby");
+            TestEntityQuery(TestCow, "q.is_alive");
+            TestEntityQuery(TestCow, "q.is_on_ground");
+            TestEntityQuery(TestCow, "q.is_in_water");
+            TestEntityQuery(TestCow, "q.is_in_lava");
+            TestEntityQuery(TestCow, "q.is_on_fire");
+            TestEntityQuery(TestCow, "q.is_invisible");
+            TestEntityQuery(TestCow, "q.is_sneaking");
+            TestEntityQuery(TestCow, "q.is_sprinting");
+            TestEntityQuery(TestCow, "q.is_swimming");
+            TestEntityQuery(TestCow, "q.is_sleeping");
+            TestEntityQuery(TestCow, "q.is_riding");
+            TestEntityQuery(TestCow, "q.is_riding_any_entity");
+            TestEntityQuery(TestCow, "q.is_attached");
+
+            TestEntityQuery(TestCow, "q.entity_biome_has_any_identifier('minecraft:plains')");
+            TestEntityQuery(TestCow, "q.entity_biome_has_any_identifier('minecraft:cherry_grove')");
+            TestEntityQuery(TestCow, "q.entity_biome_has_any_identifier('minecraft:plains', 'minecraft:forest')");
+
+            TestEntityQuery(TestCow, "q.is_in_ui");
+            TestEntityQuery(TestCow, "q.graphics_mode_is_any('simple', 'fancy')");
+            TestEntityQuery(TestCow, "q.is_pack_setting_selected('oreville_ans:fxwjdy', 'enabled')");
+
+            JavaUnbound.LOGGER.error("========== NESTED MOLANG TESTS ==========");
 
             TestMolangValue(TestCow, "q.is_name_any('Steve')");
             TestMolangValue(TestCow, "math.abs(q.is_name_any('Steve'))");
             TestMolangValue(TestCow, "math.abs(math.abs(q.is_name_any('Steve')))");
             TestMolangValue(TestCow, "math.sin(math.abs(q.is_name_any('Steve')))");
             TestMolangValue(TestCow, "math.sin(math.cos(q.is_name_any('Steve')))");
+            TestMolangValue(TestCow, "q.is_name_any('Steve') || q.is_baby");
+            TestMolangValue(TestCow, "q.is_name_any('Alex') || q.is_baby");
+            TestMolangValue(TestCow, "!q.is_name_any('Alex')");
+            TestMolangValue(TestCow, "q.is_name_any('Steve') && q.is_alive");
+
+            JavaUnbound.LOGGER.error("========== STATEMENT BLOCK TESTS ==========");
+
+            TestMolangValue(TestCow, "v.qhhozj = 0");
+            TestMolangValue(TestCow, "q.is_name_any('Steve') ? { v.qhhozj = 1; }");
+            TestMolangValue(TestCow, "q.is_name_any('Alex') ? { v.qhhozj = 2; }");
+            TestMolangValue(TestCow, "v.qhhozj");
+            TestMolangValue(TestCow, "q.is_name_any('Steve') ? { v.qhhozj = 3; v.ykxvro = 5; }");
+            TestMolangValue(TestCow, "v.qhhozj");
+            TestMolangValue(TestCow, "v.ykxvro");
+
+            TestMolangValue(TestCow, "v.qhhozj = 0");
+            TestMolangValue(TestCow, "q.is_name_any('Steve') ? { q.is_alive ? { v.qhhozj = 4; }; }");
+            TestMolangValue(TestCow, "v.qhhozj");
+
+            JavaUnbound.LOGGER.error("========== ENTITY QUERY TESTS END ==========");
         } catch (Exception e) {
             JavaUnbound.LOGGER.error("[MoLang Test] MolangEntityParser failed", e);
         }

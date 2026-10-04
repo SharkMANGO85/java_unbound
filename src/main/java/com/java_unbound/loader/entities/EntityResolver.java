@@ -113,4 +113,30 @@ public class EntityResolver {
 
         return ResolvedRenderControllers;
     }
+
+    public static HashMap<String, JsonArray> GetScripts(String Identifier, JsonObject Description) {
+        JsonElement ScriptsElement = Description.get("scripts");
+
+        if (ScriptsElement == null || !ScriptsElement.isJsonObject()) {
+            JavaUnbound.LOGGER.error("SCRIPTS: Entity has no scripts object: " + Identifier);
+            return new HashMap<>();
+        }
+
+        JsonObject Scripts = ScriptsElement.getAsJsonObject();
+        HashMap<String, JsonArray> ResolvedScripts = new HashMap<>();
+
+        for (Map.Entry<String, JsonElement> Entry : Scripts.entrySet()) {
+            String ScriptName = Entry.getKey();
+            JsonElement ScriptElement = Entry.getValue();
+            JsonArray ScriptArray = ScriptElement.isJsonArray() ? ScriptElement.getAsJsonArray() : new JsonArray();
+
+            if (!ScriptElement.isJsonArray()) {
+                ScriptArray.add(ScriptElement);
+            }
+
+            ResolvedScripts.put(ScriptName, ScriptArray);
+        }
+
+        return ResolvedScripts;
+    }
 }
