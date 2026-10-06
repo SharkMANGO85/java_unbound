@@ -1,4 +1,4 @@
-package com.java_unbound.loader.definitions;
+package com.java_unbound.loader.definitions.global_use;
 
 import com.java_unbound.global.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;

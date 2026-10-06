@@ -1,4 +1,4 @@
-package com.java_unbound.loader.entities;
+package com.java_unbound.entities.loader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -6,7 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.global.HashMaps;
-import com.java_unbound.loader.definitions.EntitiesDefinition;
+import com.java_unbound.loader.definitions.entities.EntitiesDefinition;
 
 import java.nio.file.Path;
 import java.util.HashMap;

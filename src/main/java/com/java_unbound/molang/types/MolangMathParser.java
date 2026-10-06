@@ -1,6 +1,6 @@
-package com.java_unbound.loader.molang.types;
+package com.java_unbound.molang.types;
 
-import com.java_unbound.loader.molang.MolangParser;
+import com.java_unbound.molang.MolangParser;
 import net.minecraft.world.entity.Entity;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public final class MolangMathParser {
     }
 
     public static boolean IsMathExpression(String Expression) {
-        if (Expression == null || !Expression.startsWith("math.") || !Expression.endsWith(")")) {
+        if (Expression == null || !Expression.startsWith("math.") || !Expression.startsWith("Math.") || !Expression.endsWith(")")) {
             return false;
         }
 

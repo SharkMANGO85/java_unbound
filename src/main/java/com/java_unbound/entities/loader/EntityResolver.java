@@ -1,13 +1,12 @@
-package com.java_unbound.loader.entities;
+package com.java_unbound.entities.loader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.loader.definitions.EntitiesDefinition;
-import com.java_unbound.loader.definitions.GeometriesDefinition;
-import com.java_unbound.loader.definitions.RenderControllersDefinition;
-import com.java_unbound.loader.definitions.TexturesDefinition;
+import com.java_unbound.loader.definitions.global_use.GeometriesDefinition;
+import com.java_unbound.loader.definitions.global_use.RenderControllersDefinition;
+import com.java_unbound.loader.definitions.global_use.TexturesDefinition;
 
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -69,49 +68,36 @@ public class EntityResolver {
     }
 
     public static HashMap<String, JsonElement> GetRenderControllers(String Identifier, JsonObject Description) {
-        JsonElement RenderControllersElement = Description.get("render_controllers");
+        JsonElement Element = Description.get("render_controllers");
 
-        if (RenderControllersElement == null || !RenderControllersElement.isJsonArray()) {
+        if (Element == null || !Element.isJsonArray()) {
             JavaUnbound.LOGGER.error("RENDER CONTROLLER: Entity has no render controllers array: " + Identifier);
             return new HashMap<>();
         }
 
-        JsonArray RenderControllers = RenderControllersElement.getAsJsonArray();
-        HashMap<String, JsonElement> ResolvedRenderControllers = new HashMap<>();
+        HashMap<String, JsonElement> Resolved = new HashMap<>();
 
-        for (JsonElement RenderControllerElement : RenderControllers) {
-            if (RenderControllerElement.isJsonPrimitive()) {
-                String RenderControllerIdentifier = RenderControllerElement.getAsString();
-                JsonElement RenderController = RenderControllersDefinition.GetRenderControllerByIdentifier(RenderControllerIdentifier);
-
-                if (RenderController == null) {
-                    JavaUnbound.LOGGER.error("RENDER CONTROLLER: Could not resolve render controller '{}' for entity '{}'", RenderControllerIdentifier, Identifier);
-                    continue;
-                }
-
-                ResolvedRenderControllers.put(RenderControllerIdentifier, RenderController);
-                continue;
-            }
-
-            if (RenderControllerElement.isJsonObject()) {
-                JsonObject ConditionalController = RenderControllerElement.getAsJsonObject();
-
-                for (Map.Entry<String, JsonElement> Entry : ConditionalController.entrySet()) {
-                    String RenderControllerIdentifier = Entry.getKey();
-                    JsonElement Condition = Entry.getValue();
-                    JsonElement RenderController = RenderControllersDefinition.GetRenderControllerByIdentifier(RenderControllerIdentifier);
-
-                    if (RenderController == null) {
-                        JavaUnbound.LOGGER.error("RENDER CONTROLLER: Could not resolve render controller '{}' for entity '{}'", RenderControllerIdentifier, Identifier);
-                        continue;
-                    }
-
-                    ResolvedRenderControllers.put(RenderControllerIdentifier, RenderController);
+        for (JsonElement Controller : Element.getAsJsonArray()) {
+            if (Controller.isJsonPrimitive()) {
+                ResolveRenderController(Controller.getAsString(), Identifier, Resolved);
+            } else if (Controller.isJsonObject()) {
+                for (String ControllerIdentifier : Controller.getAsJsonObject().keySet()) {
+                    ResolveRenderController(ControllerIdentifier, Identifier, Resolved);
                 }
             }
         }
+        return Resolved;
+    }
 
-        return ResolvedRenderControllers;
+    private static void ResolveRenderController(String Identifier, String EntityIdentifier, HashMap<String, JsonElement> Resolved) {
+        JsonElement Controller = RenderControllersDefinition.GetRenderControllerByIdentifier(Identifier);
+
+        if (Controller == null) {
+            JavaUnbound.LOGGER.error("RENDER CONTROLLER: Could not resolve render controller '{}' for entity '{}'", Identifier, EntityIdentifier);
+            return;
+        }
+
+        Resolved.put(Identifier, Controller);
     }
 
     public static HashMap<String, JsonArray> GetScripts(String Identifier, JsonObject Description) {

@@ -1,6 +1,6 @@
 package com.java_unbound.mixin.entity;
 
-import com.java_unbound.loader.entities.on_spawn.EntitySpawnHandler;
+import com.java_unbound.entities.actions.EntitySpawnHandler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;

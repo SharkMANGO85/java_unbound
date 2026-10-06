@@ -1,6 +1,6 @@
 package com.java_unbound;
 
-import com.java_unbound.loader.entities.on_spawn.EntityLoadHandler;
+import com.java_unbound.entities.actions.EntityLoadHandler;
 
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;

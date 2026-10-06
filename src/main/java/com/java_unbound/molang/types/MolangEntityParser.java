@@ -1,44 +1,16 @@
-package com.java_unbound.loader.molang.types;
+package com.java_unbound.molang.types;
 
-import com.java_unbound.loader.entities.EntityBiome;
-import com.java_unbound.loader.molang.MolangParser;
+import com.java_unbound.entities.interfaces.EntityBiomeInterface;
+import com.java_unbound.entities.interfaces.EntityVariableInterface;
+import com.java_unbound.molang.MolangParser;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.HashMap;
+import java.util.*;
 
 public final class MolangEntityParser {
     private MolangEntityParser() {}
-
-    private static final Map<Entity, Map<String, Double>> Variables = new WeakHashMap<>();
-
-    public static void PrintVariables(Entity Entity) {
-        if (Entity == null) {
-            return;
-        }
-
-        Map<String, Double> EntityVariables = Variables.get(Entity);
-
-        System.out.println("========== MoLang Entity ==========");
-        System.out.println("Entity: " + Entity);
-        System.out.println("Type: " + Entity.getType());
-
-        if (EntityVariables == null || EntityVariables.isEmpty()) {
-            System.out.println("Variables: none");
-        } else {
-            for (Map.Entry<String, Double> Entry : EntityVariables.entrySet()) {
-                System.out.println("v." + Entry.getKey() + " = " + Entry.getValue());
-            }
-        }
-
-        System.out.println("===================================");
-    }
 
     public static double Evaluate(Entity Entity, String Expression) {
         if (Entity == null || Expression == null || Expression.isBlank()) {
@@ -80,38 +52,7 @@ public final class MolangEntityParser {
             return 0;
         }
 
-        Map<String, Double> EntityVariables = Variables.get(Entity);
-
-        if (EntityVariables != null && EntityVariables.containsKey(VariableName)) {
-            return EntityVariables.get(VariableName);
-        }
-
-        Class<?> EntityClass = Entity.getClass();
-
-        while (EntityClass != null) {
-            try {
-                Field Field = EntityClass.getDeclaredField(VariableName);
-                Field.setAccessible(true);
-
-                Object Value = Field.get(Entity);
-
-                if (Value instanceof Number Number) {
-                    return Number.doubleValue();
-                }
-
-                if (Value instanceof Boolean Boolean) {
-                    return Boolean ? 1 : 0;
-                }
-
-                return 0;
-            } catch (NoSuchFieldException Exception) {
-                EntityClass = EntityClass.getSuperclass();
-            } catch (IllegalAccessException Exception) {
-                return 0;
-            }
-        }
-
-        return 0;
+        return ((EntityVariableInterface) Entity).JavaUnbound$getVariable(VariableName);
     }
 
     public static void SetVariable(Entity Entity, String VariableName, double Value) {
@@ -119,7 +60,7 @@ public final class MolangEntityParser {
             return;
         }
 
-        Variables.computeIfAbsent(Entity, Key -> new HashMap<>()).put(VariableName, Value);
+        ((EntityVariableInterface) Entity).JavaUnbound$setVariable(VariableName, Value);
 
         Class<?> EntityClass = Entity.getClass();
 
@@ -180,9 +121,9 @@ public final class MolangEntityParser {
             case "is_riding_any_entity" -> Entity.isPassenger() ? 1 : 0;
             case "is_attached" -> Entity.isPassenger() ? 1 : 0;
             case "is_in_ui" -> 0;
-            case "graphics_mode_is_any" -> 0;
+            case "graphics_mode_is_any" -> 1;
             case "entity_biome_has_any_identifier" -> EvaluateBiome(Entity, Arguments);
-            case "is_pack_setting_selected" -> 0;
+            case "is_pack_setting_selected" -> 1;
             default -> 0;
         };
     }
@@ -204,7 +145,7 @@ public final class MolangEntityParser {
     }
 
     private static double EvaluateBiome(Entity Entity, List<String> Values) {
-        String BiomeId = ((EntityBiome) Entity).JavaUnbound$getBiome();
+        String BiomeId = ((EntityBiomeInterface) Entity).JavaUnbound$getBiome();
 
         if (BiomeId == null) {
             return 0;

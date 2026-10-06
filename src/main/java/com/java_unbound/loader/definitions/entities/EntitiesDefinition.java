@@ -1,11 +1,11 @@
-package com.java_unbound.loader.definitions;
+package com.java_unbound.loader.definitions.entities;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.global.HashMaps;
-import com.java_unbound.loader.entities.EntityRegistry;
+import com.java_unbound.entities.loader.EntityRegistry;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import java.io.IOException;

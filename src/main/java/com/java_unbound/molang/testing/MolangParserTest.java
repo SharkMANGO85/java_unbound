@@ -1,9 +1,10 @@
-package com.java_unbound.loader.molang.testing;
+package com.java_unbound.molang.testing;
 
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.loader.molang.MolangExpression;
-import com.java_unbound.loader.molang.MolangParser;
-import com.java_unbound.loader.molang.types.MolangEntityParser;
+import com.java_unbound.entities.interfaces.EntityVariableInterface;
+import com.java_unbound.molang.MolangParser;
+import com.java_unbound.molang.enums.MolangExpression;
+import com.java_unbound.molang.types.MolangEntityParser;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.cow.Cow;
@@ -64,6 +65,32 @@ public class MolangParserTest {
             JavaUnbound.LOGGER.info("[Entity Query Test] {} -> {}", Expression, Result);
         } catch (Exception e) {
             JavaUnbound.LOGGER.error("[Entity Query Test] Failed: " + Expression, e);
+        }
+    }
+
+    private static void TestEntityVariables(TestCow Entity) {
+        try {
+            EntityVariableInterface Variables = (EntityVariableInterface) Entity;
+
+            JavaUnbound.LOGGER.error("========== ENTITY VARIABLE TESTS ==========");
+
+            TestMolangValue(Entity, "v.sdad = 23");
+
+            JavaUnbound.LOGGER.info("[Variable Test] HashMap: {}", Variables.JavaUnbound$getVariables());
+            JavaUnbound.LOGGER.info("[Variable Test] sdad: {}", Variables.JavaUnbound$getVariable("sdad"));
+
+            TestMolangValue(Entity, "v.sdad");
+
+            TestMolangValue(Entity, "v.sdad = 42");
+
+            JavaUnbound.LOGGER.info("[Variable Test] HashMap after update: {}", Variables.JavaUnbound$getVariables());
+            JavaUnbound.LOGGER.info("[Variable Test] sdad after update: {}", Variables.JavaUnbound$getVariable("sdad"));
+
+            TestMolangValue(Entity, "v.sdad");
+
+            JavaUnbound.LOGGER.error("========== ENTITY VARIABLE TESTS END ==========");
+        } catch (Exception e) {
+            JavaUnbound.LOGGER.error("[Variable Test] Failed", e);
         }
     }
 
@@ -130,6 +157,8 @@ public class MolangParserTest {
             TestMolangValue(TestCow, "v.qhhozj = 0");
             TestMolangValue(TestCow, "q.is_name_any('Steve') ? { q.is_alive ? { v.qhhozj = 4; }; }");
             TestMolangValue(TestCow, "v.qhhozj");
+
+            TestEntityVariables(TestCow);
 
             JavaUnbound.LOGGER.error("========== ENTITY QUERY TESTS END ==========");
         } catch (Exception e) {

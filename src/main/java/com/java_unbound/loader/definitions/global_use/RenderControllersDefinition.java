@@ -1,4 +1,4 @@
-package com.java_unbound.loader.definitions;
+package com.java_unbound.loader.definitions.global_use;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -107,5 +107,30 @@ public class RenderControllersDefinition {
         }
 
         return RenderControllers;
+    }
+
+    public static JsonArray GetRenderControllersByEntityId(String Identifier) {
+        JsonElement EntityJson = HashMaps.EntityFiles.get(Identifier);
+
+        if (EntityJson == null || !EntityJson.isJsonObject()) {
+            JavaUnbound.LOGGER.error("RENDER CONTROLLER: Could not find entity '{}'", Identifier);
+            return new JsonArray();
+        }
+
+        JsonElement DescriptionElement = EntityJson.getAsJsonObject().get("description");
+
+        if (DescriptionElement == null || !DescriptionElement.isJsonObject()) {
+            JavaUnbound.LOGGER.error("RENDER CONTROLLER: Entity has no description: " + Identifier);
+            return new JsonArray();
+        }
+
+        JsonElement RenderControllersElement = DescriptionElement.getAsJsonObject().get("render_controllers");
+
+        if (RenderControllersElement == null || !RenderControllersElement.isJsonArray()) {
+            JavaUnbound.LOGGER.error("RENDER CONTROLLER: Entity has no render controllers array: " + Identifier);
+            return new JsonArray();
+        }
+
+        return RenderControllersElement.getAsJsonArray();
     }
 }

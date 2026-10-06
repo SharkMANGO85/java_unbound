@@ -1,13 +1,7 @@
-package com.java_unbound.loader.molang;
+package com.java_unbound.molang.enums;
 
 public final class MolangExpression {
-    public enum Type {
-        NUMBER,
-        VALUE,
-        ASSIGNMENT,
-        MATH,
-        UNKNOWN
-    }
+    public enum Type {NUMBER, VALUE, ASSIGNMENT, MATH, UNKNOWN}
 
     private final Type ExpressionType;
     private final String Expression;

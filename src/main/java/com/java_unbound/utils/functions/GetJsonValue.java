@@ -5,9 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class GetJsonValue {
-    private GetJsonValue() {
-
-    }
+    private GetJsonValue() {}
 
     public static JsonElement GetValue(String Content, String Path) {
         if (Content == null || Content.isEmpty() || Path == null || Path.isEmpty()) {return null;}

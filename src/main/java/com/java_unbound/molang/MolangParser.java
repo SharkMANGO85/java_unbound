@@ -1,7 +1,8 @@
-package com.java_unbound.loader.molang;
+package com.java_unbound.molang;
 
-import com.java_unbound.loader.molang.types.MolangEntityParser;
-import com.java_unbound.loader.molang.types.MolangMathParser;
+import com.java_unbound.molang.enums.MolangExpression;
+import com.java_unbound.molang.types.MolangEntityParser;
+import com.java_unbound.molang.types.MolangMathParser;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
@@ -34,51 +35,6 @@ public final class MolangParser {
         }
 
         return new MolangExpression(MolangExpression.Type.UNKNOWN, Expression);
-    }
-
-    private static List<String> SplitTopLevel(String Expression, String Operator) {
-        List<String> Result = new ArrayList<>();
-        int Depth = 0;
-        char Quote = 0;
-        int Start = 0;
-
-        for (int Index = 0; Index <= Expression.length() - Operator.length(); Index++) {
-            char Character = Expression.charAt(Index);
-
-            if (Quote != 0) {
-                if (Character == Quote) {
-                    Quote = 0;
-                }
-                continue;
-            }
-
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
-                continue;
-            }
-
-            if (Character == '(' || Character == '{') {
-                Depth++;
-                continue;
-            }
-
-            if (Character == ')' || Character == '}') {
-                Depth--;
-                continue;
-            }
-
-            if (Depth == 0 && Expression.startsWith(Operator, Index)) {
-                Result.add(Expression.substring(Start, Index).trim());
-                Start = Index + Operator.length();
-                Index += Operator.length() - 1;
-            }
-        }
-
-        if (!Result.isEmpty()) {
-            Result.add(Expression.substring(Start).trim());
-        }
-
-        return Result;
     }
 
     public static double Evaluate(Entity Entity, String Expression) {
@@ -255,6 +211,157 @@ public final class MolangParser {
         return 0;
     }
 
+    public static boolean IsTrue(double Value) {
+        return Value != 0 && !Double.isNaN(Value);
+    }
+
+    public static boolean IsNumber(String Expression) {
+        return Expression != null && Expression.trim().matches("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?");
+    }
+
+    public static String GetArguments(String Expression) {
+        return Expression.substring(Expression.indexOf('(') + 1, Expression.length() - 1);
+    }
+
+    public static String Unquote(String Value) {
+        Value = Value.trim();
+
+        if (Value.length() >= 2) {
+            char First = Value.charAt(0);
+            char Last = Value.charAt(Value.length() - 1);
+
+            if ((First == '\'' && Last == '\'') || (First == '"' && Last == '"')) {
+                return Value.substring(1, Value.length() - 1);
+            }
+        }
+
+        return Value;
+    }
+
+    public static List<String> SplitArguments(String Arguments) {
+        List<String> Result = new ArrayList<>();
+        StringBuilder Current = new StringBuilder();
+
+        int Depth = 0;
+        char Quote = 0;
+
+        for (int Index = 0; Index < Arguments.length(); Index++) {
+            char Character = Arguments.charAt(Index);
+
+            if (Quote != 0) {
+                Current.append(Character);
+
+                if (Character == Quote) {
+                    Quote = 0;
+                }
+
+                continue;
+            }
+
+            if (Character == '\'' || Character == '"') {
+                Quote = Character;
+                Current.append(Character);
+                continue;
+            }
+
+            if (Character == '(' || Character == '{') {
+                Depth++;
+            } else if (Character == ')' || Character == '}') {
+                Depth--;
+            }
+
+            if (Character == ',' && Depth == 0) {
+                Result.add(Current.toString().trim());
+                Current.setLength(0);
+                continue;
+            }
+
+            Current.append(Character);
+        }
+
+        if (!Current.isEmpty()) {
+            Result.add(Current.toString().trim());
+        }
+
+        return Result;
+    }
+
+    public static boolean IsBalanced(String Expression) {
+        int Depth = 0;
+        char Quote = 0;
+
+        for (int Index = 0; Index < Expression.length(); Index++) {
+            char Character = Expression.charAt(Index);
+
+            if (Quote != 0) {
+                if (Character == Quote) {
+                    Quote = 0;
+                }
+
+                continue;
+            }
+
+            if (Character == '\'' || Character == '"') {
+                Quote = Character;
+            } else if (Character == '(' || Character == '{') {
+                Depth++;
+            } else if (Character == ')' || Character == '}') {
+                Depth--;
+
+                if (Depth < 0) {
+                    return false;
+                }
+            }
+        }
+
+        return Depth == 0 && Quote == 0;
+    }
+
+    private static List<String> SplitTopLevel(String Expression, String Operator) {
+        List<String> Result = new ArrayList<>();
+        int Depth = 0;
+        char Quote = 0;
+        int Start = 0;
+
+        for (int Index = 0; Index <= Expression.length() - Operator.length(); Index++) {
+            char Character = Expression.charAt(Index);
+
+            if (Quote != 0) {
+                if (Character == Quote) {
+                    Quote = 0;
+                }
+                continue;
+            }
+
+            if (Character == '\'' || Character == '"') {
+                Quote = Character;
+                continue;
+            }
+
+            if (Character == '(' || Character == '{') {
+                Depth++;
+                continue;
+            }
+
+            if (Character == ')' || Character == '}') {
+                Depth--;
+                continue;
+            }
+
+            if (Depth == 0 && Expression.startsWith(Operator, Index)) {
+                Result.add(Expression.substring(Start, Index).trim());
+                Start = Index + Operator.length();
+                Index += Operator.length() - 1;
+            }
+        }
+
+        if (!Result.isEmpty()) {
+            Result.add(Expression.substring(Start).trim());
+        }
+
+        return Result;
+    }
+
     private static double EvaluateBlock(Entity Entity, String Block) {
         List<String> Statements = SplitStatements(Block);
         double Result = 0;
@@ -370,14 +477,6 @@ public final class MolangParser {
         }
 
         return -1;
-    }
-
-    public static boolean IsTrue(double Value) {
-        return Value != 0 && !Double.isNaN(Value);
-    }
-
-    public static boolean IsNumber(String Expression) {
-        return Expression != null && Expression.trim().matches("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?");
     }
 
     private static boolean IsWrapped(String Expression) {
@@ -648,103 +747,5 @@ public final class MolangParser {
         }
 
         return -1;
-    }
-
-    public static String GetArguments(String Expression) {
-        return Expression.substring(Expression.indexOf('(') + 1, Expression.length() - 1);
-    }
-
-    public static String Unquote(String Value) {
-        Value = Value.trim();
-
-        if (Value.length() >= 2) {
-            char First = Value.charAt(0);
-            char Last = Value.charAt(Value.length() - 1);
-
-            if ((First == '\'' && Last == '\'') || (First == '"' && Last == '"')) {
-                return Value.substring(1, Value.length() - 1);
-            }
-        }
-
-        return Value;
-    }
-
-    public static List<String> SplitArguments(String Arguments) {
-        List<String> Result = new ArrayList<>();
-        StringBuilder Current = new StringBuilder();
-
-        int Depth = 0;
-        char Quote = 0;
-
-        for (int Index = 0; Index < Arguments.length(); Index++) {
-            char Character = Arguments.charAt(Index);
-
-            if (Quote != 0) {
-                Current.append(Character);
-
-                if (Character == Quote) {
-                    Quote = 0;
-                }
-
-                continue;
-            }
-
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
-                Current.append(Character);
-                continue;
-            }
-
-            if (Character == '(' || Character == '{') {
-                Depth++;
-            } else if (Character == ')' || Character == '}') {
-                Depth--;
-            }
-
-            if (Character == ',' && Depth == 0) {
-                Result.add(Current.toString().trim());
-                Current.setLength(0);
-                continue;
-            }
-
-            Current.append(Character);
-        }
-
-        if (!Current.isEmpty()) {
-            Result.add(Current.toString().trim());
-        }
-
-        return Result;
-    }
-
-    public static boolean IsBalanced(String Expression) {
-        int Depth = 0;
-        char Quote = 0;
-
-        for (int Index = 0; Index < Expression.length(); Index++) {
-            char Character = Expression.charAt(Index);
-
-            if (Quote != 0) {
-                if (Character == Quote) {
-                    Quote = 0;
-                }
-
-                continue;
-            }
-
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
-            } else if (Character == '(' || Character == '{') {
-                Depth++;
-            } else if (Character == ')' || Character == '}') {
-                Depth--;
-
-                if (Depth < 0) {
-                    return false;
-                }
-            }
-        }
-
-        return Depth == 0 && Quote == 0;
     }
 }
