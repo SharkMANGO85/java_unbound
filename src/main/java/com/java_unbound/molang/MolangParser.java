@@ -3,11 +3,13 @@ package com.java_unbound.molang;
 import com.java_unbound.molang.enums.MolangExpression;
 import com.java_unbound.molang.types.MolangEntityParser;
 import com.java_unbound.molang.types.MolangMathParser;
+import com.java_unbound.molang.types.MolangRenderControllerParser;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//evaluates moLang expressions, including math, conditions, variables, assignments, and render controller expressions
 public final class MolangParser {
     private MolangParser() {}
 
@@ -37,6 +39,10 @@ public final class MolangParser {
         return new MolangExpression(MolangExpression.Type.UNKNOWN, Expression);
     }
 
+    public static String EvaluateRenderController(Entity Entity, String Expression, com.java_unbound.entities.render_controller.EntityRenderControllerRegistry Registry) {
+        return MolangRenderControllerParser.Evaluate(Entity, Expression, Registry);
+    }
+
     public static double Evaluate(Entity Entity, String Expression) {
         if (Entity == null || Expression == null || Expression.isBlank()) {
             return 0;
@@ -46,6 +52,10 @@ public final class MolangParser {
 
         if (Expression.endsWith(";")) {
             Expression = Expression.substring(0, Expression.length() - 1).trim();
+        }
+
+        if (Expression.startsWith("return ")) {
+            Expression = Expression.substring(7).trim();
         }
 
         if (Expression.isEmpty()) {
@@ -196,15 +206,7 @@ public final class MolangParser {
             return MolangMathParser.Evaluate(Entity, Expression);
         }
 
-        if (Expression.startsWith("q.")) {
-            return MolangEntityParser.Evaluate(Entity, Expression);
-        }
-
-        if (Expression.startsWith("v.")) {
-            return MolangEntityParser.Evaluate(Entity, Expression);
-        }
-
-        if (Expression.startsWith("t.")) {
+        if (Expression.startsWith("q.") || Expression.startsWith("v.") || Expression.startsWith("t.")) {
             return MolangEntityParser.Evaluate(Entity, Expression);
         }
 
@@ -241,7 +243,6 @@ public final class MolangParser {
     public static List<String> SplitArguments(String Arguments) {
         List<String> Result = new ArrayList<>();
         StringBuilder Current = new StringBuilder();
-
         int Depth = 0;
         char Quote = 0;
 
@@ -264,9 +265,9 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
-            } else if (Character == ')' || Character == '}') {
+            } else if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
             }
 
@@ -303,9 +304,9 @@ public final class MolangParser {
 
             if (Character == '\'' || Character == '"') {
                 Quote = Character;
-            } else if (Character == '(' || Character == '{') {
+            } else if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
-            } else if (Character == ')' || Character == '}') {
+            } else if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
 
                 if (Depth < 0) {
@@ -330,6 +331,7 @@ public final class MolangParser {
                 if (Character == Quote) {
                     Quote = 0;
                 }
+
                 continue;
             }
 
@@ -338,12 +340,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
                 continue;
             }
@@ -373,6 +375,10 @@ public final class MolangParser {
                 continue;
             }
 
+            if (Statement.startsWith("return ")) {
+                return Evaluate(Entity, Statement.substring(7).trim());
+            }
+
             Result = Evaluate(Entity, Statement);
         }
 
@@ -382,9 +388,9 @@ public final class MolangParser {
     private static List<String> SplitStatements(String Expression) {
         List<String> Result = new ArrayList<>();
         StringBuilder Current = new StringBuilder();
-
         int ParenthesisDepth = 0;
         int BlockDepth = 0;
+        int ArrayDepth = 0;
         char Quote = 0;
 
         for (int Index = 0; Index < Expression.length(); Index++) {
@@ -414,9 +420,13 @@ public final class MolangParser {
                 BlockDepth++;
             } else if (Character == '}') {
                 BlockDepth--;
+            } else if (Character == '[') {
+                ArrayDepth++;
+            } else if (Character == ']') {
+                ArrayDepth--;
             }
 
-            if (Character == ';' && ParenthesisDepth == 0 && BlockDepth == 0) {
+            if (Character == ';' && ParenthesisDepth == 0 && BlockDepth == 0 && ArrayDepth == 0) {
                 Result.add(Current.toString().trim());
                 Current.setLength(0);
                 continue;
@@ -452,12 +462,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
                 continue;
             }
@@ -569,12 +579,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
                 continue;
             }
@@ -612,12 +622,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth++;
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth--;
                 continue;
             }
@@ -664,12 +674,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
                 continue;
             }
@@ -712,12 +722,12 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Character == '(' || Character == '{') {
+            if (Character == '(' || Character == '{' || Character == '[') {
                 Depth++;
                 continue;
             }
 
-            if (Character == ')' || Character == '}') {
+            if (Character == ')' || Character == '}' || Character == ']') {
                 Depth--;
                 continue;
             }

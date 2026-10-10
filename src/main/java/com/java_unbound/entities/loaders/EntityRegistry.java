@@ -1,4 +1,4 @@
-package com.java_unbound.entities.loader;
+package com.java_unbound.entities.loaders;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,6 +11,7 @@ import com.java_unbound.loader.definitions.entities.EntitiesDefinition;
 import java.nio.file.Path;
 import java.util.HashMap;
 
+//this contains the data of the main entity script. it contains the texutes, geometries, etc.
 public class EntityRegistry {
     public String Identifier = "";
     public HashMap<String, Path> Textures = null;

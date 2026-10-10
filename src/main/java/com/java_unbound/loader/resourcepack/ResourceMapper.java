@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+//can set a texture located in the bedrock resourcepack folder to a one which should be replaced
 public final class ResourceMapper {
     private static final Map<String, String> Mappings = new HashMap<>();
 

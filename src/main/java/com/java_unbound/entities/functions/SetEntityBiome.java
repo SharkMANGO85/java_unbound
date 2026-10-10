@@ -5,6 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 
 public class SetEntityBiome {
+    //sets the biome of the entity it spawned in
     public static void SetEntityBiome(Entity Entity) {
         EntityBiomeInterface Data = (EntityBiomeInterface) Entity;
 

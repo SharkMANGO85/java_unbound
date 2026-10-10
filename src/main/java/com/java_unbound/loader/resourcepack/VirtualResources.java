@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+//stores virtual minecraft resources in memory using their paths as keys
 public final class VirtualResources {
     private static final Map<String, byte[]> Resources = new LinkedHashMap<>();
 

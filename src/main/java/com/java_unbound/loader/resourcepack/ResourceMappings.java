@@ -1,5 +1,6 @@
 package com.java_unbound.loader.resourcepack;
 
+//replaces java textures with the bedrock resourcepack textures
 public final class ResourceMappings {
     private ResourceMappings() {
     }

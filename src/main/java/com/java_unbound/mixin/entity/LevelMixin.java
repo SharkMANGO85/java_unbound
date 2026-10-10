@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+//once an entity spawns the corresponding function gets called
 @Mixin(ServerLevel.class)
 public class LevelMixin {
     @Inject(method = "addFreshEntity", at = @At("RETURN"))

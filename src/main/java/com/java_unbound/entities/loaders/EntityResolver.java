@@ -1,4 +1,4 @@
-package com.java_unbound.entities.loader;
+package com.java_unbound.entities.loaders;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+//this returns the texture paths, render conrtoller json elements, etc.
 public class EntityResolver {
     public static HashMap<String, Path> GetTextures(String Identifier, JsonObject Description) {
         JsonElement TexturesElement = Description.get("textures");

@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
+import com.java_unbound.entities.loaders.EntityRegistry;
 import com.java_unbound.global.HashMaps;
-import com.java_unbound.entities.loader.EntityRegistry;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+//uploads the entity json files to the global hashmap
 public class EntitiesDefinition {
     private static final Path BaseEntityFolder = Folder.GetConfigFolder().resolve("entity");
     private static final Path SubpackEntityFolder0 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP0").resolve("entity");

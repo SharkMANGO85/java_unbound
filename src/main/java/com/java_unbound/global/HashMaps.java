@@ -1,13 +1,15 @@
 package com.java_unbound.global;
 
 import com.google.gson.JsonElement;
-import com.java_unbound.entities.loader.EntityRegistry;
+import com.java_unbound.entities.loaders.EntityRegistry;
+import com.java_unbound.entities.render_controller.EntityRenderControllerRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
 
+//saving the hole data here
 public final class HashMaps {
-    private HashMaps() {}
+    public HashMaps() {}
 
     //Definitions
     public static final Map<String, JsonElement> AnimationControllerFiles = new HashMap<>();
@@ -19,4 +21,5 @@ public final class HashMaps {
 
     //Entities
     public static final Map<String, EntityRegistry> EntityRegistries = new HashMap<>();
+    public static Map<String, EntityRenderControllerRegistry> EntityRenderControllers = new HashMap<>();
 }

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
+import com.java_unbound.entities.render_controller.EntityRenderControllerRegistry;
 import com.java_unbound.global.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+//uploads the render controller as a json object to the global hashmap
+//render controllers decide which texutes, geometries, etc. should be used
 public class RenderControllersDefinition {
     private static final Path BaseRenderControllerFolder = Folder.GetConfigFolder().resolve("render_controllers");
 
@@ -49,11 +52,16 @@ public class RenderControllersDefinition {
                 String Identifier = Entry.getKey();
                 JsonElement RenderController = Entry.getValue();
 
-                if (!RenderController.isJsonObject()) {continue;}
+                if (!RenderController.isJsonObject()) {
+                    continue;
+                }
 
-                HashMaps.RenderControllerFiles.putIfAbsent(Identifier, RenderController);
+                if (HashMaps.RenderControllerFiles.putIfAbsent(Identifier, RenderController) == null) {
+                    EntityRenderControllerRegistry Registry = new EntityRenderControllerRegistry();
+                    Registry.LoadEntityRenderController(Identifier);
+                    HashMaps.EntityRenderControllers.put(Identifier, Registry);
+                }
             }
-
         } catch (IOException | RuntimeException Exception) {
             JavaUnbound.LOGGER.error("Failed to load RenderController file: " + RenderControllerPath, Exception);
         }
@@ -61,9 +69,12 @@ public class RenderControllersDefinition {
 
     public static void LoadRenderControllers() throws IOException {
         HashMaps.RenderControllerFiles.clear();
+        HashMaps.EntityRenderControllers.clear();
 
         for (Path RenderControllerFolder : RenderControllerPriorityOrder) {
-            if (!Files.isDirectory(RenderControllerFolder)) {continue;}
+            if (!Files.isDirectory(RenderControllerFolder)) {
+                continue;
+            }
 
             try (Stream<Path> Paths = Files.walk(RenderControllerFolder)) {
                 Paths.filter(Files::isRegularFile).filter(Path -> Path.getFileName().toString().toLowerCase().endsWith(".json")).forEach(RenderControllersDefinition::AddJsonToFiles);

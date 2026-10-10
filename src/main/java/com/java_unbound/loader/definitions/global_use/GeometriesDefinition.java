@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+//uploads the geometries as a json object to the global hashmap
 public class GeometriesDefinition {
     private static final Path BaseGeometryFolder = Folder.GetConfigFolder().resolve("models");
 

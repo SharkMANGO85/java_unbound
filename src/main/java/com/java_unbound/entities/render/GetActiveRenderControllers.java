@@ -1,10 +1,9 @@
-package com.java_unbound.entities.functions;
+package com.java_unbound.entities.render;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.entities.interfaces.EntityVariableInterface;
 import com.java_unbound.loader.definitions.global_use.RenderControllersDefinition;
 import com.java_unbound.molang.MolangParser;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.HashMap;
 import java.util.Map;
 
+//return the active render controllers, which tell which texture, geometry, etc. to use
 public class GetActiveRenderControllers {
     public static HashMap<String, JsonElement> GetActiveRenderControllers(Entity Entity) {
         String Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(Entity.getType()).toString();
@@ -29,6 +29,8 @@ public class GetActiveRenderControllers {
                     JavaUnbound.LOGGER.error("RENDER CONTROLLER: Could not resolve render controller '{}' for entity '{}'", RenderControllerIdentifier, Identifier);
                     continue;
                 }
+
+                //JavaUnbound.LOGGER.info("RC RESOLVED: Entity='{}' Controller='{}' JSON={}", Identifier, RenderControllerIdentifier, RenderController);
 
                 ResolvedRenderControllers.put(RenderControllerIdentifier, RenderController);
                 continue;
@@ -47,11 +49,11 @@ public class GetActiveRenderControllers {
                         continue;
                     }
 
-                    double Value = MolangParser.Evaluate(Entity, String.valueOf(Condition));
+                    //JavaUnbound.LOGGER.info("RC RESOLVED: Entity='{}' Controller='{}' JSON={}", Identifier, RenderControllerIdentifier, RenderController);
 
-                    //JavaUnbound.LOGGER.info("RENDER CONTROLLER: Entity='{}' Controller='{}' Condition={} Value={} Variables={}", Identifier, RenderControllerIdentifier, Condition, Value, ((EntityVariableInterface) Entity).JavaUnbound$getVariables());
+                    double Value = MolangParser.Evaluate(Entity, Condition.getAsString());
 
-                    if (Value == 1.0) {
+                    if (MolangParser.IsTrue(Value)) {
                         ResolvedRenderControllers.put(RenderControllerIdentifier, RenderController);
                     }
                 }

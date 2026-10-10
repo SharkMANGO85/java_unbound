@@ -5,11 +5,14 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
+//math. e.g. cos, ceil, etc.
 public final class MolangMathParser {
     private MolangMathParser() {}
 
     public static double Evaluate(Entity Entity, String Expression) {
-        if (!IsMathExpression(Expression)) {return 0;}
+        if (!IsMathExpression(Expression)) {
+            return 0;
+        }
 
         int OpenIndex = Expression.indexOf('(');
         String FunctionName = Expression.substring(5, OpenIndex).trim();
@@ -26,7 +29,7 @@ public final class MolangMathParser {
     }
 
     public static boolean IsMathExpression(String Expression) {
-        if (Expression == null || !Expression.startsWith("math.") || !Expression.startsWith("Math.") || !Expression.endsWith(")")) {
+        if (Expression == null || !Expression.startsWith("math.") || !Expression.endsWith(")")) {
             return false;
         }
 
@@ -35,7 +38,9 @@ public final class MolangMathParser {
     }
 
     private static double ApplyMath(String FunctionName, double[] Values) {
-        if (Values.length == 0) {return 0;}
+        if (Values.length == 0) {
+            return 0;
+        }
 
         return switch (FunctionName) {
             case "abs" -> Math.abs(Values[0]);
@@ -50,6 +55,7 @@ public final class MolangMathParser {
             case "log" -> Math.log(Values[0]);
             case "min" -> Math.min(Values[0], Values.length > 1 ? Values[1] : 0);
             case "max" -> Math.max(Values[0], Values.length > 1 ? Values[1] : 0);
+            case "mod" -> Values.length > 1 && Values[1] != 0 ? Values[0] % Values[1] : 0;
             default -> 0;
         };
     }

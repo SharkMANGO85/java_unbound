@@ -6,7 +6,6 @@ import com.java_unbound.loader.definitions.global_use.*;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
-import com.java_unbound.molang.testing.MolangParserTest;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -100,15 +99,5 @@ public class JavaUnboundClient implements ClientModInitializer {
 
         JavaUnbound.LOGGER.error("Finished Loading Entities");
         JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-
-        ClientTickEvents.END_CLIENT_TICK.register(Client -> {
-            if (MolangTested) {return;}
-            if (Client.level == null) {return;}
-
-            JavaUnbound.LOGGER.info("[MoLang Test] Level found, starting tests.");
-
-            MolangTested = true;
-            MolangParserTest.test(Client.level);
-        });
     }
 }

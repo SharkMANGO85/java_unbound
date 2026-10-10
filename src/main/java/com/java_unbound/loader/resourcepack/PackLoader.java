@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+//creates the resourcepack with its info
 public final class PackLoader {
     private PackLoader() {
     }

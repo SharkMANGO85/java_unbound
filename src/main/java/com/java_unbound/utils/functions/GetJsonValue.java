@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+//retrieves nested json values using a dot separated path
 public class GetJsonValue {
     private GetJsonValue() {}
 

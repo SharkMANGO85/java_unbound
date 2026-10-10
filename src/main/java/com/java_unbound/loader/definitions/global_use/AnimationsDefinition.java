@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
+//uploads the animation as a json object to the global hashmap
+//animations are the actual animtaions with the keyframes, etc.
 public class AnimationsDefinition {
     private static final Path BaseAnimationFolder = Folder.GetConfigFolder().resolve("animations");
 

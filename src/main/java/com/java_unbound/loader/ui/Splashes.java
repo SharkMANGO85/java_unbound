@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+//replaces the text on the homescreen witht the bedrock resourcepack one
 public final class Splashes {
     private Splashes() {
     }

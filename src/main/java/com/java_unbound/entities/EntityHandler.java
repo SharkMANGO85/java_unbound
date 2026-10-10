@@ -2,8 +2,9 @@ package com.java_unbound.entities;
 
 import net.minecraft.world.entity.Entity;
 
-import static com.java_unbound.entities.functions.InitializeEntity.InitializeEntity;
+import static com.java_unbound.entities.initialization.InitializeEntity.InitializeEntity;
 
+//calls the load and spawn functions
 public final class EntityHandler {
     private EntityHandler() {}
 

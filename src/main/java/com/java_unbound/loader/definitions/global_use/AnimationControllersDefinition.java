@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
+//uploads the animation controller as a json object to the global hashmap
+//animation controllers decide which animation to play
 public class AnimationControllersDefinition {
     private static final Path BaseAnimationControllerFolder = Folder.GetConfigFolder().resolve("animation_controllers");
 

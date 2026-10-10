@@ -1,7 +1,8 @@
 package com.java_unbound.molang.enums;
 
+//stores a molang expression and its type
 public final class MolangExpression {
-    public enum Type {NUMBER, VALUE, ASSIGNMENT, MATH, UNKNOWN}
+    public enum Type {NUMBER, VALUE, ASSIGNMENT, MATH, REFERENCE, UNKNOWN}
 
     private final Type ExpressionType;
     private final String Expression;

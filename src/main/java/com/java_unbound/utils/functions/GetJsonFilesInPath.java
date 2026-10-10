@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
+//returns all json files in a given path
 public class GetJsonFilesInPath {
     public static List<Path> Get(Path SearchPath) {
         try (var Stream = Files.list(SearchPath)) {

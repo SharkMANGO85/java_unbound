@@ -7,10 +7,11 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.HashMap;
 
+//set variables and the biome to the entity
 @Mixin(Entity.class)
 public class EntityMixin implements EntityBiomeInterface, EntityVariableInterface {
     private String JavaUnbound$Biome;
-    private final HashMap<String, Double> JavaUnbound$Variables = new HashMap<>();
+    private final HashMap<String, Object> JavaUnbound$Variables = new HashMap<>();
 
     @Override
     public String JavaUnbound$getBiome() {
@@ -23,7 +24,7 @@ public class EntityMixin implements EntityBiomeInterface, EntityVariableInterfac
     }
 
     @Override
-    public HashMap<String, Double> JavaUnbound$getVariables() {
+    public HashMap<String, Object> JavaUnbound$getVariables() {
         return JavaUnbound$Variables;
     }
 
@@ -33,7 +34,27 @@ public class EntityMixin implements EntityBiomeInterface, EntityVariableInterfac
     }
 
     @Override
+    public void JavaUnbound$setVariable(String Name, String Value) {
+        JavaUnbound$Variables.put(Name, Value);
+    }
+
+    @Override
     public double JavaUnbound$getVariable(String Name) {
-        return JavaUnbound$Variables.getOrDefault(Name, 0.0);
+        Object Value = JavaUnbound$Variables.get(Name);
+
+        if (Value instanceof Number Number) {
+            return Number.doubleValue();
+        }
+
+        if (Value instanceof Boolean Boolean) {
+            return Boolean ? 1.0 : 0.0;
+        }
+
+        return 0.0;
+    }
+
+    @Override
+    public Object JavaUnbound$getVariableObject(String Name) {
+        return JavaUnbound$Variables.get(Name);
     }
 }

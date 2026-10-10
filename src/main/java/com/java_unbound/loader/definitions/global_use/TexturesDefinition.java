@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+//uploads the textures path to the global hashmap
 public class TexturesDefinition {
     private static final Path BaseTextureFolder = Folder.GetConfigFolder().resolve("textures");
     private static final Path SubpackTextureFolder0 = Folder.GetConfigFolder().resolve("subpacks").resolve("SP0").resolve("textures");
