@@ -1,6 +1,6 @@
 package com.java_unbound.loader.definitions.global_use;
 
-import com.java_unbound.global.HashMaps;
+import com.java_unbound.utils.variables.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import javax.imageio.ImageIO;
@@ -25,13 +25,9 @@ public class TexturesDefinition {
             if (!Files.isDirectory(TextureFolder)) {continue;}
 
             try (Stream<Path> Paths = Files.walk(TextureFolder)) {
-                Paths.filter(Files::isRegularFile).filter(Path -> {
-                    try {
-                        return ImageIO.read(Path.toFile()) != null;
-                    } catch (IOException e) {
-                        return false;
-                    }
-                }).forEach(Path -> {
+                Paths.filter(Files::isRegularFile)
+                        .filter(Path -> {try {return ImageIO.read(Path.toFile()) != null;} catch (IOException e) {return false;}})
+                        .forEach(Path -> {
                             String FileName = Path.getFileName().toString();
                             String Name = FileName.substring(0, FileName.lastIndexOf('.'));
 

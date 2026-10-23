@@ -1,4 +1,4 @@
-package com.java_unbound.entities.render;
+package com.java_unbound.entities.functions;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 
 public class JavaUnbound implements ModInitializer {
     public static final String MOD_ID = "java_unbound";
+    public static final String MOD_NAME = "Java Unbound";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final String SUBPACK = "SP2";
 
     @Override
     public void onInitialize() {

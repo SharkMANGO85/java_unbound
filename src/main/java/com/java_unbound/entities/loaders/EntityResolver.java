@@ -55,7 +55,7 @@ public class EntityResolver {
         for (Map.Entry<String, JsonElement> Entry : Geometries.entrySet()) {
             String Key = Entry.getKey();
             String GeometryPath = Entry.getValue().getAsString();
-            JsonElement Geometry = GeometriesDefinition.GetGeometryByIdentifier(GeometryPath);
+            JsonElement Geometry = GeometriesDefinition.GetGeckoLibGeomtryByIdentifier(GeometryPath);
 
             if (Geometry == null) {
                 JavaUnbound.LOGGER.error("GEOMETRIES: Could not resolve geometry '{}' for entity '{}'", GeometryPath, Identifier);

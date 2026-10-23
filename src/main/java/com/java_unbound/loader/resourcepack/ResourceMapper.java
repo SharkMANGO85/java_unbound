@@ -1,5 +1,9 @@
 package com.java_unbound.loader.resourcepack;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +16,10 @@ public final class ResourceMapper {
     }
 
     public static void SetIdentifier(String MinecraftPath, String ResourcePath) {
-        Mappings.put(Normalize(MinecraftPath), Normalize(ResourcePath));
+        String target = Normalize(MinecraftPath);
+        String source = Normalize(ResourcePath);
+
+        Mappings.put(target, source);
     }
 
     public static String GetIdentifier(String MinecraftPath) {

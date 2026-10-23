@@ -2,19 +2,13 @@ package com.java_unbound.entities.initialization;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.java_unbound.entities.actions.EntityTickHandler;
 import com.java_unbound.entities.loaders.EntityRegistry;
-import com.java_unbound.entities.render_controller.EntityRenderControllerRegistry;
-import com.java_unbound.global.EntityRenderControllerData;
-import com.java_unbound.global.HashMaps;
+import com.java_unbound.utils.variables.HashMaps;
 import com.java_unbound.molang.MolangParser;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 
-import java.util.HashMap;
-
 import static com.java_unbound.entities.functions.SetEntityBiome.SetEntityBiome;
-import static com.java_unbound.entities.render.GetActiveRenderControllers.GetActiveRenderControllers;
 
 public class InitializeEntity {
     //initiliaze the enity witht the variabless, etc.
@@ -30,7 +24,7 @@ public class InitializeEntity {
 
         InitializeScript(Entity, EntityRegistry);
 
-        EntityTickHandler.RenderControllerTick(Entity);
+        //EntityTickHandler.RenderControllerTick(Entity);
     }
 
     //set the biome if not done yet

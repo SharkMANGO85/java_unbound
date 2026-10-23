@@ -1,4 +1,4 @@
-package com.java_unbound.global;
+package com.java_unbound.entities.render_controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;

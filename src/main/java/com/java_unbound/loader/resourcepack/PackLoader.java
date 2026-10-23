@@ -1,5 +1,6 @@
 package com.java_unbound.loader.resourcepack;
 
+import com.java_unbound.JavaUnbound;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -23,11 +24,11 @@ public final class PackLoader {
     }
 
     public static String GetPackName(Path ResourcePack) {
-        return ReadLang(ResourcePack, "pack.name", "Java Unbound");
+        return ReadLang(ResourcePack, "pack.name", JavaUnbound.MOD_NAME);
     }
 
     public static String GetDescription(Path ResourcePack) {
-        return ReadLang(ResourcePack, "pack.description", "Java Unbound");
+        return ReadLang(ResourcePack, "pack.description", JavaUnbound.MOD_NAME);
     }
 
     public static String ReadLang(Path Root, String Key, String Fallback) {
@@ -56,7 +57,7 @@ public final class PackLoader {
 
                 return Value;
             }
-        } catch (IOException E) {
+        } catch (IOException Exception) {
             return Fallback;
         }
 

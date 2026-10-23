@@ -1,0 +1,1 @@
+add animated texture tab to save changes, new screen, -> refrence: nametags, entity effects

@@ -1,3 +1,4 @@
+
 package com.java_unbound.loader.definitions.global_use;
 
 import com.google.gson.JsonArray;
@@ -5,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.global.HashMaps;
+import com.java_unbound.utils.variables.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-//uploads the geometries as a json object to the global hashmap
+// uploads the geometries as a json object to the global hashmap
 public class GeometriesDefinition {
     private static final Path BaseGeometryFolder = Folder.GetConfigFolder().resolve("models");
 
@@ -59,6 +60,19 @@ public class GeometriesDefinition {
                 String Identifier = IdentifierElement.getAsString();
 
                 HashMaps.GeoemtryFiles.putIfAbsent(Identifier, Geometry);
+
+                JsonObject GeckoLibRoot = new JsonObject();
+
+                if (RootObject.has("format_version")) {
+                    GeckoLibRoot.add("format_version", RootObject.get("format_version").deepCopy());
+                }
+
+                JsonArray GeckoLibGeometries = new JsonArray();
+                GeckoLibGeometries.add(Geometry.deepCopy());
+
+                GeckoLibRoot.add("minecraft:geometry", GeckoLibGeometries);
+
+                HashMaps.GeckoLibGeoemtryFiles.putIfAbsent(Identifier, GeckoLibRoot);
             }
 
         } catch (IOException | RuntimeException Exception) {
@@ -68,6 +82,7 @@ public class GeometriesDefinition {
 
     public static void LoadGeometries() throws IOException {
         HashMaps.GeoemtryFiles.clear();
+        HashMaps.GeckoLibGeoemtryFiles.clear();
 
         for (Path GeometryFolder : GeometryPriorityOrder) {
             if (!Files.isDirectory(GeometryFolder)) {continue;}
@@ -82,5 +97,11 @@ public class GeometriesDefinition {
         if (Identifier == null || Identifier.isEmpty()) {return null;}
 
         return HashMaps.GeoemtryFiles.get(Identifier);
+    }
+
+    public static JsonElement GetGeckoLibGeomtryByIdentifier(String Identifier) {
+        if (Identifier == null || Identifier.isEmpty()) {return null;}
+
+        return HashMaps.GeckoLibGeoemtryFiles.get(Identifier);
     }
 }

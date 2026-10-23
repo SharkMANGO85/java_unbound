@@ -1,47 +1,120 @@
-package com.java_unbound.converter;
+package com.java_unbound.loader.converters;
+
+import com.java_unbound.JavaUnbound;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public final class TgaConverter {
+    private static final boolean DEBUG = true;
+
     private TgaConverter() {}
 
+    private static void Debug(String Message) {
+        if (DEBUG) {JavaUnbound.LOGGER.info("[TgaConverter] " + Message);}
+    }
+
+    private static String Hex(byte[] Data, int Count) {
+        StringBuilder Builder = new StringBuilder();
+
+        for (int Index = 0; Index < Math.min(Count, Data.length); Index++) {
+            Builder.append(String.format("%02X ", Data[Index] & 0xFF));
+        }
+
+        return Builder.toString().trim();
+    }
+
     public static void ConvertAll(Path Root) {
+        Debug("ConvertAll root = " + Root);
+
         if (Root == null || !Files.isDirectory(Root)) {
+            Debug("Root is null or not a directory, skipping");
             return;
         }
 
+        AtomicInteger Found = new AtomicInteger();
+        AtomicInteger Succeeded = new AtomicInteger();
+        AtomicInteger Failed = new AtomicInteger();
+
         try (Stream<Path> FilesStream = Files.walk(Root)) {
             FilesStream.filter(Files::isRegularFile).filter(File -> File.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".tga")).forEach(File -> {
+                Found.incrementAndGet();
+
                 try {
                     Convert(File);
+                    Succeeded.incrementAndGet();
                 } catch (Exception Exception) {
-                    //Exception.printStackTrace();
+                    Failed.incrementAndGet();
+                    JavaUnbound.LOGGER.error("TGA convert failed: " + File + " -> " + Exception.getMessage());
                 }
             });
         } catch (IOException Exception) {
-            //Exception.printStackTrace();
+            JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
         }
+
+        Debug("ConvertAll done: found=" + Found + ", converted=" + Succeeded + ", failed=" + Failed);
     }
 
     public static void Convert(Path TgaFile) throws IOException {
         byte[] Data = Files.readAllBytes(TgaFile);
-        BufferedImage Image = Decode(Data);
-
-        if (Image == null) {throw new IOException("Could not decode TGA");}
-
         Path PngFile = TgaFile.resolveSibling(GetPngName(TgaFile));
 
+        Debug("Converting " + TgaFile + " (" + Data.length + " bytes) -> " + PngFile.getFileName());
+        Debug("  first 18 bytes: " + Hex(Data, 18));
+
+        if (IsPng(Data)) {
+            Debug("  detected real PNG with .tga extension, renaming");
+            Files.write(PngFile, Data);
+            Files.delete(TgaFile);
+            return;
+        }
+
+        BufferedImage Image;
+
+        if (IsOtherKnownImage(Data)) {
+            Debug("  detected other ImageIO format (JPEG/BMP/GIF), decoding with ImageIO");
+            Image = ImageIO.read(new ByteArrayInputStream(Data));
+        } else {
+            Debug("  treating as real TGA, using custom decoder");
+            Image = Decode(Data);
+        }
+
+        if (Image == null) {throw new IOException("Could not decode TGA");}
         if (!ImageIO.write(Image, "png", PngFile.toFile())) {throw new IOException("No PNG writer available");}
 
         Files.delete(TgaFile);
+        Debug("  wrote " + PngFile.getFileName() + " (" + Image.getWidth() + "x" + Image.getHeight() + ") and deleted original");
+    }
+
+    private static boolean IsPng(byte[] Data) {
+        return Data.length >= 8
+                && (Data[0] & 0xFF) == 0x89
+                && Data[1] == 'P'
+                && Data[2] == 'N'
+                && Data[3] == 'G'
+                && Data[4] == 0x0D
+                && Data[5] == 0x0A
+                && Data[6] == 0x1A
+                && Data[7] == 0x0A;
+    }
+
+    private static boolean IsOtherKnownImage(byte[] Data) {
+        if (Data.length < 4) {return false;}
+
+        boolean Jpeg = (Data[0] & 0xFF) == 0xFF && (Data[1] & 0xFF) == 0xD8 && (Data[2] & 0xFF) == 0xFF;
+        boolean Bmp = Data[0] == 'B' && Data[1] == 'M';
+        boolean Gif = Data[0] == 'G' && Data[1] == 'I' && Data[2] == 'F' && Data[3] == '8';
+
+        return Jpeg || Bmp || Gif;
     }
 
     private static String GetPngName(Path TgaFile) {
@@ -73,6 +146,11 @@ public final class TgaConverter {
         int PixelDepth = U8(Data, 16);
         int ImageDescriptor = U8(Data, 17);
 
+        Debug("  TGA header: idLen=" + IdLength + ", colorMapType=" + ColorMapType + ", imageType=" + ImageType
+                + ", cmFirst=" + ColorMapFirst + ", cmLen=" + ColorMapLength + ", cmDepth=" + ColorMapDepth
+                + ", origin=" + XOrigin + "," + YOrigin + ", size=" + Width + "x" + Height
+                + ", depth=" + PixelDepth + ", descriptor=0x" + Integer.toHexString(ImageDescriptor));
+
         if (Width <= 0 || Height <= 0) {throw new IOException("Invalid TGA dimensions: " + Width + "x" + Height);}
         if (PixelDepth != 8 && PixelDepth != 15 && PixelDepth != 16 && PixelDepth != 24 && PixelDepth != 32) {throw new IOException("Unsupported TGA color depth: " + PixelDepth + " (image type " + ImageType + ", descriptor " + ImageDescriptor + ")");}
 
@@ -92,12 +170,16 @@ public final class TgaConverter {
 
         if (BaseImageType != 1 && BaseImageType != 2 && BaseImageType != 3) {throw new IOException("Unsupported TGA image type: " + ImageType);}
 
+        Debug("  decoding: rle=" + Rle + ", baseType=" + BaseImageType + ", pixelDataOffset=" + Offset + ", palette=" + (Palette != null ? Palette.length + " entries" : "none"));
+
         BufferedImage Image = new BufferedImage(Width, Height, BufferedImage.TYPE_INT_ARGB);
 
         List<Integer> Pixels = Rle ? ReadRlePixels(Data, Offset, Width * Height, PixelDepth, Palette, BaseImageType) : ReadPixels(Data, Offset, Width * Height, PixelDepth, Palette, BaseImageType);
 
         boolean TopOrigin = (ImageDescriptor & 0x20) != 0;
         boolean RightOrigin = (ImageDescriptor & 0x10) != 0;
+
+        Debug("  read " + Pixels.size() + " pixels, topOrigin=" + TopOrigin + ", rightOrigin=" + RightOrigin);
 
         int Index = 0;
 
@@ -175,27 +257,34 @@ public final class TgaConverter {
                 throw new IOException("Unsupported indexed TGA depth: " + PixelDepth);
             }
 
-            int PaletteOffset = PaletteIndex;
+            if (Palette == null || PaletteIndex < 0 || PaletteIndex >= Palette.length) {throw new IOException("Invalid TGA palette index: " + PaletteIndex);}
 
-            if (Palette == null || PaletteOffset < 0 || PaletteOffset >= Palette.length) {throw new IOException("Invalid TGA palette index: " + PaletteIndex);}
-
-            return Palette[PaletteOffset];
+            return Palette[PaletteIndex];
         }
 
         if (ImageType == 3) {
-            int Gray = U8(Data, Offset);
-            return 0xFF000000 | Gray << 16 | Gray << 8 | Gray;
+            if (PixelDepth == 8) {
+                int Gray = U8(Data, Offset);
+                return 0xFF000000 | Gray << 16 | Gray << 8 | Gray;
+            }
+
+            if (PixelDepth == 16) {
+                int Gray = U8(Data, Offset);
+                int A = U8(Data, Offset + 1);
+                return A << 24 | Gray << 16 | Gray << 8 | Gray;
+            }
+
+            throw new IOException("Unsupported grayscale TGA depth: " + PixelDepth);
         }
 
-        if (PixelDepth == 16) {
+        if (PixelDepth == 15 || PixelDepth == 16) {
             int Value = U16(Data, Offset);
 
             int B = Expand5(Value & 0x1F);
             int G = Expand5((Value >> 5) & 0x1F);
             int R = Expand5((Value >> 10) & 0x1F);
-            int A = (Value & 0x8000) != 0 ? 255 : 255;
 
-            return A << 24 | R << 16 | G << 8 | B;
+            return 0xFF000000 | R << 16 | G << 8 | B;
         }
 
         if (PixelDepth == 24) {
@@ -233,14 +322,13 @@ public final class TgaConverter {
     }
 
     private static int ReadPaletteColor(byte[] Data, int Offset, int Depth) throws IOException {
-        if (Depth == 16) {
+        if (Depth == 15 || Depth == 16) {
             int Value = U16(Data, Offset);
             int B = Expand5(Value & 0x1F);
             int G = Expand5((Value >> 5) & 0x1F);
             int R = Expand5((Value >> 10) & 0x1F);
-            int A = (Value & 0x8000) != 0 ? 255 : 255;
 
-            return A << 24 | R << 16 | G << 8 | B;
+            return 0xFF000000 | R << 16 | G << 8 | B;
         }
 
         if (Depth == 24) {

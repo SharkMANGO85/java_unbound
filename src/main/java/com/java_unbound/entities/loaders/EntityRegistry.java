@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.global.HashMaps;
+import com.java_unbound.utils.variables.HashMaps;
 import com.java_unbound.loader.definitions.entities.EntitiesDefinition;
 
 import java.nio.file.Path;

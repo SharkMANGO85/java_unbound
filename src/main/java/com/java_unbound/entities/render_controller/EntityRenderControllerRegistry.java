@@ -3,12 +3,10 @@ package com.java_unbound.entities.render_controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.global.EntityRenderControllerData;
-import com.java_unbound.global.HashMaps;
-import com.java_unbound.global.Vec4String;
+import com.java_unbound.utils.variables.HashMaps;
+import com.java_unbound.utils.variables.Vec4String;
 import com.java_unbound.loader.definitions.global_use.RenderControllersDefinition;
 import com.java_unbound.molang.MolangParser;
-import com.java_unbound.molang.types.MolangRenderControllerParser;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;

@@ -2,8 +2,9 @@ package com.java_unbound.molang.types;
 
 import com.java_unbound.entities.interfaces.EntityBiomeInterface;
 import com.java_unbound.entities.interfaces.EntityVariableInterface;
+import com.java_unbound.mod_menu.config.ConfigManager;
 import com.java_unbound.molang.MolangParser;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 
@@ -152,18 +153,54 @@ public final class MolangEntityParser {
             case "fall_distance" -> Entity.fallDistance;
             case "vertical_speed" -> Entity.getDeltaMovement().y;
 
-            case "is_in_ui" -> 0;
-            case "graphics_mode_is_any" -> 1;
+            case "is_in_ui" -> IsInUI();
+            case "graphics_mode_is_any" -> GraphicsModeIsAny(Arguments);
 
             case "entity_biome_has_any_identifier" -> EvaluateBiome(Entity, Arguments);
 
-            case "is_pack_setting_selected" -> 1;
-            case "is_pack_setting_enabled" -> 1;
+            case "is_pack_setting_selected" -> IsPackSettingSelected(Arguments);
+            case "is_pack_setting_enabled" -> IsPackSettingEnabled(Arguments);
 
             case "in_range" -> EvaluateInRange(Entity, Arguments);
 
             default -> 0;
         };
+    }
+
+    private static double IsInUI() {
+        return Minecraft.getInstance().gui.screen() != null ? 1.0 : 0.0;
+    }
+
+    private static double GraphicsModeIsAny(List<String> Arguments) {
+        String Graphics = Minecraft.getInstance().options.graphicsPreset().get().toString();
+
+        if (Graphics.equals("CUSTOM")) {return 1.0;}
+
+        return Arguments.stream().anyMatch(Graphics::equalsIgnoreCase) ? 1.0 : 0.0;
+    }
+
+    private static double IsPackSettingEnabled(List<String> Arguments) {
+        Object Value = ConfigManager.GetValue("SETTING", Arguments.getFirst());
+
+        if (Value instanceof Boolean BooleanValue) {
+            return BooleanValue ? 1.0 : 0.0;
+        }
+
+        if (Value instanceof Number NumberValue) {
+            return NumberValue.doubleValue();
+        }
+
+        return 0.0;
+    }
+
+    private static double IsPackSettingSelected(List<String> Arguments) {
+        Object Value = ConfigManager.GetValue("SETTING", Arguments.getFirst());
+
+        if (Value == null) {
+            return 0.0;
+        }
+
+        return Value.toString().equals(Arguments.get(1)) ? 1.0 : 0.0;
     }
 
     private static double EvaluateInRange(Entity Entity, List<String> Arguments) {

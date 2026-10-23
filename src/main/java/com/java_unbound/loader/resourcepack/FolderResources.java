@@ -191,10 +191,11 @@ public final class FolderResources implements PackResources {
             String MappedPath = ResourceMapper.GetIdentifier(Path);
 
             if (MappedPath != null) {
-                return ResolvePath(ResourcePack.resolve(MappedPath));
+                Path Resolved = ResolvePath(ResourcePack.resolve(MappedPath));
+
+                return Resolved;
             }
         }
-
         return ResolvePath(ResourcePack.resolve("assets").resolve(Namespace).resolve(Path));
     }
 

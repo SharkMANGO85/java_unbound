@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "0": {
+      "Tab": "Mod",
+      "Name": "Description Color",
+      "DefaultValue": "§8",
+      "Type": "Dropdown",
+
+      "options": {
+        "Names": ["§0", "§1", "§2", "§3", "§4", "§5", "§6", "§7", "§8", "§9", "§a", "§b", "§c", "§d", "§e", "§f", "§l", "§o", "§r"],
+        "Values": ["Black", "Dark blue", "Dark green", "Dark aqua", "Dark red", "Dark purple", "Gold", "Gray", "Dark gray", "Blue", "Green", "Aqua", "Red", "Light purple", "Yellow", "White", "Bold", "Italic", "Reset formatting"]
+      }
+    },
+    "1": {
+      "Tab": "Mod",
+      "Name": "Pumpkin Blur Texture Scale",
+      "DefaultValue": 1.5,
+      "Type": "Scrollbar",
+      "Range": [0.1, 2],
+      "Step": 0.1
+    },
+    "2": {
+      "Tab": "Mod",
+      "Name": "Clear Resource Pack Cache",
+      "DefaultValue": false,
+      "Type": "Toggle"
+    }
+  }
+}

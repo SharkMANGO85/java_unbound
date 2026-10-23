@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.entities.loaders.EntityRegistry;
-import com.java_unbound.global.HashMaps;
+import com.java_unbound.utils.variables.HashMaps;
 import com.java_unbound.loader.resourcepack.Folder;
 
 import java.io.IOException;
