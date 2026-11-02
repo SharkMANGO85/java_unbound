@@ -28,7 +28,7 @@ public class GenericReplacedEntityRenderer<R extends LivingEntityRenderState & G
     private final float ScaleHeight;
 
     public GenericReplacedEntityRenderer(EntityRendererProvider.Context Context, Function<Entity, List<EntityRenderPass>> PassProvider, float ScaleWidth, float ScaleHeight) {
-        super(Context, new GenericReplacedEntityModel(new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.empty"), Identifier.fromNamespaceAndPath("minecraft", "textures/misc/unknown_server.png"))), new GenericReplacedEntity());
+        super(Context, new GenericReplacedEntityModel(), new GenericReplacedEntity());
 
         this.PassProvider = PassProvider;
         this.ScaleWidth = ScaleWidth;

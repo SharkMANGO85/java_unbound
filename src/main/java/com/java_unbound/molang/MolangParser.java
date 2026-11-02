@@ -352,6 +352,20 @@ public final class MolangParser {
     }
 
     public static boolean IsTrue(String Value) {
+        if (Value == null) {
+            return false;
+        }
+
+        Value = Value.trim();
+
+        if (Value.equalsIgnoreCase("true")) {
+            return true;
+        }
+
+        if (Value.equalsIgnoreCase("false")) {
+            return false;
+        }
+
         double Number = ParseDouble(Value);
 
         return Number != 0 && !Double.isNaN(Number);

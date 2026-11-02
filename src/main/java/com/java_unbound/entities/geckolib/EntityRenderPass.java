@@ -1,4 +1,4 @@
-package com.java_unbound.entities.geckolib.entity;
+package com.java_unbound.entities.geckolib;
 
 import net.minecraft.resources.Identifier;
 

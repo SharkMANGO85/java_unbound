@@ -9,6 +9,7 @@ import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.EntityDefinitionDebugger;
 import com.java_unbound.loader.definitions.entity.reolvers.EntityGeometryResolver;
 import com.java_unbound.loader.definitions.entity.reolvers.EntityRenderControllerResolver;
+import com.java_unbound.loader.gecko_lib.GeckoLibLogFilter;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
@@ -78,6 +79,8 @@ public class JavaUnboundClient implements ClientModInitializer {
         ResourceMappings.Register();
 
         Loading();
+
+        GeckoLibLogFilter.Initialize();
 
         EntityRendererRegistration.RegisterEntityRenderer();
 

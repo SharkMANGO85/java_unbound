@@ -15,12 +15,12 @@ import java.util.Map;
 public class RenderController {
     public record ResolvedRenderController(String Geometry, List<String> Textures, List<Map<String, String>> Materials) {}
 
-    public static void RenderEntity(Entity Entity) {
+    public static List<ResolvedRenderController> RenderEntity(Entity Entity) {
         List<EntityRenderControllerReference> ActiveRenderControllers = new ArrayList<>();
         List<ResolvedRenderController> ToRender = new ArrayList<>();
 
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
-        if (Definition == null) {return;}
+        if (Definition == null) {return null;}
 
         ActiveRenderControllers = GetActiveRenderControllers(Entity, Definition);
 
@@ -29,6 +29,8 @@ public class RenderController {
 
             ToRender.add(Resolved);
         }
+
+        return ToRender;
     }
 
     private static List<EntityRenderControllerReference> GetActiveRenderControllers(Entity Entity, EntityDefinition Definition) {
