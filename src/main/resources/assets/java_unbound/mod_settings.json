@@ -22,8 +22,14 @@
     "2": {
       "Tab": "Mod",
       "Name": "Clear Resource Pack Cache",
-      "DefaultValue": false,
-      "Type": "Toggle"
+      "Type": "Button",
+      "Action": "RESET"
+    },
+    "3": {
+      "Tab": "Mod",
+      "Name": "Reset Block Animation Data",
+      "Type": "Button",
+      "Action": "RESET"
     }
   }
 }

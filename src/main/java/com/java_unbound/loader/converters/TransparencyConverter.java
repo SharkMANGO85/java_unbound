@@ -18,7 +18,7 @@ public class TransparencyConverter {
         Transparency.put("blocks/water_still_grey.png", 255.0 / 2);
     }
     
-    public static void LoadTextureTransparencies(File TexturesRoot) {
+    public static Runnable LoadTextureTransparencies(File TexturesRoot) {
         for (Map.Entry<String, Double> Entry : Transparency.entrySet()) {
             File File = new File(TexturesRoot, Entry.getKey());
             if (!File.isFile()) {
@@ -39,6 +39,7 @@ public class TransparencyConverter {
                 JavaUnbound.LOGGER.error("[TransparencyConverter] Failed to convert " + File + ": " + e.getMessage());
             }
         }
+        return null;
     }
     
     public static BufferedImage applyAlpha(BufferedImage Source, double AlphaValue) {

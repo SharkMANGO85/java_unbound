@@ -9,7 +9,7 @@ public interface EntityVariableInterface {
 
     void JavaUnbound$setVariable(String Name, String Value);
 
-    double JavaUnbound$getVariable(String Name);
+    String JavaUnbound$getVariable(String Name);
 
     Object JavaUnbound$getVariableObject(String Name);
 }

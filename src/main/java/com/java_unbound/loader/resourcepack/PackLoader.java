@@ -83,7 +83,7 @@ public final class PackLoader {
 
         Pack.Metadata Metadata = new Pack.Metadata(Component.literal(Description), PackCompatibility.COMPATIBLE, FeatureFlagSet.of(), List.of());
 
-        PackSelectionConfig Selection = new PackSelectionConfig(true, Pack.Position.TOP, true);
+        PackSelectionConfig Selection = new PackSelectionConfig(true, Pack.Position.TOP, false);
 
         return new Pack(Location, Supplier, Metadata, Selection);
     }

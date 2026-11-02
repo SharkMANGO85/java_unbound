@@ -7,28 +7,10 @@
   ],
   "client": [
     "resourcepack.PackRepositoryMixin",
+    "resourcepack.LogoRendererMixin",
+    "resourcepack.SplashRendererMixin",
 
-    "ui.LogoRendererMixin",
-    "ui.SplashRendererMixin",
-    "ui.PumpkinBlurMixin",
-    "ui.ItemModelResolverMixin",
-
-    "render.ModelBakeryMixin",
-
-    "entity.LevelMixin",
-    "entity.LivingEntityRendererMixin",
-    "entity.LivingEntityRenderStateMixin",
-    "entity.LivingEntityRendererStateMixin",
-
-    "mod_menu.YACLCategoryTabMixin",
-    "mod_menu.ControllerWidgetMixin",
-    "mod_menu.YACLCategoryTabAccessor",
-    "mod_menu.YACLScreenMixin",
-    "mod_menu.OptionListWidgetMixin",
-    "mod_menu.DropdownControllerMixin",
-    "mod_menu.DropdownOptionsMixin",
-    "mod_menu.DropdownControllerElementAccessor",
-    "mod_menu.DropdownWidgetMixin"
+    "entity.LevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

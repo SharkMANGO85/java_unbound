@@ -14,7 +14,7 @@ public final class Folder {
     private Folder() {}
 
     public static Path GetConfigFolder() {
-        return FabricLoader.getInstance().getConfigDir().resolve("java_unbound_addon");
+        return GetConfigsFolder().resolve("java_unbound_addon");
     }
 
     public static Path GetConfigsFolder() {

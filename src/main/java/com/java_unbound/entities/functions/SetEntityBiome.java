@@ -1,11 +1,11 @@
 package com.java_unbound.entities.functions;
 
+import com.java_unbound.JavaUnbound;
 import com.java_unbound.entities.interfaces.EntityBiomeInterface;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 
 public class SetEntityBiome {
-    //sets the biome of the entity it spawned in
     public static void SetEntityBiome(Entity Entity) {
         EntityBiomeInterface Data = (EntityBiomeInterface) Entity;
 

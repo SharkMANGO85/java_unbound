@@ -1,0 +1,32 @@
++------------------------------------------+--------------------+--------+
+| Name                                     | Type               | Status |
++------------------------------------------+--------------------+--------+
+| animations                               | Object             | ✖️     |
+| animations (as String)                   | String             | ✖️     |
+| enable_attachables                       | Boolean true/false | ✔️     |
+| geometry                                 | Object             | ✔️     |
+| geometry (as String)                     | String             | ✔️     |
+| held_item_ignores_lighting               | Boolean true/false | ✔️     |
+| hide_armor                               | Boolean true/false | ✔️     |
+| identifier                               | String             | ✖️     |
+| item                                     | Object             | ✖️     |
+| item (as String)                         | String             | ✖️     |
+| item (as Molang)                         | Molang             | ✖️     |
+| materials                                | Object             | ✖️     |
+| materials (as String)                    | String             | ✖️     |
+| min_engine_version                       | Version            | ✔️     |
+| particle_effects                         | Object             | ✖️     |
+| particle_effects (as String)             | String             | ✖️     |
+| particle_emitters                        | Object             | ✖️     |
+| particle_emitters (as String)            | String             | ✖️     |
+| queryable_geometry                       | String             | ✖️     |
+| render_controllers                       | Array of objects   | ✔️     |
+| render_controllers (as Array of strings) | Array of strings   | ✔️     |
+| render_controllers (as Molang)           | Molang             | ✔️️     |
+| scripts                                  | Scripts item       | ✔️     |
+| sound_effects                            | Object             | ✖️     |
+| sound_effects (as String)                | String             | ✖️     |
+| spawn_egg                                | Spawn Egg item     | ✔️     |
+| textures                                 | Object             | ✔️     |
+| textures (as String)                     | String             | ✔️     |
++------------------------------------------+--------------------+--------+

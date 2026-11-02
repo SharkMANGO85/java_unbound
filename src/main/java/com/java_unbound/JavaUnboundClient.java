@@ -1,163 +1,86 @@
 package com.java_unbound;
 
+import com.java_unbound.entities.geckolib.EntityRendererRegistration;
+import com.java_unbound.loader.converters.GeckoLibConverter;
 import com.java_unbound.loader.converters.TgaConverter;
 import com.java_unbound.loader.converters.TransparencyConverter;
-import com.java_unbound.loader.definitions.entities.EntitiesDefinition;
-import com.java_unbound.loader.definitions.global_use.*;
-import com.java_unbound.loader.gecko_lib.EntityRendererRegistration;
-import com.java_unbound.loader.gecko_lib.GeckoLibConverter;
+import com.java_unbound.loader.debug.EntityDebugGenerator;
+import com.java_unbound.loader.definitions.entity.EntityDefinition;
+import com.java_unbound.loader.definitions.entity.EntityDefinitionDebugger;
+import com.java_unbound.loader.definitions.entity.reolvers.EntityGeometryResolver;
+import com.java_unbound.loader.definitions.entity.reolvers.EntityRenderControllerResolver;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
-import com.java_unbound.loader.ui.textures.loaders.TextureLoader;
-import com.java_unbound.mod_menu.config.ConfigManager;
+import com.java_unbound.utils.variables.HashMaps;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.Commands;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class JavaUnboundClient implements ClientModInitializer {
-    public static void Loading() {
-        //Folder.ClearResourcePack();
+    public static String Debug = "";
 
-        TransparencyConverter.LoadTextureTransparencies(Folder.GetConfigFolder().resolve("subpacks").resolve("SP2").resolve("textures").toFile());
+    private static void DebugError(String Type, Runnable Function) {
+        StringBuilder DebugBuilder = new StringBuilder();
 
-        // Loading Definitions
-        JavaUnbound.LOGGER.error("-------------------------Definitions-------------------------");
-        JavaUnbound.LOGGER.error("");
-        JavaUnbound.LOGGER.error("---------------------------Textures---------------------------");
-        JavaUnbound.LOGGER.error("Loading Textures");
+        DebugBuilder.append("---------------------").append(Type).append("---------------------\n");
+        DebugBuilder.append("Loading ").append(Type).append("\n");
 
-        try {
-            TexturesDefinition.LoadTextures();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Loading Textures");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("--------------------------Geometries--------------------------");
-        JavaUnbound.LOGGER.error("Loading Geometries");
+        long StartTime = System.nanoTime();
 
         try {
-            GeometriesDefinition.LoadGeometries();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
+            Function.run();
+        } catch (Exception Exception) {
+            DebugBuilder.append("Error while loading ").append(Type).append(": ").append(Exception).append("\n");
         }
 
-        JavaUnbound.LOGGER.error("Finished Loading Geometries");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
+        long LoadingTime = (System.nanoTime() - StartTime) / 1_000_000;
 
-        JavaUnbound.LOGGER.error("---------------------Animation Controllers---------------------");
-        JavaUnbound.LOGGER.error("Loading Animation Controllers");
+        DebugBuilder.append("Finished Loading ").append(Type).append(" in ").append(LoadingTime).append(" ms\n");
+        DebugBuilder.append("--------------------------------------------------------------\n\n");
 
-        try {
-            AnimationControllersDefinition.LoadAnimationControllers();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Loading Animation Controllers");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Animations---------------------");
-        JavaUnbound.LOGGER.error("Loading Animations");
-
-        try {
-            AnimationsDefinition.LoadAnimations();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Loading Animations");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Render Controllers---------------------");
-        JavaUnbound.LOGGER.error("Loading Render Controllers");
-
-        try {
-            RenderControllersDefinition.LoadRenderControllers();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Loading Render Controllers");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Entities---------------------");
-        JavaUnbound.LOGGER.error("Loading Entities");
-
-        try {
-            EntitiesDefinition.LoadEntities();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Loading Entities");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Language---------------------");
-        JavaUnbound.LOGGER.error("Loading Languages");
-
-        LanguageLoader.PreloadLanguage();
-
-        JavaUnbound.LOGGER.error("Finished Loading Languages");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        LanguageLoader.PreloadLanguage();
-
-        JavaUnbound.LOGGER.error("Finished Loading Languages");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Config Manager---------------------");
-        JavaUnbound.LOGGER.error("Loading Config Manager");
-
-        ConfigManager.Load();
-
-        JavaUnbound.LOGGER.error("Finished Loading Config Manager");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Gecko Lib Loader---------------------");
-        JavaUnbound.LOGGER.error("Loading Gecko Lib");
-
-        try {
-            GeckoLibConverter.LoadResources();
-        } catch (IOException Execption) {
-            throw new RuntimeException(Execption);
-        }
-
-        JavaUnbound.LOGGER.error("Finished Gecko Lib");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
-
-        JavaUnbound.LOGGER.error("---------------------Item Icon Loader---------------------");
-        JavaUnbound.LOGGER.error("Loading Item Icons");
-
-        TextureLoader.LoadItemIcons();
-
-        JavaUnbound.LOGGER.error("Finished Item Icons");
-        JavaUnbound.LOGGER.error("--------------------------------------------------------------");
-        JavaUnbound.LOGGER.error("");
+        Debug += DebugBuilder;
     }
 
-   @Override
+    public static void Loading() {
+        EntityGeometryResolver.ClearCache();
+        EntityRenderControllerResolver.ClearCache();
+
+        DebugError("TGA Converter", TgaConverter.ConvertAll(Folder.GetConfigFolder()));
+        DebugError("Transparency Converter", TransparencyConverter.LoadTextureTransparencies(Folder.GetConfigFolder().resolve("subpacks").resolve(JavaUnbound.SUB_PACK).resolve("textures").toFile()));
+        DebugError("Languages", LanguageLoader::PreloadLanguage);
+        DebugError("Entity Definitions", EntityDefinition::PreloadEntityFiles);
+
+        DebugError("GeckoLib Converter", () -> {
+            try {
+                GeckoLibConverter.LoadResources();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        /*DebugError("Entity Debugging", () -> {
+            HashMaps.Entities.forEach((Identifier, Definition) -> {
+                EntityDefinitionDebugger.DebugEntity(Identifier);
+            });
+        });*/
+
+        JavaUnbound.LOGGER.error("\n\n\n\n\n{}" + "\n\n\n\n\n", Debug);
+    }
+
+    @Override
     public void onInitializeClient() {
         ResourceMapper.Clear();
         TgaConverter.ConvertAll(Folder.GetConfigFolder());
         ResourceMappings.Register();
+
         Loading();
+
         EntityRendererRegistration.RegisterEntityRenderer();
+
+        CommandRegistrationCallback.EVENT.register((Dispatcher, RegistryAccess, Environment) -> {Dispatcher.register(Commands.literal("entitydebug").then(Commands.literal("generate").executes(Context -> EntityDebugGenerator.Generate(Context.getSource().getLevel(), Context.getSource().getPosition().x, Context.getSource().getPosition().z, Message -> Context.getSource().sendSuccess(() -> Message, false)))));});
     }
 }

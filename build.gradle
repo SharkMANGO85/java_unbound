@@ -65,6 +65,17 @@ dependencies {
 	implementation 'ar.com.hjg:pngj:2.1.0'
 }
 
+loom {
+	runs {
+		client {
+			vmArg "-Xmx16G"
+		}
+		"server" {
+			vmArg "-Xmx4G"
+		}
+	}
+}
+
 processResources {
 	def version = project.version
 

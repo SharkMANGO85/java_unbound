@@ -33,12 +33,12 @@ public final class TgaConverter {
         return Builder.toString().trim();
     }
 
-    public static void ConvertAll(Path Root) {
+    public static Runnable ConvertAll(Path Root) {
         Debug("ConvertAll root = " + Root);
 
         if (Root == null || !Files.isDirectory(Root)) {
             Debug("Root is null or not a directory, skipping");
-            return;
+            return null;
         }
 
         AtomicInteger Found = new AtomicInteger();
@@ -61,7 +61,8 @@ public final class TgaConverter {
             JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
         }
 
-        Debug("ConvertAll done: found=" + Found + ", converted=" + Succeeded + ", failed=" + Failed);
+        Debug("ConvertAll done: found =" + Found + ", converted =" + Succeeded + ", failed =" + Failed);
+        return null;
     }
 
     public static void Convert(Path TgaFile) throws IOException {

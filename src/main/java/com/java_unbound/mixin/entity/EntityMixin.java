@@ -1,17 +1,19 @@
 package com.java_unbound.mixin.entity;
 
 import com.java_unbound.entities.interfaces.EntityBiomeInterface;
+import com.java_unbound.entities.interfaces.EntityTemporaryInterface;
 import com.java_unbound.entities.interfaces.EntityVariableInterface;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.HashMap;
 
-//set variables and the biome to the entity
 @Mixin(Entity.class)
-public class EntityMixin implements EntityBiomeInterface, EntityVariableInterface {
+public class EntityMixin implements EntityBiomeInterface, EntityVariableInterface, EntityTemporaryInterface {
     private String JavaUnbound$Biome;
+
     private final HashMap<String, Object> JavaUnbound$Variables = new HashMap<>();
+    private final HashMap<String, Object> JavaUnbound$Temporaries = new HashMap<>();
 
     @Override
     public String JavaUnbound$getBiome() {
@@ -22,6 +24,8 @@ public class EntityMixin implements EntityBiomeInterface, EntityVariableInterfac
     public void JavaUnbound$setBiome(String Biome) {
         JavaUnbound$Biome = Biome;
     }
+
+    // Variables
 
     @Override
     public HashMap<String, Object> JavaUnbound$getVariables() {
@@ -39,22 +43,51 @@ public class EntityMixin implements EntityBiomeInterface, EntityVariableInterfac
     }
 
     @Override
-    public double JavaUnbound$getVariable(String Name) {
+    public String JavaUnbound$getVariable(String Name) {
         Object Value = JavaUnbound$Variables.get(Name);
 
-        if (Value instanceof Number Number) {
-            return Number.doubleValue();
+        if (Value instanceof Number || Value instanceof Boolean || Value instanceof String) {
+            return String.valueOf(Value);
         }
 
-        if (Value instanceof Boolean Boolean) {
-            return Boolean ? 1.0 : 0.0;
-        }
-
-        return 0.0;
+        return "0.0";
     }
 
     @Override
     public Object JavaUnbound$getVariableObject(String Name) {
         return JavaUnbound$Variables.get(Name);
+    }
+
+    // Temporaries
+
+    @Override
+    public HashMap<String, Object> JavaUnbound$getTemporaries() {
+        return JavaUnbound$Temporaries;
+    }
+
+    @Override
+    public void JavaUnbound$setTemporary(String Name, double Value) {
+        JavaUnbound$Temporaries.put(Name, Value);
+    }
+
+    @Override
+    public void JavaUnbound$setTemporary(String Name, String Value) {
+        JavaUnbound$Temporaries.put(Name, Value);
+    }
+
+    @Override
+    public String JavaUnbound$getTemporary(String Name) {
+        Object Value = JavaUnbound$Temporaries.get(Name);
+
+        if (Value instanceof Number || Value instanceof Boolean || Value instanceof String) {
+            return String.valueOf(Value);
+        }
+
+        return "0.0";
+    }
+
+    @Override
+    public Object JavaUnbound$getTemporaryObject(String Name) {
+        return JavaUnbound$Temporaries.get(Name);
     }
 }
