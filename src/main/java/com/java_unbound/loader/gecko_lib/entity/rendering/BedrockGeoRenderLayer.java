@@ -8,6 +8,7 @@ import com.geckolib.renderer.layer.GeoRenderLayer;
 
 import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
 import com.java_unbound.loader.gecko_lib.entity.GenericReplacedEntity;
+import com.java_unbound.loader.gecko_lib.entity.GenericReplacedEntityRenderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -24,19 +25,17 @@ public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRender
     private final EntityRendererProvider.Context Context;
     private final GenericReplacedEntity Animatable;
     private final GeoModel<GenericReplacedEntity> AnimationModel;
-    private final List<EntityRenderPass> Passes;
     private final float ScaleWidth;
     private final float ScaleHeight;
 
     private final Map<EntityRenderPass, GenericReplacedEntityPassRenderer<R>> PassRenderers = new HashMap<>();
 
-    public BedrockGeoRenderLayer(GeoRenderer<GenericReplacedEntity, Entity, R> Renderer, EntityRendererProvider.Context Context, GenericReplacedEntity Animatable, List<EntityRenderPass> Passes, float ScaleWidth, float ScaleHeight) {
+    public BedrockGeoRenderLayer(GeoRenderer<GenericReplacedEntity, Entity, R> Renderer, EntityRendererProvider.Context Context, GenericReplacedEntity Animatable, float ScaleWidth, float ScaleHeight) {
         super(Renderer);
 
         this.Context = Context;
         this.Animatable = Animatable;
         this.AnimationModel = Renderer.getGeoModel();
-        this.Passes = List.copyOf(Passes);
         this.ScaleWidth = ScaleWidth;
         this.ScaleHeight = ScaleHeight;
     }
@@ -47,9 +46,12 @@ public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRender
 
     @Override
     public void submitRenderTask(RenderPassInfo<R> RenderPassInfo, SubmitNodeCollector RenderTasks) {
+        List<EntityRenderPass> Passes = RenderPassInfo.renderState().getGeckolibData(GenericReplacedEntityRenderer.RENDER_PASSES);
+        if (Passes == null || Passes.isEmpty()) {return;}
+
         PoseStack PoseStack = RenderPassInfo.poseStack();
 
-        for (EntityRenderPass Pass : this.Passes) {
+        for (EntityRenderPass Pass : Passes) {
             PoseStack.pushPose();
 
             try {

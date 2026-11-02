@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Snow_Golem {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.SNOW_GOLEM,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.aqclcy"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/dcn.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.SNOW_GOLEM,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.aqclcy"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/dcn.png")));*/
     }
 }

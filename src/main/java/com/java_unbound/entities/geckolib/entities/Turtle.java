@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Turtle {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.TURTLE,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.mgozpe"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cec.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.TURTLE,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.mgozpe"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cec.png")));*/
     }
 }

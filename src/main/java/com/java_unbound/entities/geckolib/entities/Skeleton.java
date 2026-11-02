@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Skeleton {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.SKELETON,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.qvfczf"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/nju.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.SKELETON,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.qvfczf"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/nju.png")));*/
     }
 }

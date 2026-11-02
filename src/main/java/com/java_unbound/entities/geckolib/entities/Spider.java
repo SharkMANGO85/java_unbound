@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Spider {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.SPIDER,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.phkjbq"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/nmo.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.SPIDER,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.phkjbq"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/nmo.png")));*/
     }
 }

@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Bee {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.BEE,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.muzfwx"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cqr.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.BEE,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.muzfwx"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cqr.png")));*/
     }
 }

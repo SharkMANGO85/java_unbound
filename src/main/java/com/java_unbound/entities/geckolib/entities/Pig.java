@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Pig {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.PIG,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.syxqbj"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cys.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.PIG,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.syxqbj"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/cys.png")));*/
     }
 }

@@ -8,8 +8,8 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Allay {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.ALLAY,
+        /*EntityRendererRegistration.AddEntity(EntityTypes.ALLAY,
                 new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.qcmlcp"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/czm.png")),
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.ywnwfl"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/czg.png")));
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.ywnwfl"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/czg.png")));*/
     }
 }

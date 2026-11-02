@@ -5,22 +5,16 @@ import com.java_unbound.loader.gecko_lib.entity.GenericReplacedEntityRenderer;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class EntityRendererRegistration {
-    public EntityRendererRegistration() {}
-
-    private record EntityRendererDefinition(List<EntityRenderPass> Passes, float ScaleWidth, float ScaleHeight) {
-        private EntityRendererDefinition {
-            Passes = List.copyOf(Passes);
-        }
-    }
+    private record EntityRendererDefinition(Function<Entity, List<EntityRenderPass>> PassProvider, float ScaleWidth, float ScaleHeight) {}
 
     private static final Map<EntityType<?>, EntityRendererDefinition> RENDERERS = new LinkedHashMap<>();
 
@@ -32,34 +26,42 @@ public class EntityRendererRegistration {
         }
     }
 
-    public static void AddEntity(EntityType<?> Type, EntityRenderPass... Passes) {
-        AddEntity(Type, 1.0f, 1.0f, Passes);
+    public static void AddEntity(EntityType<?> Type, Function<Entity, List<EntityRenderPass>> PassProvider) {
+        AddEntity(Type, 1.0f, 1.0f, PassProvider);
     }
 
-    public static void AddEntity(EntityType<?> Type, float ScaleWidth, float ScaleHeight, EntityRenderPass... Passes) {
-        if (Type == null) {
-            throw new IllegalArgumentException("Entity type cannot be null.");
-        }
-
-        if (Passes == null || Passes.length == 0) {
-            throw new IllegalArgumentException("At least one geometry/texture pair is required.");
+    public static void AddEntity(EntityType<?> Type, float ScaleWidth, float ScaleHeight, Function<Entity, List<EntityRenderPass>> PassProvider) {
+        if (Type == null || PassProvider == null) {
+            throw new IllegalArgumentException("Entity type and pass provider cannot be null.");
         }
 
         if (RENDERERS.containsKey(Type)) {
             throw new IllegalArgumentException("Entity renderer already registered: " + BuiltInRegistries.ENTITY_TYPE.getKey(Type));
         }
 
-        RENDERERS.put(Type, new EntityRendererDefinition(List.of(Passes), ScaleWidth, ScaleHeight));
+        RENDERERS.put(Type, new EntityRendererDefinition(PassProvider, ScaleWidth, ScaleHeight));
     }
 
-    public static List<EntityRenderPass> GetRenderPasses(EntityType<?> Type) {
-        EntityRendererDefinition Definition = RENDERERS.get(Type);
+    public static List<EntityRenderPass> GetRenderPasses(Entity Entity) {
+        if (Entity == null) {
+            return List.of();
+        }
 
-        return Definition != null ? Definition.Passes() : List.of();
+        EntityRendererDefinition Definition = RENDERERS.get(Entity.getType());
+
+        return Definition != null ? Definition.PassProvider().apply(Entity) : List.of();
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void RegisterEntity(EntityType<?> Type, EntityRendererDefinition Definition) {
-        EntityRenderers.register((EntityType) Type, Context -> new GenericReplacedEntityRenderer(Context, Definition.Passes(), Definition.ScaleWidth(), Definition.ScaleHeight()));
+        EntityRenderers.register(
+                (EntityType) Type,
+                Context -> new GenericReplacedEntityRenderer<>(
+                        Context,
+                        Definition.PassProvider(),
+                        Definition.ScaleWidth(),
+                        Definition.ScaleHeight()
+                )
+        );
     }
 }

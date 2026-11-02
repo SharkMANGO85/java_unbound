@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Creeper {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.CREEPER,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.hdrgxz"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/odr.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.CREEPER,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.hdrgxz"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/odr.png")));*/
     }
 }

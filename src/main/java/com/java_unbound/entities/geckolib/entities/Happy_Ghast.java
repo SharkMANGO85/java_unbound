@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityTypes;
 
 public class Happy_Ghast {
     public static void RegisterEntity(Entity Entity) {
-        EntityRendererRegistration.AddEntity(EntityTypes.HAPPY_GHAST,
-                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.gsiepj"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/csv.png")));
+        /*EntityRendererRegistration.AddEntity(EntityTypes.HAPPY_GHAST,
+                new EntityRenderPass(Identifier.fromNamespaceAndPath("minecraft", "geometry.oreville_ans.gsiepj"), Identifier.fromNamespaceAndPath("minecraft", "textures/oreville/ans/csv.png")));*/
     }
 }
