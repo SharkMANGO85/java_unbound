@@ -20,9 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRenderState>
-        extends GeoRenderLayer<GenericReplacedEntity, Entity, R> {
-
+public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRenderState> extends GeoRenderLayer<GenericReplacedEntity, Entity, R> {
     private final EntityRendererProvider.Context Context;
     private final GenericReplacedEntity Animatable;
     private final GeoModel<GenericReplacedEntity> AnimationModel;
@@ -32,14 +30,7 @@ public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRender
 
     private final Map<EntityRenderPass, GenericReplacedEntityPassRenderer<R>> PassRenderers = new HashMap<>();
 
-    public BedrockGeoRenderLayer(
-            GeoRenderer<GenericReplacedEntity, Entity, R> Renderer,
-            EntityRendererProvider.Context Context,
-            GenericReplacedEntity Animatable,
-            List<EntityRenderPass> Passes,
-            float ScaleWidth,
-            float ScaleHeight
-    ) {
+    public BedrockGeoRenderLayer(GeoRenderer<GenericReplacedEntity, Entity, R> Renderer, EntityRendererProvider.Context Context, GenericReplacedEntity Animatable, List<EntityRenderPass> Passes, float ScaleWidth, float ScaleHeight) {
         super(Renderer);
 
         this.Context = Context;
@@ -51,24 +42,11 @@ public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRender
     }
 
     private GenericReplacedEntityPassRenderer<R> GetPassRenderer(EntityRenderPass Pass) {
-        return this.PassRenderers.computeIfAbsent(
-                Pass,
-                Key -> new GenericReplacedEntityPassRenderer<>(
-                        this.Context,
-                        Key,
-                        this.Animatable,
-                        this.AnimationModel,
-                        this.ScaleWidth,
-                        this.ScaleHeight
-                )
-        );
+        return this.PassRenderers.computeIfAbsent(Pass, Key -> new GenericReplacedEntityPassRenderer<>(this.Context, Key, this.Animatable, this.AnimationModel, this.ScaleWidth, this.ScaleHeight));
     }
 
     @Override
-    public void submitRenderTask(
-            RenderPassInfo<R> RenderPassInfo,
-            SubmitNodeCollector RenderTasks
-    ) {
+    public void submitRenderTask(RenderPassInfo<R> RenderPassInfo, SubmitNodeCollector RenderTasks) {
         PoseStack PoseStack = RenderPassInfo.poseStack();
 
         for (EntityRenderPass Pass : this.Passes) {
@@ -77,12 +55,7 @@ public class BedrockGeoRenderLayer<R extends LivingEntityRenderState & GeoRender
             try {
                 PoseStack.last().set(RenderPassInfo.getPreRenderMatrixPose());
 
-                GetPassRenderer(Pass).submit(
-                        RenderPassInfo.renderState(),
-                        PoseStack,
-                        RenderTasks,
-                        RenderPassInfo.cameraState()
-                );
+                GetPassRenderer(Pass).submit(RenderPassInfo.renderState(), PoseStack, RenderTasks, RenderPassInfo.cameraState());
             } finally {
                 PoseStack.popPose();
             }

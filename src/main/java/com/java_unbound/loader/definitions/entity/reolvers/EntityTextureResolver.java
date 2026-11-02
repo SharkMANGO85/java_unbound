@@ -14,6 +14,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EntityTextureResolver {
+    private static Path OutputFolder = Folder.GetConfigsFolder().resolve("java_unbound_mod").resolve("output").resolve("textures");
+
+    private static Path CopyTexture(Path TexturePath, String EntityIdentifier, String OriginalTexturePath) {
+        if (TexturePath == null || !Files.isRegularFile(TexturePath)) {
+            JavaUnbound.LOGGER.error("Cannot copy entity texture: {}", TexturePath);
+            return null;
+        }
+
+        try {
+            String EntityFolderName = EntityIdentifier.replace(":", "_").replace("minecraft_", "");
+            String TextureName = Path.of(OriginalTexturePath).getFileName().toString();
+
+            Path EntityFolder = OutputFolder.resolve(EntityFolderName);
+            Files.createDirectories(EntityFolder);
+
+            Path TargetPath = EntityFolder.resolve(TextureName + ".png").normalize();
+
+            if (!TargetPath.startsWith(EntityFolder.normalize())) {
+                JavaUnbound.LOGGER.error("Invalid entity texture output path: {}", TargetPath);
+                return null;
+            }
+
+            Files.copy(TexturePath, TargetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            JavaUnbound.LOGGER.debug("Copied entity texture: {} -> {}", TexturePath, TargetPath);
+
+            return TargetPath;
+        } catch (IOException Exception) {
+            JavaUnbound.LOGGER.error("Failed to copy entity texture: {}", TexturePath, Exception);
+            return null;
+        }
+    }
+
     private static JsonObject GetTextureElements(Path JsonFile) {
         if (JsonFile == null) {
             JavaUnbound.LOGGER.error("Cannot load entity textures: JSON file path is null.");
@@ -110,7 +143,7 @@ public class EntityTextureResolver {
         Path NormalizedPath = AbsolutePath.normalize();
 
         if (!NormalizedPath.startsWith(ConfigPath)) {
-            JavaUnbound.LOGGER.error("Texture path is outside the config folder: {}", AbsolutePath);
+            JavaUnbound.LOGGER.debug("Texture path is outside the config folder: {}", AbsolutePath);
             return null;
         }
 
@@ -132,6 +165,23 @@ public class EntityTextureResolver {
         JavaUnbound.LOGGER.debug("Loading entity textures from: {}", JsonFile);
 
         JsonObject TexturesElement = GetTextureElements(JsonFile);
+        String Content;
+
+        try {
+            Content = Files.readString(JsonFile);
+        } catch (IOException Exception) {
+            JavaUnbound.LOGGER.error("Failed to read entity JSON: {}", JsonFile, Exception);
+            return new HashMap<>();
+        }
+
+        JsonElement IdentifierElement = GetJsonValue.GetValue(Content, "description.identifier");
+
+        if (IdentifierElement == null || !IdentifierElement.isJsonPrimitive()) {
+            JavaUnbound.LOGGER.error("Missing description.identifier in entity JSON: {}", JsonFile);
+            return new HashMap<>();
+        }
+
+        String EntityIdentifier = IdentifierElement.getAsString();
 
         if (TexturesElement.size() == 0) {
             JavaUnbound.LOGGER.warn("No entity textures loaded from: {}", JsonFile);
@@ -152,9 +202,12 @@ public class EntityTextureResolver {
             String TexturePath = TextureElement.getAsString();
             EntityTextureDefinition TextureDefinition = new EntityTextureDefinition();
 
+            Path OriginalPath = GetTexturePath(TexturePath);
+            Path CopiedPath = CopyTexture(OriginalPath, EntityIdentifier, TexturePath);
+
             TextureDefinition.Identifier = TextureIdentifier;
-            TextureDefinition.AbsolutePath = GetTexturePath(TexturePath);
-            TextureDefinition.ResourcePath = GetResourcePath(TextureDefinition.AbsolutePath);
+            TextureDefinition.AbsolutePath = OriginalPath;
+            TextureDefinition.ResourcePath = GetResourcePath(OriginalPath);
 
             if (TextureDefinition.AbsolutePath == null) {
                 JavaUnbound.LOGGER.error("Failed to resolve texture: {} | Identifier: {} | File: {}", TexturePath, TextureIdentifier, JsonFile);

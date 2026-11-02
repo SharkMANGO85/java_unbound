@@ -15,10 +15,7 @@ public class BedrockGeoModel extends DefaultedEntityGeoModel<GenericReplacedEnti
     private final Identifier Texture;
     private final GeoModel<GenericReplacedEntity> AnimationModel;
 
-    public BedrockGeoModel(
-            EntityRenderPass Pass,
-            GeoModel<GenericReplacedEntity> AnimationModel
-    ) {
+    public BedrockGeoModel(EntityRenderPass Pass, GeoModel<GenericReplacedEntity> AnimationModel) {
         super(Pass.Geometry());
 
         this.Texture = Pass.Texture();
@@ -41,15 +38,7 @@ public class BedrockGeoModel extends DefaultedEntityGeoModel<GenericReplacedEnti
     }
 
     @Override
-    public void addAdditionalStateData(
-            GenericReplacedEntity Animatable,
-            @Nullable Object RelatedObject,
-            GeoRenderState RenderState
-    ) {
-        this.AnimationModel.addAdditionalStateData(
-                Animatable,
-                RelatedObject,
-                RenderState
-        );
+    public void addAdditionalStateData(GenericReplacedEntity Animatable, @Nullable Object RelatedObject, GeoRenderState RenderState) {
+        this.AnimationModel.addAdditionalStateData(Animatable, RelatedObject, RenderState);
     }
 }
