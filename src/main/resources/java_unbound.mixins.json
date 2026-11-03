@@ -8,9 +8,7 @@
   "client": [
     "resourcepack.PackRepositoryMixin",
     "resourcepack.LogoRendererMixin",
-    "resourcepack.SplashRendererMixin",
-
-    "entity.LevelMixin"
+    "resourcepack.SplashRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

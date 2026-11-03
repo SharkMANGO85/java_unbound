@@ -14,10 +14,14 @@ import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
+import com.java_unbound.molang.types.MolangEntityParser;
 import com.java_unbound.utils.variables.HashMaps;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.Commands;
+import com.java_unbound.entities.InitializeEntity;
+
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 
 import java.io.IOException;
 
@@ -74,6 +78,10 @@ public class JavaUnboundClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ClientEntityEvents.ENTITY_LOAD.register((Entity, World) -> {
+            InitializeEntity.InitializeEntity(Entity);
+        });
+
         ResourceMapper.Clear();
         TgaConverter.ConvertAll(Folder.GetConfigFolder());
         ResourceMappings.Register();
@@ -81,9 +89,19 @@ public class JavaUnboundClient implements ClientModInitializer {
         Loading();
 
         GeckoLibLogFilter.Initialize();
-
         EntityRendererRegistration.RegisterEntityRenderer();
 
-        CommandRegistrationCallback.EVENT.register((Dispatcher, RegistryAccess, Environment) -> {Dispatcher.register(Commands.literal("entitydebug").then(Commands.literal("generate").executes(Context -> EntityDebugGenerator.Generate(Context.getSource().getLevel(), Context.getSource().getPosition().x, Context.getSource().getPosition().z, Message -> Context.getSource().sendSuccess(() -> Message, false)))));});
+        MolangEntityParser.SetDebug(false);
+
+        ClientEntityEvents.ENTITY_LOAD.register((Entity, World) -> {
+            InitializeEntity.InitializeEntity(Entity);
+        });
+
+        CommandRegistrationCallback.EVENT.register((Dispatcher, RegistryAccess, Environment) -> {
+            Dispatcher.register(Commands.literal("entitydebug")
+                    .then(Commands.literal("generate").executes(Context ->
+                            EntityDebugGenerator.Generate(Context.getSource().getLevel(), Context.getSource().getPosition().x, Context.getSource().getPosition().z, Message -> Context.getSource().sendSuccess(() -> Message, false))
+                    )));
+        });
     }
 }

@@ -1,11 +1,12 @@
 package com.java_unbound.entities.rendering;
 
-import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
-import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
+import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
+
 import com.java_unbound.molang.MolangParser;
 import com.java_unbound.molang.types.MolangRenderControllerParser;
+
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
@@ -13,19 +14,28 @@ import java.util.List;
 import java.util.Map;
 
 public class RenderController {
-    public record ResolvedRenderController(String Geometry, List<String> Textures, List<Map<String, String>> Materials) {}
+
+    public record ResolvedRenderController(
+            String Geometry,
+            List<String> Textures,
+            List<Map<String, String>> Materials,
+            List<EntityRenderPass.PartVisibility> PartVisibility
+    ) {
+    }
 
     public static List<ResolvedRenderController> RenderEntity(Entity Entity) {
-        List<EntityRenderControllerReference> ActiveRenderControllers = new ArrayList<>();
         List<ResolvedRenderController> ToRender = new ArrayList<>();
 
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
-        if (Definition == null) {return null;}
 
-        ActiveRenderControllers = GetActiveRenderControllers(Entity, Definition);
+        if (Definition == null) {
+            return ToRender;
+        }
+
+        List<EntityRenderControllerReference> ActiveRenderControllers = GetActiveRenderControllers(Entity, Definition);
 
         for (EntityRenderControllerReference RenderController : ActiveRenderControllers) {
-            var Resolved = ResolveRenderController(Entity, RenderController);
+            ResolvedRenderController Resolved = ResolveRenderController(Entity, RenderController);
 
             ToRender.add(Resolved);
         }
@@ -49,9 +59,37 @@ public class RenderController {
         var Definition = RenderController.Definition;
 
         String Geometry = MolangRenderControllerParser.ResolveGeometry(Entity, Definition.Geometry, Definition.Arrays);
-        List<String> Textures = MolangRenderControllerParser.ResolveTextures(Entity, Definition.Textures, Definition.Arrays);
-        List<Map<String, String>> Materials = MolangRenderControllerParser.ResolveMaterials(Entity, Definition.Materials, Definition.Arrays);
 
-        return new ResolvedRenderController(Geometry, Textures, Materials);
+        List<String> Textures = MolangRenderControllerParser.ResolveTextures(
+                Entity,
+                Definition.Textures,
+                Definition.Arrays
+        );
+
+        List<Map<String, String>> Materials = MolangRenderControllerParser.ResolveMaterials(
+                Entity,
+                Definition.Materials,
+                Definition.Arrays
+        );
+
+        List<EntityRenderPass.PartVisibility> PartVisibility = new ArrayList<>();
+
+        if (Definition.PartVisibility != null) {
+            for (var Part : Definition.PartVisibility) {
+                String Visible = MolangParser.Evaluate(Entity, Part.Visibility);
+
+                PartVisibility.add(new EntityRenderPass.PartVisibility(
+                        Part.BonePattern,
+                        MolangParser.IsTrue(Visible)
+                ));
+            }
+        }
+
+        return new ResolvedRenderController(
+                Geometry,
+                Textures,
+                Materials,
+                PartVisibility
+        );
     }
 }

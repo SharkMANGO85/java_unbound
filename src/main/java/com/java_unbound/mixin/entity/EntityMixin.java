@@ -15,6 +15,18 @@ public class EntityMixin implements EntityBiomeInterface, EntityVariableInterfac
     private final HashMap<String, Object> JavaUnbound$Variables = new HashMap<>();
     private final HashMap<String, Object> JavaUnbound$Temporaries = new HashMap<>();
 
+    private boolean JavaUnbound$Initialized;
+
+    @Override
+    public boolean JavaUnbound$isInitialized() {
+        return JavaUnbound$Initialized;
+    }
+
+    @Override
+    public void JavaUnbound$setInitialized(boolean Initialized) {
+        JavaUnbound$Initialized = Initialized;
+    }
+
     @Override
     public String JavaUnbound$getBiome() {
         return JavaUnbound$Biome;

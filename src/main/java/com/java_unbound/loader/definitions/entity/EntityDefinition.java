@@ -17,6 +17,7 @@ import com.java_unbound.utils.functions.GetJsonValue;
 import com.java_unbound.utils.variables.HashMaps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -86,8 +87,12 @@ public class EntityDefinition {
     }
 
     public static EntityDefinition GetEntityDefinition(Entity Entity) {
-        String Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(Entity.getType()).toString();
+        return GetEntityDefinition(Entity.getType());
+    }
 
-        return HashMaps.Entities.get(Identifier);
+    public static EntityDefinition GetEntityDefinition(EntityType<?> Type) {
+        var Key = BuiltInRegistries.ENTITY_TYPE.getKey(Type);
+
+        return Key != null ? HashMaps.Entities.get(Key.toString()) : null;
     }
 }

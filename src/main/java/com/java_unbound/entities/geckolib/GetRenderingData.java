@@ -2,14 +2,12 @@ package com.java_unbound.entities.geckolib;
 
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.entities.rendering.RenderController;
+
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.types.geometry.EntityGeometryDefinition;
-import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerPartVisibility;
-import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
 import com.java_unbound.loader.definitions.entity.types.texture.EntityTextureDefinition;
 import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
 
-import com.java_unbound.molang.MolangParser;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
@@ -39,16 +37,6 @@ public class GetRenderingData {
 
             EntityGeometryDefinition Geometry = Definition.Geometries.get(GeometryIdentifier);
 
-            for (EntityRenderControllerReference RenderController : Definition.RenderControllers) {
-                if (RenderController.Definition.PartVisibility == null) {continue;}
-
-                for (EntityRenderControllerPartVisibility Part : RenderController.Definition.PartVisibility) {
-                    String Visible = MolangParser.Evaluate(Entity, Part.Visibility);
-
-                    JavaUnbound.LOGGER.info("Part: " + Part.BonePattern + ", Visible: " + Visible);
-                }
-            }
-
             if (Geometry == null) {
                 JavaUnbound.LOGGER.error("Geometry not found: {}", GeometryIdentifier);
                 continue;
@@ -65,10 +53,12 @@ public class GetRenderingData {
                 }
 
                 Identifier GeometryPath = Identifier.fromNamespaceAndPath("minecraft", Geometry.Identifier);
+
                 String TextureResourcePath = Texture.ResourcePath.endsWith(".png") ? Texture.ResourcePath : Texture.ResourcePath + ".png";
+
                 Identifier TexturePath = Identifier.fromNamespaceAndPath("minecraft", TextureResourcePath);
 
-                RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath));
+                RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath, Controller.PartVisibility()));
             }
         }
 

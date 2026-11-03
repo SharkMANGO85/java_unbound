@@ -12,4 +12,8 @@ public interface EntityVariableInterface {
     String JavaUnbound$getVariable(String Name);
 
     Object JavaUnbound$getVariableObject(String Name);
+
+    boolean JavaUnbound$isInitialized();
+
+    void JavaUnbound$setInitialized(boolean Initialized);
 }
