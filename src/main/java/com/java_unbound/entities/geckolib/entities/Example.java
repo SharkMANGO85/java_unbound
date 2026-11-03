@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
-public class Allay {
+public class Example {
     public static List<EntityRenderPass> RegisterEntity(Entity Entity) {
         return GetRenderingData.GetRenderingData(Entity);
     }

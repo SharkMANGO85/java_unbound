@@ -33,9 +33,7 @@ public class GenericReplacedEntityPassRenderer<R extends LivingEntityRenderState
         super.adjustModelBonesForRender(RenderPassInfo, Snapshots);
 
         for (EntityRenderPass.PartVisibility Part : this.Pass.PartVisibility()) {
-            if (Part.BonePattern() == null || Part.BonePattern().isBlank()) {
-                continue;
-            }
+            if (Part.BonePattern() == null || Part.BonePattern().isBlank()) {continue;}
 
             for (GeoBone Bone : RenderPassInfo.model().topLevelBones()) {
                 ApplyVisibility(Bone, Snapshots, Part);

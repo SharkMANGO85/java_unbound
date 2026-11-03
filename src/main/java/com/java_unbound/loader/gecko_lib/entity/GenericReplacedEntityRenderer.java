@@ -43,8 +43,6 @@ public class GenericReplacedEntityRenderer<R extends LivingEntityRenderState & G
     public void addRenderData(GenericReplacedEntity Animatable, Entity RelatedEntity, R RenderState, float PartialTick) {
         List<EntityRenderPass> Passes = this.PassProvider.apply(RelatedEntity);
 
-        //GetRenderingData.GetRenderingData(RelatedEntity);
-
         RenderState.addGeckolibData(RENDER_PASSES, Passes);
     }
 

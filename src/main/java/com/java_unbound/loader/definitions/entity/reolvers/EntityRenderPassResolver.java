@@ -21,16 +21,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class EntityRenderPassResolver {
-    private static final Pattern ArrayReferencePattern = Pattern.compile(
-            "(?i)\\bArray\\.([A-Za-z0-9_]+)\\s*\\[([^\\]]+)\\]"
-    );
+    private static final Pattern ArrayReferencePattern = Pattern.compile("(?i)\\bArray\\.([A-Za-z0-9_]+)\\s*\\[([^\\]]+)\\]");
+    private static final Pattern IdentifierReferencePattern = Pattern.compile("(?i)\\b(?:Geometry|Texture|Material)\\.([A-Za-z0-9_]+)\\b");
 
-    private static final Pattern IdentifierReferencePattern = Pattern.compile(
-            "(?i)\\b(?:Geometry|Texture|Material)\\.([A-Za-z0-9_]+)\\b"
-    );
-
-    private EntityRenderPassResolver() {
-    }
+    private EntityRenderPassResolver() {}
 
     public static List<EntityRenderPass> GetActiveRenderPasses(Entity Entity) {
         if (Entity == null) {
@@ -55,26 +49,14 @@ public final class EntityRenderPassResolver {
             }
 
             EntityRenderControllerDefinition Controller = Reference.Definition;
+            String GeometryAlias = EvaluateExpression(Entity, Controller.Arrays, Controller.Geometry);
 
-            String GeometryAlias = EvaluateExpression(
-                    Entity,
-                    Controller.Arrays,
-                    Controller.Geometry
-            );
-
-            if (GeometryAlias == null || Definition.Geometries == null) {
-                continue;
-            }
+            if (GeometryAlias == null || Definition.Geometries == null) {continue;}
 
             EntityGeometryDefinition Geometry = Definition.Geometries.get(GeometryAlias);
 
             if (Geometry == null || Geometry.Identifier == null) {
-                JavaUnbound.LOGGER.warn(
-                        "Could not resolve geometry alias: {} | Controller: {}",
-                        GeometryAlias,
-                        Reference.Identifier
-                );
-
+                JavaUnbound.LOGGER.warn("Could not resolve geometry alias: {} | Controller: {}", GeometryAlias, Reference.Identifier);
                 continue;
             }
 

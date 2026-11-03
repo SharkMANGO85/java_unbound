@@ -221,9 +221,11 @@ public final class MolangRenderControllerParser {
         int Index = (int) Math.floor(NumericIndex);
 
         List<String> Values = FindArrayValues(Arrays, ArrayName);
-        if (Values == null || Index < 0 || Index >= Values.size()) {return "0";}
+        if (Values == null || Values.isEmpty()) {return "0";}
 
+        Index = Math.floorMod(Index, Values.size());
         String Value = Values.get(Index);
+
         if (Value == null || Value.isBlank()) {return "0";}
 
         return ResolveResourceInternal(Entity, Value, Arrays, Depth + 1);

@@ -6,7 +6,6 @@ import com.java_unbound.loader.converters.TgaConverter;
 import com.java_unbound.loader.converters.TransparencyConverter;
 import com.java_unbound.loader.debug.EntityDebugGenerator;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
-import com.java_unbound.loader.definitions.entity.EntityDefinitionDebugger;
 import com.java_unbound.loader.definitions.entity.reolvers.EntityGeometryResolver;
 import com.java_unbound.loader.definitions.entity.reolvers.EntityRenderControllerResolver;
 import com.java_unbound.loader.gecko_lib.GeckoLibLogFilter;
@@ -14,8 +13,7 @@ import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
-import com.java_unbound.molang.types.MolangEntityParser;
-import com.java_unbound.utils.variables.HashMaps;
+import com.java_unbound.loader.textures.loaders.TextureLoader;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.commands.Commands;
@@ -66,6 +64,8 @@ public class JavaUnboundClient implements ClientModInitializer {
                 throw new RuntimeException(e);
             }
         });
+
+        //DebugError("Texture Loading", TextureLoader::LoadItemIcons);
 
         /*DebugError("Entity Debugging", () -> {
             HashMaps.Entities.forEach((Identifier, Definition) -> {

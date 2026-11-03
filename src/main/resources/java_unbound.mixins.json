@@ -9,7 +9,9 @@
   "client": [
     "resourcepack.PackRepositoryMixin",
     "resourcepack.LogoRendererMixin",
-    "resourcepack.SplashRendererMixin"
+    "resourcepack.SplashRendererMixin",
+
+    "ui.PumpkinBlurMixin"
   ],
   "injectors": {
     "defaultRequire": 1

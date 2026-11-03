@@ -36,25 +36,34 @@ public class GetRenderingData {
 
         for (RenderController.ResolvedRenderController Controller : ActiveRenderControllers) {
             String GeometryIdentifier = Controller.Geometry().replaceFirst("^Geometry\\.", "");
+
             EntityGeometryDefinition Geometry = Definition.Geometries.get(GeometryIdentifier);
 
             if (Geometry == null) {
-                JavaUnbound.LOGGER.error("Geometry not found: {}", GeometryIdentifier);
+                Geometry = Definition.Geometries.get("default");
+                //JavaUnbound.LOGGER.error("Geometry not found: {}, Entity: {}", GeometryIdentifier, Entity.getName().getString());
+                //continue;
+            }
+
+            if (Geometry == null) {
+                JavaUnbound.LOGGER.error("Geometry not found: {}, Entity: {}", GeometryIdentifier, Entity.getName().getString());
                 continue;
             }
 
             for (String TextureIdentifier : Controller.Textures()) {
                 String TextureAlias = TextureIdentifier.replaceFirst("^Texture\\.", "");
-
                 EntityTextureDefinition Texture = Definition.Textures.get(TextureAlias);
 
                 if (Texture == null) {
-                    JavaUnbound.LOGGER.error("Texture not found: {}", TextureAlias);
-                    continue;
+                    Texture = Definition.Textures.get("default");
                 }
 
+                if (Texture == null || Texture.AbsolutePath == null || Texture.ResourcePath == null) {JavaUnbound.LOGGER.error("Texture not found: {}", TextureAlias);continue;}
+
                 Identifier GeometryPath = Identifier.fromNamespaceAndPath("minecraft", Geometry.Identifier);
+
                 String TextureResourcePath = Texture.ResourcePath.endsWith(".png") ? Texture.ResourcePath : Texture.ResourcePath + ".png";
+
                 Identifier TexturePath = Identifier.fromNamespaceAndPath("minecraft", TextureResourcePath);
 
                 RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath, Controller.PartVisibility()));

@@ -16,6 +16,7 @@ public final class MolangParser {
     private MolangParser() {}
 
     private static final ThreadLocal<Integer> EVALUATION_DEPTH = ThreadLocal.withInitial(() -> 0);
+    private static final ThreadLocal<String> RETURN_VALUE = new ThreadLocal<>();
 
     public static MolangExpression Classify(String Expression) {
         if (Expression == null) {
@@ -48,6 +49,7 @@ public final class MolangParser {
 
         if (IsRootEvaluation) {
             MolangEntityParser.ClearTemporaries(Entity);
+            RETURN_VALUE.remove();
         }
 
         EVALUATION_DEPTH.set(EVALUATION_DEPTH.get() + 1);
@@ -61,6 +63,7 @@ public final class MolangParser {
 
             if (Depth <= 0) {
                 MolangEntityParser.ClearTemporaries(Entity);
+                RETURN_VALUE.remove();
                 EVALUATION_DEPTH.remove();
             } else {
                 EVALUATION_DEPTH.set(Depth);
@@ -84,24 +87,30 @@ public final class MolangParser {
         List<String> Statements = SplitStatements(Expression);
 
         if (Statements.size() > 1 || (Expression.endsWith(";") && Statements.size() == 1)) {
-            String ReturnValue = "0";
+            String LastValue = "0";
 
             for (String Statement : Statements) {
                 Statement = Statement.trim();
                 if (Statement.isEmpty()) {continue;}
 
-                if (Statement.regionMatches(true, 0, "return", 0, 6) && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
-                    return EvaluateInternal(Entity, Statement.length() == 6 ? "0" : Statement.substring(6).trim());
+                if (IsReturnStatement(Statement)) {
+                    return EvaluateReturn(Entity, Statement);
                 }
 
-                EvaluateInternal(Entity, Statement);
+                LastValue = EvaluateInternal(Entity, Statement);
+
+                if (RETURN_VALUE.get() != null) {return RETURN_VALUE.get();}
             }
 
-            return ReturnValue;
+            return Statements.size() == 1 ? LastValue : "0";
         }
 
-        if (Expression.regionMatches(true, 0, "return", 0, 6) && (Expression.length() == 6 || Character.isWhitespace(Expression.charAt(6)))) {
-            return EvaluateInternal(Entity, Expression.length() == 6 ? "0" : Expression.substring(6).trim());
+        if (IsReturnStatement(Expression)) {
+            return EvaluateReturn(Entity, Expression);
+        }
+
+        if (Expression.startsWith("{") && IsWrappedBlock(Expression)) {
+            return EvaluateBlock(Entity, Expression.substring(1, Expression.length() - 1));
         }
 
         while (IsWrapped(Expression)) {
@@ -578,19 +587,30 @@ public final class MolangParser {
 
         for (String Statement : Statements) {
             Statement = Statement.trim();
+            if (Statement.isEmpty()) {continue;}
 
-            if (Statement.isEmpty()) {
-                continue;
-            }
-
-            if (Statement.regionMatches(true, 0, "return", 0, 6) && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
-                return EvaluateInternal(Entity, Statement.length() == 6 ? "0" : Statement.substring(6).trim());
+            if (IsReturnStatement(Statement)) {
+                return EvaluateReturn(Entity, Statement);
             }
 
             Result = EvaluateInternal(Entity, Statement);
+
+            if (RETURN_VALUE.get() != null) {return RETURN_VALUE.get();}
         }
 
         return HasMultipleStatements ? "0" : Result;
+    }
+
+    private static boolean IsReturnStatement(String Statement) {
+        return Statement.regionMatches(true, 0, "return", 0, 6) && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)));
+    }
+
+    private static String EvaluateReturn(Entity Entity, String Statement) {
+        String Value = Statement.length() == 6 ? "0" : EvaluateInternal(Entity, Statement.substring(6).trim());
+
+        RETURN_VALUE.set(Value);
+
+        return Value;
     }
 
     private static List<String> SplitStatements(String Expression) {
