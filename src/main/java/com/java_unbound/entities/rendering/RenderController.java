@@ -1,9 +1,9 @@
 package com.java_unbound.entities.rendering;
 
+import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
 import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
-
 import com.java_unbound.molang.MolangParser;
 import com.java_unbound.molang.types.MolangRenderControllerParser;
 
@@ -14,28 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class RenderController {
-
-    public record ResolvedRenderController(
-            String Geometry,
-            List<String> Textures,
-            List<Map<String, String>> Materials,
-            List<EntityRenderPass.PartVisibility> PartVisibility
-    ) {
-    }
+    public record ResolvedRenderController(String Geometry, List<String> Textures, List<Map<String, String>> Materials, List<EntityRenderPass.PartVisibility> PartVisibility) {}
 
     public static List<ResolvedRenderController> RenderEntity(Entity Entity) {
         List<ResolvedRenderController> ToRender = new ArrayList<>();
 
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
-
-        if (Definition == null) {
-            return ToRender;
-        }
+        if (Definition == null) {return ToRender;}
 
         List<EntityRenderControllerReference> ActiveRenderControllers = GetActiveRenderControllers(Entity, Definition);
 
-        for (EntityRenderControllerReference RenderController : ActiveRenderControllers) {
-            ResolvedRenderController Resolved = ResolveRenderController(Entity, RenderController);
+        for (EntityRenderControllerReference ControllerReference : ActiveRenderControllers) {
+            ResolvedRenderController Resolved = ResolveRenderController(Entity, ControllerReference);
 
             ToRender.add(Resolved);
         }
@@ -46,9 +36,13 @@ public class RenderController {
     private static List<EntityRenderControllerReference> GetActiveRenderControllers(Entity Entity, EntityDefinition Definition) {
         List<EntityRenderControllerReference> ActiveRenderControllers = new ArrayList<>();
 
-        for (EntityRenderControllerReference RenderController : Definition.RenderControllers) {
-            if (MolangParser.IsConditionMet(Entity, RenderController.Condition)) {
-                ActiveRenderControllers.add(RenderController);
+        for (EntityRenderControllerReference ControllerReference : Definition.RenderControllers) {
+            String Condition = ControllerReference.Condition;
+
+            boolean IsActive = MolangParser.IsConditionMet(Entity, Condition);
+
+            if (IsActive) {
+                ActiveRenderControllers.add(ControllerReference);
             }
         }
 
@@ -59,18 +53,8 @@ public class RenderController {
         var Definition = RenderController.Definition;
 
         String Geometry = MolangRenderControllerParser.ResolveGeometry(Entity, Definition.Geometry, Definition.Arrays);
-
-        List<String> Textures = MolangRenderControllerParser.ResolveTextures(
-                Entity,
-                Definition.Textures,
-                Definition.Arrays
-        );
-
-        List<Map<String, String>> Materials = MolangRenderControllerParser.ResolveMaterials(
-                Entity,
-                Definition.Materials,
-                Definition.Arrays
-        );
+        List<String> Textures = MolangRenderControllerParser.ResolveTextures(Entity, Definition.Textures, Definition.Arrays);
+        List<Map<String, String>> Materials = MolangRenderControllerParser.ResolveMaterials(Entity, Definition.Materials, Definition.Arrays);
 
         List<EntityRenderPass.PartVisibility> PartVisibility = new ArrayList<>();
 
@@ -78,18 +62,10 @@ public class RenderController {
             for (var Part : Definition.PartVisibility) {
                 String Visible = MolangParser.Evaluate(Entity, Part.Visibility);
 
-                PartVisibility.add(new EntityRenderPass.PartVisibility(
-                        Part.BonePattern,
-                        MolangParser.IsTrue(Visible)
-                ));
+                PartVisibility.add(new EntityRenderPass.PartVisibility(Part.BonePattern, MolangParser.IsTrue(Visible)));
             }
         }
 
-        return new ResolvedRenderController(
-                Geometry,
-                Textures,
-                Materials,
-                PartVisibility
-        );
+        return new ResolvedRenderController(Geometry, Textures, Materials, PartVisibility);
     }
 }

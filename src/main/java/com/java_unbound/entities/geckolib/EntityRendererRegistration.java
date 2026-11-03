@@ -43,9 +43,7 @@ public class EntityRendererRegistration {
     }
 
     public static List<EntityRenderPass> GetRenderPasses(Entity Entity) {
-        if (Entity == null) {
-            return List.of();
-        }
+        if (Entity == null) {return List.of();}
 
         EntityRendererDefinition Definition = RENDERERS.get(Entity.getType());
 
@@ -54,14 +52,6 @@ public class EntityRendererRegistration {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private static void RegisterEntity(EntityType<?> Type, EntityRendererDefinition Definition) {
-        EntityRenderers.register(
-                (EntityType) Type,
-                Context -> new GenericReplacedEntityRenderer<>(
-                        Context,
-                        Definition.PassProvider(),
-                        Definition.ScaleWidth(),
-                        Definition.ScaleHeight()
-                )
-        );
+        EntityRenderers.register((EntityType) Type, Context -> new GenericReplacedEntityRenderer<>(Context, Definition.PassProvider(), Definition.ScaleWidth(), Definition.ScaleHeight()));
     }
 }

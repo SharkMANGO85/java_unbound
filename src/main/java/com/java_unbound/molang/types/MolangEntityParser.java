@@ -1,74 +1,44 @@
 package com.java_unbound.molang.types;
 
+import com.java_unbound.JavaUnbound;
 import com.java_unbound.entities.interfaces.EntityBiomeInterface;
 import com.java_unbound.entities.interfaces.EntityTemporaryInterface;
 import com.java_unbound.entities.interfaces.EntityVariableInterface;
 import com.java_unbound.molang.MolangParser;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.golem.SnowGolem;
 import net.minecraft.world.entity.player.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Locale;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class MolangEntityParser {
-    private static volatile PackSettingProvider PackSettings;
+    private static final Logger LOGGER = LoggerFactory.getLogger("JavaUnbound/Molang");
+    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
 
     private MolangEntityParser() {}
 
-    private static final Logger Logger = LoggerFactory.getLogger("JavaUnbound/Molang");
-    private static boolean Debug = true;
-
-    public static void SetDebug(boolean Enabled) {
-        Debug = Enabled;
-    }
-
-    private static void LogDebug(String Message) {
-        if (Debug) Logger.info("[Molang] {}", Message);
-    }
-
-    private static void LogError(String Message, Exception Exception) {
-        Logger.error("[Molang] {}", Message, Exception);
-    }
-
-    public interface PackSettingProvider {
-        boolean IsEnabled(String SettingName);
-
-        boolean IsSelected(String SettingName, String SelectedValue);
-    }
-
-    public static void SetPackSettingProvider(PackSettingProvider Provider) {
-        PackSettings = Provider;
-    }
-
     public static String Evaluate(Entity Entity, String Expression) {
-        if (Expression == null || Expression.isBlank()) {
-            LogDebug("Received empty expression.");
-            return "0";
-        }
+        if (Expression == null || Expression.isBlank()) {return "0";}
 
         try {
             Expression = Expression.trim();
             String LowerExpression = Expression.toLowerCase(Locale.ROOT);
 
-            LogDebug("Evaluating: " + Expression + " | Entity: " + (Entity != null ? Entity.getName().getString() : "null"));
-
             if (LowerExpression.startsWith("v.") || LowerExpression.startsWith("variable.")) {
-                String Result = EvaluateVariable(Entity, Expression.substring(Expression.indexOf('.') + 1).trim());
-                LogDebug("Variable result: " + Result);
-                return Result;
+                return EvaluateVariable(Entity, Expression.substring(Expression.indexOf('.') + 1).trim());
             }
 
             if (LowerExpression.startsWith("t.") || LowerExpression.startsWith("temp.")) {
-                String Result = EvaluateTemporary(Entity, Expression.substring(Expression.indexOf('.') + 1).trim());
-                LogDebug("Temporary result: " + Result);
-                return Result;
+                return EvaluateTemporary(Entity, Expression.substring(Expression.indexOf('.') + 1).trim());
             }
 
             if (LowerExpression.startsWith("q.") || LowerExpression.startsWith("query.")) {
@@ -76,59 +46,36 @@ public final class MolangEntityParser {
                 int PrefixLength = LowerExpression.startsWith("query.") ? 6 : 2;
 
                 if (OpenIndex < 0) {
-                    String Result = EvaluateQuery(Entity, Expression.substring(PrefixLength).trim(), List.of());
-                    LogDebug("Query result: " + Result);
-                    return Result;
+                    return EvaluateQuery(Entity, Expression.substring(PrefixLength).trim(), List.of());
                 }
 
-                if (!Expression.endsWith(")") || !MolangParser.IsBalanced(Expression)) {
-                    LogError("Invalid query syntax: " + Expression, new IllegalArgumentException("Unbalanced query expression."));
-                    return "0";
-                }
+                if (!Expression.endsWith(")") || !MolangParser.IsBalanced(Expression)) {return "0";}
 
                 String FunctionName = Expression.substring(PrefixLength, OpenIndex).trim();
                 String Arguments = Expression.substring(OpenIndex + 1, Expression.length() - 1);
 
-                String Result = EvaluateQuery(Entity, FunctionName, MolangParser.SplitArguments(Arguments));
-                LogDebug("Query '" + FunctionName + "' returned: " + Result);
-                return Result;
+                return EvaluateQuery(Entity, FunctionName, MolangParser.SplitArguments(Arguments));
             }
 
-            LogError("Unknown expression: " + Expression, new IllegalArgumentException("Unsupported Molang expression."));
             return "0";
-
         } catch (Exception Exception) {
-            LogError("Failed to evaluate expression: " + Expression, Exception);
+            if (WARNED.add("exception:" + Expression)) {
+                LOGGER.warn("Molang query failed for '{}'", Expression, Exception);
+            }
+
             return "0";
         }
     }
 
     public static String GetVariable(Entity Entity, String VariableName) {
-        if (Entity == null || VariableName == null || VariableName.isBlank()) {
-            LogDebug("GetVariable received invalid arguments.");
-            return null;
-        }
+        if (Entity == null || VariableName == null || VariableName.isBlank()) {return null;}
 
         VariableName = VariableName.trim().toLowerCase(Locale.ROOT);
 
-        LogDebug("Looking up variable: " + VariableName);
-
-        if (!(Entity instanceof EntityVariableInterface Variables)) {
-            LogDebug("FAILED: Entity does not implement EntityVariableInterface!");
-            LogDebug("Entity class: " + Entity.getClass().getName());
-            LogDebug("Entity type: " + Entity.getType());
-            return null;
-        }
+        if (!(Entity instanceof EntityVariableInterface Variables)) {return null;}
 
         Object Value = Variables.JavaUnbound$getVariableObject(VariableName);
-
-        if (Value == null) {
-            LogDebug("Variable does not exist: " + VariableName);
-            LogDebug("Available variables: " + Variables.JavaUnbound$getVariables());
-            return null;
-        }
-
-        LogDebug("Variable found: " + VariableName + " = " + Value);
+        if (Value == null) {return null;}
 
         return String.valueOf(Value);
     }
@@ -140,34 +87,21 @@ public final class MolangEntityParser {
     }
 
     public static void SetVariable(Entity Entity, String VariableName, String Value) {
-        if (Entity == null || VariableName == null || VariableName.isBlank()) {
-            return;
-        }
+        if (Entity == null || VariableName == null || VariableName.isBlank()) {return;}
+        if (!(Entity instanceof EntityVariableInterface Variables)) {return;}
 
-        if (!(Entity instanceof EntityVariableInterface Variables)) {
-            return;
-        }
-
-        Variables.JavaUnbound$setVariable(
-                VariableName.trim().toLowerCase(Locale.ROOT),
-                Value == null ? "0" : Value
-        );
+        Variables.JavaUnbound$setVariable(VariableName.trim().toLowerCase(Locale.ROOT), Value == null ? "0" : Value);
     }
 
     public static String GetTemporary(Entity Entity, String TemporaryName) {
-        if (Entity == null || TemporaryName == null || TemporaryName.isBlank()) {
-            return null;
-        }
+        if (Entity == null || TemporaryName == null || TemporaryName.isBlank()) {return null;}
 
         if (Entity instanceof EntityTemporaryInterface Temporaries) {
-            Object Value = Temporaries.JavaUnbound$getTemporaryObject(
-                    TemporaryName.trim().toLowerCase(Locale.ROOT)
-            );
+            Object Value = Temporaries.JavaUnbound$getTemporaryObject(TemporaryName.trim().toLowerCase(Locale.ROOT));
 
             return Value != null ? String.valueOf(Value) : null;
         }
 
-        LogDebug("Entity does not implement EntityTemporaryInterface: " + Entity.getType());
         return null;
     }
 
@@ -178,18 +112,10 @@ public final class MolangEntityParser {
     }
 
     public static void SetTemporary(Entity Entity, String TemporaryName, String Value) {
-        if (Entity == null || TemporaryName == null || TemporaryName.isBlank()) {
-            return;
-        }
+        if (Entity == null || TemporaryName == null || TemporaryName.isBlank()) {return;}
+        if (!(Entity instanceof EntityTemporaryInterface Temporaries)) {return;}
 
-        if (!(Entity instanceof EntityTemporaryInterface Temporaries)) {
-            return;
-        }
-
-        Temporaries.JavaUnbound$setTemporary(
-                TemporaryName.trim().toLowerCase(Locale.ROOT),
-                Value == null ? "0" : Value
-        );
+        Temporaries.JavaUnbound$setTemporary(TemporaryName.trim().toLowerCase(Locale.ROOT), Value == null ? "0" : Value);
     }
 
     public static void ClearTemporaries(Entity Entity) {
@@ -199,18 +125,30 @@ public final class MolangEntityParser {
     }
 
     public static String EvaluateQuery(Entity Entity, String FunctionName, List<String> Arguments) {
-        if (Entity == null || FunctionName == null) {
-            return "0";
-        }
+        if (FunctionName == null) {return "0";}
 
         if (Arguments == null) {
             Arguments = List.of();
         }
 
-        return switch (FunctionName.toLowerCase(Locale.ROOT)) {
+        String Name = FunctionName.trim().toLowerCase(Locale.ROOT);
+        String Global = EvaluateGlobalQuery(Entity, Name, Arguments);
+
+        if (Global != null) {return Global;}
+        if (Entity == null) {return "0";}
+
+        return switch (Name) {
             case "is_name_any" -> EvaluateIsNameAny(Entity, Arguments);
 
-            case "is_baby" -> Entity instanceof AgeableMob Mob && Mob.isBaby() ? "1" : "0";
+            case "is_baby" -> {
+                String Number = Entity instanceof AgeableMob Mob && Mob.getAge() != 0 ? "1" : "0";
+                String IsBaby = Entity instanceof AgeableMob Mob ? (Mob.isBaby() ? "1" : "0") : "0";
+
+                String Baby = Number.equals("1") && IsBaby.equals("1") ? "1" : "0";
+
+                yield Baby;
+            }
+
             case "is_alive" -> Entity.isAlive() ? "1" : "0";
             case "life_time" -> String.valueOf(Entity.tickCount / 20.0);
 
@@ -247,41 +185,45 @@ public final class MolangEntityParser {
             case "fall_distance" -> String.valueOf(Entity.fallDistance);
             case "vertical_speed" -> String.valueOf(Entity.getDeltaMovement().y);
 
-            case "is_in_ui" -> IsInUI();
-            case "graphics_mode_is_any" -> GraphicsModeIsAny(Arguments);
-
             case "entity_biome_has_any_identifier" -> EvaluateBiome(Entity, Arguments);
-
-            case "is_pack_setting_selected" -> IsPackSettingSelected(Arguments);
-            case "is_pack_setting_enabled" -> IsPackSettingEnabled(Arguments);
-
-            case "in_range" -> EvaluateInRange(Entity, Arguments);
-            case "any" -> EvaluateAny(Entity, Arguments);
-            case "all" -> EvaluateAll(Entity, Arguments);
 
             case "has_rider" -> !Entity.getPassengers().isEmpty() ? "1" : "0";
             case "has_target" -> Entity instanceof Mob Mob && Mob.getTarget() != null ? "1" : "0";
 
+            case "is_saddled" -> Entity instanceof Cow && ((Cow) Entity).isSaddled() ? "1" : "0";
+            case "is_sheared" -> Entity instanceof SnowGolem SnowGolem && !SnowGolem.hasPumpkin() ? "1" : "0";
+
             default -> {
-                LogDebug("Unknown query: " + FunctionName + " | Arguments: " + Arguments);
+                String Extra = MolangEntityQueries.Evaluate(Entity, Name, Arguments);
+                if (Extra != null) {yield Extra;}
+
                 yield "0";
             }
+        };
+    }
+
+    private static String EvaluateGlobalQuery(Entity Entity, String Name, List<String> Arguments) {
+        return switch (Name) {
+            case "is_in_ui" -> IsInUI();
+            case "graphics_mode_is_any" -> GraphicsModeIsAny(Arguments);
+            case "is_pack_setting_selected" -> IsPackSettingSelected(Arguments);
+            case "is_pack_setting_enabled" -> IsPackSettingEnabled(Arguments);
+            case "in_range" -> EvaluateInRange(Entity, Arguments);
+            case "any" -> EvaluateAny(Entity, Arguments);
+            case "all" -> EvaluateAll(Entity, Arguments);
+
+            default -> null;
         };
     }
 
     private static String IsLocalPlayer(Entity Entity) {
         Minecraft Client = Minecraft.getInstance();
 
-        return Entity instanceof Player Player
-                && Player.level().isClientSide()
-                && Client != null
-                && Player == Client.player ? "1" : "0";
+        return Entity instanceof Player Player && Player.level().isClientSide() && Client != null && Player == Client.player ? "1" : "0";
     }
 
     private static String EvaluateAny(Entity Entity, List<String> Arguments) {
-        if (Arguments.size() < 2) {
-            return "0";
-        }
+        if (Arguments.size() < 2) {return "0";}
 
         double Value = MolangParser.ParseDouble(MolangParser.Evaluate(Entity, Arguments.getFirst()));
 
@@ -297,9 +239,7 @@ public final class MolangEntityParser {
     }
 
     private static String EvaluateAll(Entity Entity, List<String> Arguments) {
-        if (Arguments.size() < 3) {
-            return "0";
-        }
+        if (Arguments.size() < 3) {return "0";}
 
         double Value = MolangParser.ParseDouble(MolangParser.Evaluate(Entity, Arguments.getFirst()));
 
@@ -315,9 +255,7 @@ public final class MolangEntityParser {
     }
 
     private static String EvaluateInRange(Entity Entity, List<String> Arguments) {
-        if (Arguments.size() < 3) {
-            return "0";
-        }
+        if (Arguments.size() < 3) {return "0";}
 
         double Value = MolangParser.ParseDouble(MolangParser.Evaluate(Entity, Arguments.get(0)));
         double Min = MolangParser.ParseDouble(MolangParser.Evaluate(Entity, Arguments.get(1)));
@@ -327,24 +265,11 @@ public final class MolangEntityParser {
     }
 
     private static String IsPackSettingSelected(List<String> Arguments) {
-        if (PackSettings == null || Arguments.size() < 2) {
-            return "0";
-        }
-
-        String SettingName = MolangParser.Unquote(Arguments.get(0)).trim();
-        String SelectedValue = MolangParser.Unquote(Arguments.get(1)).trim();
-
-        return PackSettings.IsSelected(SettingName, SelectedValue) ? "1" : "0";
+        return "1";
     }
 
     private static String IsPackSettingEnabled(List<String> Arguments) {
-        if (PackSettings == null || Arguments.isEmpty()) {
-            return "0";
-        }
-
-        String SettingName = MolangParser.Unquote(Arguments.getFirst()).trim();
-
-        return PackSettings.IsEnabled(SettingName) ? "1" : "0";
+        return "1";
     }
 
     private static String IsInUI() {
@@ -355,10 +280,7 @@ public final class MolangEntityParser {
 
     private static String GraphicsModeIsAny(List<String> Arguments) {
         Minecraft Client = Minecraft.getInstance();
-
-        if (Client == null || Arguments.isEmpty()) {
-            return "0";
-        }
+        if (Client == null || Arguments.isEmpty()) {return "0";}
 
         String Graphics = NormalizeGraphicsMode(Client.options.graphicsPreset().get().toString());
 
@@ -381,37 +303,44 @@ public final class MolangEntityParser {
             case "fancy" -> "fancy";
             case "deferred", "ray_traced", "raytraced", "fabulous" -> "fabulous";
             case "custom" -> "custom";
+
             default -> Normalized;
         };
     }
 
     private static String EvaluateIsNameAny(Entity Entity, List<String> Values) {
-        if (Entity.getCustomName() == null) {
-            return "0";
-        }
+        String EntityName = Entity.getCustomName() != null ? Entity.getCustomName().getString() : null;
+        String MatchedValue = null;
 
-        String EntityName = Entity.getCustomName().getString();
+        boolean DebugEntity = EntityName != null && EntityName.contains("Cherry");
 
-        for (String Value : Values) {
-            if (EntityName.equals(MolangParser.Unquote(Value).trim())) {
-                return "1";
+        if (EntityName != null) {
+            for (String Value : Values) {
+                String Candidate = MolangParser.Unquote(Value).trim();
+
+                boolean Matches = EntityName.equalsIgnoreCase(Candidate);
+
+                if (Matches) {
+                    MatchedValue = Candidate;
+                    break;
+                }
             }
         }
 
-        return "0";
+        String Result = MatchedValue != null ? "1" : "0";
+
+        /*if (Result.equals("1")) {
+            JavaUnbound.LOGGER.error("Matched Name: {}, List: {}, Result: {}", MatchedValue, Values, Result);
+        }*/
+
+        return Result;
     }
 
     private static String EvaluateBiome(Entity Entity, List<String> Values) {
-        if (!(Entity instanceof EntityBiomeInterface BiomeInterface)) {
-            LogDebug("Entity does not implement EntityBiomeInterface: " + Entity.getType());
-            return "0";
-        }
+        if (!(Entity instanceof EntityBiomeInterface BiomeInterface)) {return "0";}
 
         String BiomeId = BiomeInterface.JavaUnbound$getBiome();
-
-        if (BiomeId == null) {
-            return "0";
-        }
+        if (BiomeId == null) {return "0";}
 
         for (String Value : Values) {
             if (BiomeId.equals(MolangParser.Unquote(Value).trim())) {

@@ -13,7 +13,6 @@ import static com.java_unbound.entities.rendering.RenderController.RenderEntity;
 public class InitializeEntity {
     public static void InitializeEntity(Entity Entity) {
         if (Entity == null || !Entity.level().isClientSide()) {return;}
-
         if (!(Entity instanceof EntityVariableInterface Variables) || Variables.JavaUnbound$isInitialized()) {return;}
 
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
@@ -27,7 +26,9 @@ public class InitializeEntity {
 
         Variables.JavaUnbound$setInitialized(true);
 
-        RenderEntity(Entity);
+        /*if (Definition.Scripts != null && Definition.Scripts.PreAnimation != null) {
+            Definition.Scripts.PreAnimation.forEach(Script -> MolangParser.Evaluate(Entity, Script));
+        }*/
     }
 
     private static void InitializeBiome(Entity Entity) {

@@ -13,10 +13,9 @@ import java.util.Map;
 
 // Evaluates MoLang expressions, including math, conditions, variables, assignments, and render controller expressions.
 public final class MolangParser {
-    private static final ThreadLocal<Integer> EVALUATION_DEPTH = ThreadLocal.withInitial(() -> 0);
+    private MolangParser() {}
 
-    private MolangParser() {
-    }
+    private static final ThreadLocal<Integer> EVALUATION_DEPTH = ThreadLocal.withInitial(() -> 0);
 
     public static MolangExpression Classify(String Expression) {
         if (Expression == null) {
@@ -70,27 +69,17 @@ public final class MolangParser {
     }
 
     public static boolean IsConditionMet(Entity Entity, String Condition) {
-        if (Condition == null || Condition.isBlank()) {
-            return true;
-        }
+        if (Condition == null || Condition.isBlank()) {return true;}
 
         return MolangParser.IsTrue(MolangParser.Evaluate(Entity, Condition));
     }
 
     private static String EvaluateInternal(Entity Entity, String Expression) {
-        if (Expression == null || Expression.isBlank()) {
-            return "0";
-        }
-
-        if (Entity == null) {
-            return "0";
-        }
+        if (Expression == null || Expression.isBlank()) {return "0";}
+        if (Entity == null) {return "0";}
 
         Expression = Expression.trim();
-
-        if (!IsBalanced(Expression)) {
-            return "0";
-        }
+        if (!IsBalanced(Expression)) {return "0";}
 
         List<String> Statements = SplitStatements(Expression);
 
@@ -99,13 +88,9 @@ public final class MolangParser {
 
             for (String Statement : Statements) {
                 Statement = Statement.trim();
+                if (Statement.isEmpty()) {continue;}
 
-                if (Statement.isEmpty()) {
-                    continue;
-                }
-
-                if (Statement.regionMatches(true, 0, "return", 0, 6)
-                        && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
+                if (Statement.regionMatches(true, 0, "return", 0, 6) && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
                     return EvaluateInternal(Entity, Statement.length() == 6 ? "0" : Statement.substring(6).trim());
                 }
 
@@ -115,8 +100,7 @@ public final class MolangParser {
             return ReturnValue;
         }
 
-        if (Expression.regionMatches(true, 0, "return", 0, 6)
-                && (Expression.length() == 6 || Character.isWhitespace(Expression.charAt(6)))) {
+        if (Expression.regionMatches(true, 0, "return", 0, 6) && (Expression.length() == 6 || Character.isWhitespace(Expression.charAt(6)))) {
             return EvaluateInternal(Entity, Expression.length() == 6 ? "0" : Expression.substring(6).trim());
         }
 
@@ -140,7 +124,6 @@ public final class MolangParser {
             return "0";
         }
 
-        // Assignment has lower precedence than all value operators, so split it before evaluating the right side.
         int AssignmentIndex = FindTopLevelAssignment(Expression);
 
         if (AssignmentIndex >= 0) {
@@ -162,21 +145,15 @@ public final class MolangParser {
             }
         }
 
-        // Null coalescing binds more weakly than ternary and logical operators.
         int Index = FindTopLevel(Expression, "??");
 
         if (Index >= 0) {
             String LeftExpression = Expression.substring(0, Index).trim();
             String NormalizedLeft = StripOuterParentheses(LeftExpression).toLowerCase(Locale.ROOT);
-            boolean IsVariableReference = NormalizedLeft.startsWith("v.")
-                    || NormalizedLeft.startsWith("variable.")
-                    || NormalizedLeft.startsWith("t.")
-                    || NormalizedLeft.startsWith("temp.");
+            boolean IsVariableReference = NormalizedLeft.startsWith("v.") || NormalizedLeft.startsWith("variable.") || NormalizedLeft.startsWith("t.") || NormalizedLeft.startsWith("temp.");
             boolean IsMissing = IsVariableReference && GetMissingVariableValue(Entity, LeftExpression) == null;
 
-            return IsMissing
-                    ? EvaluateInternal(Entity, Expression.substring(Index + 2).trim())
-                    : EvaluateInternal(Entity, LeftExpression);
+            return IsMissing ? EvaluateInternal(Entity, Expression.substring(Index + 2).trim()) : EvaluateInternal(Entity, LeftExpression);
         }
 
         int TernaryIndex = FindTopLevelTernaryQuestion(Expression);
@@ -199,15 +176,10 @@ public final class MolangParser {
                 String TrueExpression = Remaining.substring(0, ColonIndex).trim();
                 String FalseExpression = Remaining.substring(ColonIndex + 1).trim();
 
-                return IsTrue(EvaluateInternal(Entity, Condition))
-                        ? EvaluateInternal(Entity, TrueExpression)
-                        : EvaluateInternal(Entity, FalseExpression);
+                return IsTrue(EvaluateInternal(Entity, Condition)) ? EvaluateInternal(Entity, TrueExpression) : EvaluateInternal(Entity, FalseExpression);
             }
 
-            // Binary conditional: A ? B executes B only when A is true.
-            return IsTrue(EvaluateInternal(Entity, Condition))
-                    ? EvaluateInternal(Entity, Remaining)
-                    : "0";
+            return IsTrue(EvaluateInternal(Entity, Condition)) ? EvaluateInternal(Entity, Remaining) : "0";
         }
 
         List<String> Parts = SplitTopLevel(Expression, "||");
@@ -236,10 +208,7 @@ public final class MolangParser {
 
         if (Expression.startsWith("!") && !Expression.startsWith("!=")) {
             int OperandEnd = FindUnaryOperandEnd(Expression, 1);
-
-            if (OperandEnd <= 1) {
-                return "0";
-            }
+            if (OperandEnd <= 1) {return "0";}
 
             String Operand = Expression.substring(1, OperandEnd).trim();
             String Remaining = Expression.substring(OperandEnd).trim();
@@ -248,7 +217,6 @@ public final class MolangParser {
             return Remaining.isEmpty() ? Value : EvaluateInternal(Entity, Value + " " + Remaining);
         }
 
-        // Relational operators have higher precedence than equality operators.
         String[] ComparisonOperators = {"==", "!=", ">=", "<=", ">", "<"};
 
         for (String Operator : ComparisonOperators) {
@@ -263,9 +231,7 @@ public final class MolangParser {
                 boolean RightIsString = IsStringLiteral(RightExpression) || !IsNumber(RightString);
 
                 if (Operator.equals("==") || Operator.equals("!=")) {
-                    boolean Equal = LeftIsString || RightIsString
-                            ? LeftString.equals(RightString)
-                            : Double.compare(ParseDouble(LeftString), ParseDouble(RightString)) == 0;
+                    boolean Equal = LeftIsString || RightIsString ? LeftString.equals(RightString) : Double.compare(ParseDouble(LeftString), ParseDouble(RightString)) == 0;
 
                     return (Operator.equals("==") == Equal) ? "1" : "0";
                 }
@@ -278,6 +244,7 @@ public final class MolangParser {
                     case "<=" -> Left <= Right ? "1" : "0";
                     case ">" -> Left > Right ? "1" : "0";
                     case "<" -> Left < Right ? "1" : "0";
+
                     default -> "0";
                 };
             }
@@ -352,19 +319,12 @@ public final class MolangParser {
     }
 
     public static boolean IsTrue(String Value) {
-        if (Value == null) {
-            return false;
-        }
+        if (Value == null) {return false;}
 
         Value = Value.trim();
 
-        if (Value.equalsIgnoreCase("true")) {
-            return true;
-        }
-
-        if (Value.equalsIgnoreCase("false")) {
-            return false;
-        }
+        if (Value.equalsIgnoreCase("true")) {return true;}
+        if (Value.equalsIgnoreCase("false")) {return false;}
 
         double Number = ParseDouble(Value);
 
@@ -372,34 +332,23 @@ public final class MolangParser {
     }
 
     public static boolean IsNumber(String Expression) {
-        return Expression != null
-                && Expression.trim().matches("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?");
+        return Expression != null && Expression.trim().matches("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?");
     }
 
     public static String GetArguments(String Expression) {
-        if (Expression == null) {
-            return "";
-        }
+        if (Expression == null) {return "";}
 
         int OpenIndex = Expression.indexOf('(');
-
-        if (OpenIndex < 0 || !Expression.endsWith(")") || !IsBalanced(Expression)) {
-            return "";
-        }
+        if (OpenIndex < 0 || !Expression.endsWith(")") || !IsBalanced(Expression)) {return "";}
 
         int ClosingIndex = FindMatchingClosing(Expression, OpenIndex);
-
-        if (ClosingIndex != Expression.length() - 1) {
-            return "";
-        }
+        if (ClosingIndex != Expression.length() - 1) {return "";}
 
         return Expression.substring(OpenIndex + 1, ClosingIndex);
     }
 
     public static String Unquote(String Value) {
-        if (Value == null) {
-            return "";
-        }
+        if (Value == null) {return "";}
 
         Value = Value.trim();
 
@@ -417,10 +366,7 @@ public final class MolangParser {
 
     public static List<String> SplitArguments(String Arguments) {
         List<String> Result = new ArrayList<>();
-
-        if (Arguments == null || Arguments.isBlank()) {
-            return Result;
-        }
+        if (Arguments == null || Arguments.isBlank()) {return Result;}
 
         StringBuilder Current = new StringBuilder();
         int Depth = 0;
@@ -544,10 +490,7 @@ public final class MolangParser {
         }
 
         if (LowerExpression.startsWith("t.") || LowerExpression.startsWith("temp.")) {
-            return MolangEntityParser.GetTemporary(
-                    Entity,
-                    Expression.substring(Expression.indexOf('.') + 1)
-            );
+            return MolangEntityParser.GetTemporary(Entity, Expression.substring(Expression.indexOf('.') + 1));
         }
 
         return null;
@@ -640,8 +583,7 @@ public final class MolangParser {
                 continue;
             }
 
-            if (Statement.regionMatches(true, 0, "return", 0, 6)
-                    && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
+            if (Statement.regionMatches(true, 0, "return", 0, 6) && (Statement.length() == 6 || Character.isWhitespace(Statement.charAt(6)))) {
                 return EvaluateInternal(Entity, Statement.length() == 6 ? "0" : Statement.substring(6).trim());
             }
 
@@ -935,14 +877,11 @@ public final class MolangParser {
                     continue;
                 }
 
-                if ((Character == '+' || Character == '-')
-                        && (PreviousNonWhitespaceIndex(Expression, Index) < 0
-                        || "+-*/%(<>=!&|?".indexOf(Expression.charAt(PreviousNonWhitespaceIndex(Expression, Index))) >= 0)) {
+                if ((Character == '+' || Character == '-') && (PreviousNonWhitespaceIndex(Expression, Index) < 0 || "+-*/%(<>=!&|?".indexOf(Expression.charAt(PreviousNonWhitespaceIndex(Expression, Index))) >= 0)) {
                     continue;
                 }
 
-                if ((Character == '*' || Character == '/' || Character == '%')
-                        && PreviousNonWhitespaceIndex(Expression, Index) < 0) {
+                if ((Character == '*' || Character == '/' || Character == '%') && PreviousNonWhitespaceIndex(Expression, Index) < 0) {
                     continue;
                 }
 

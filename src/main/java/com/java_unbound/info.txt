@@ -1,1 +1,16 @@
 https://learn.microsoft.com/en-us/minecraft/creator/reference/content/visualreference/actor_resource_definition.v1.10.0?view=minecraft-bedrock-stable&utm_source=chatgpt.com#description
+
+
+
+call preanimation loop before each animation:
+
+        if (Definition.Scripts != null && Definition.Scripts.PreAnimation != null) {
+            Definition.Scripts.PreAnimation.forEach(Script -> MolangParser.Evaluate(Entity, Script));
+        }
+
+
+remove from InitializeEntity: PreAnimation
+remove from EntityRendererMixin: PreAnimation
+
+
+unknown GenericReplacedEntityRenderer = add?         //GetRenderingData.GetRenderingData(RelatedEntity); in addRenderData

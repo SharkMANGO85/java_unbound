@@ -7,6 +7,7 @@ import com.geckolib.renderer.base.GeoRenderState;
 import com.google.common.reflect.TypeToken;
 
 import com.java_unbound.entities.geckolib.EntityRendererRegistration;
+import com.java_unbound.entities.geckolib.GetRenderingData;
 import com.java_unbound.loader.gecko_lib.entity.rendering.BedrockGeoRenderLayer;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -41,6 +42,8 @@ public class GenericReplacedEntityRenderer<R extends LivingEntityRenderState & G
     @Override
     public void addRenderData(GenericReplacedEntity Animatable, Entity RelatedEntity, R RenderState, float PartialTick) {
         List<EntityRenderPass> Passes = this.PassProvider.apply(RelatedEntity);
+
+        //GetRenderingData.GetRenderingData(RelatedEntity);
 
         RenderState.addGeckolibData(RENDER_PASSES, Passes);
     }

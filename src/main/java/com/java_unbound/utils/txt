@@ -1,0 +1,94 @@
+adult:
+
+[15:43:09] [Render thread/INFO] (Minecraft) [STDOUT]: ===== AGE INFO: net.minecraft.world.entity.animal.cow.Cow =====
+[Fields]
+  Cow.static EntityDimensions BABY_DIMENSIONS = EntityDimensions[width=0.45, height=0.7, eyeHeight=0.69, attachments=net.minecraft.world.entity.EntityAttachments@6d600fe0, fixed=false]
+  AbstractCow.static EntityDimensions BABY_DIMENSIONS = EntityDimensions[width=0.45, height=0.7, eyeHeight=0.665, attachments=net.minecraft.world.entity.EntityAttachments@24d84acb, fixed=false]
+  Animal.static int PARENT_AGE_AFTER_BREEDING = 6000
+  Animal.static int DEFAULT_IN_LOVE_TIME = 0
+  Animal.int inLove = 0
+  Animal.EntityReference loveCause = null
+  AgeableMob.static EntityDataAccessor DATA_BABY_ID = <entity data: 16> -> false
+  AgeableMob.static EntityDataAccessor AGE_LOCKED = <entity data: 17> -> false
+  AgeableMob.static int BABY_START_AGE = -24000
+  AgeableMob.static int AGE_LOCK_COOLDOWN_TICKS = 40
+  AgeableMob.static float AGE_LOCK_DOWNWARDS_MOVING_PARTICLE_Y_OFFSET = 0.2
+  AgeableMob.static int FORCED_AGE_PARTICLE_TICKS = 40
+  AgeableMob.static int DEFAULT_AGE = 0
+  AgeableMob.static int DEFAULT_FORCED_AGE = 0
+  AgeableMob.int age = 0
+  AgeableMob.int forcedAge = 0
+  AgeableMob.int forcedAgeTimer = 0
+  AgeableMob.int ageLockParticleTimer = 0
+  LivingEntity.static int DAMAGE_SOURCE_TIMEOUT = 40
+  LivingEntity.static float DEFAULT_BABY_SCALE = 0.5
+  LivingEntity.DamageSource lastDamageSource = null
+  LivingEntity.long lastDamageStamp = 0
+[Methods]
+  isInLove() = false
+  canFallInLove() = true
+  getLoveCause() = null
+  getInLoveTime() = 0
+  getAge() = 1
+  getBabyStartAge() = -24000
+  isAgeLocked() = false
+  getForcedAge() = 0
+  getForcedAgeTimer() = 0
+  isBaby() = false
+  canBeABaby() = true
+  canBreed() = false
+  canAgeUp() = false
+  isIgnoringFallDamageFromCurrentImpulse() = false
+  shouldTakeDrowningDamage() = false
+  getAgeScale() = 1.0
+  getArmorCoverPercentage() = 0.0
+  getLastDamageSource() = null
+
+
+
+  #########################################
+
+
+  [15:45:03] [Render thread/INFO] (Minecraft) [STDOUT]: ===== AGE INFO: net.minecraft.world.entity.animal.cow.Cow =====
+  [Fields]
+    Cow.static EntityDimensions BABY_DIMENSIONS = EntityDimensions[width=0.45, height=0.7, eyeHeight=0.69, attachments=net.minecraft.world.entity.EntityAttachments@43946f8e, fixed=false]
+    AbstractCow.static EntityDimensions BABY_DIMENSIONS = EntityDimensions[width=0.45, height=0.7, eyeHeight=0.665, attachments=net.minecraft.world.entity.EntityAttachments@55317804, fixed=false]
+    Animal.static int PARENT_AGE_AFTER_BREEDING = 6000
+    Animal.static int DEFAULT_IN_LOVE_TIME = 0
+    Animal.int inLove = 0
+    Animal.EntityReference loveCause = null
+    AgeableMob.static EntityDataAccessor DATA_BABY_ID = <entity data: 16> -> true
+    AgeableMob.static EntityDataAccessor AGE_LOCKED = <entity data: 17> -> false
+    AgeableMob.static int BABY_START_AGE = -24000
+    AgeableMob.static int AGE_LOCK_COOLDOWN_TICKS = 40
+    AgeableMob.static float AGE_LOCK_DOWNWARDS_MOVING_PARTICLE_Y_OFFSET = 0.2
+    AgeableMob.static int FORCED_AGE_PARTICLE_TICKS = 40
+    AgeableMob.static int DEFAULT_AGE = 0
+    AgeableMob.static int DEFAULT_FORCED_AGE = 0
+    AgeableMob.int age = 0
+    AgeableMob.int forcedAge = 0
+    AgeableMob.int forcedAgeTimer = 0
+    AgeableMob.int ageLockParticleTimer = 0
+    LivingEntity.static int DAMAGE_SOURCE_TIMEOUT = 40
+    LivingEntity.static float DEFAULT_BABY_SCALE = 0.5
+    LivingEntity.DamageSource lastDamageSource = null
+    LivingEntity.long lastDamageStamp = 0
+  [Methods]
+    isInLove() = false
+    getLoveCause() = null
+    canFallInLove() = true
+    getInLoveTime() = 0
+    getAge() = -1
+    isBaby() = true
+    getForcedAgeTimer() = 0
+    isAgeLocked() = false
+    getBabyStartAge() = -24000
+    getForcedAge() = 0
+    canAgeUp() = true
+    canBreed() = false
+    canBeABaby() = true
+    getAgeScale() = 0.5
+    shouldTakeDrowningDamage() = false
+    getArmorCoverPercentage() = 0.0
+    isIgnoringFallDamageFromCurrentImpulse() = false
+    getLastDamageSource() = null

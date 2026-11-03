@@ -18,7 +18,7 @@ public class Entities {
         EntityRendererRegistration.AddEntity(EntityTypes.SKELETON, Entities::RegisterEntity);
         EntityRendererRegistration.AddEntity(EntityTypes.CREEPER, Entities::RegisterEntity);
         EntityRendererRegistration.AddEntity(EntityTypes.ALLAY, Entities::RegisterEntity);
-        EntityRendererRegistration.AddEntity(EntityTypes.SNOW_GOLEM, Entities::RegisterEntity);
+        //EntityRendererRegistration.AddEntity(EntityTypes.SNOW_GOLEM, Entities::RegisterEntity);
         EntityRendererRegistration.AddEntity(EntityTypes.PIG, Entities::RegisterEntity);
         EntityRendererRegistration.AddEntity(EntityTypes.TURTLE, Entities::RegisterEntity);
         EntityRendererRegistration.AddEntity(EntityTypes.BEE, Entities::RegisterEntity);

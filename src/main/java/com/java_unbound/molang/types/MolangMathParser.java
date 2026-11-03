@@ -94,37 +94,23 @@ public final class MolangMathParser {
             case "atan" -> HasArguments(Values, 1) ? Math.toDegrees(Math.atan(Values[0])) : 0;
             case "atan2" -> HasArguments(Values, 2) ? Math.toDegrees(Math.atan2(Values[0], Values[1])) : 0;
             case "ceil" -> HasArguments(Values, 1) ? Math.ceil(Values[0]) : 0;
-            case "clamp" -> HasArguments(Values, 3)
-                    ? Math.max(Math.min(Values[0], Math.max(Values[1], Values[2])), Math.min(Values[1], Values[2]))
-                    : 0;
+            case "clamp" -> HasArguments(Values, 3) ? Math.max(Math.min(Values[0], Math.max(Values[1], Values[2])), Math.min(Values[1], Values[2])) : 0;
             case "copy_sign" -> HasArguments(Values, 2) ? Math.copySign(Values[0], Values[1]) : 0;
             case "cos" -> HasArguments(Values, 1) ? Math.cos(Math.toRadians(Values[0])) : 0;
             case "exp" -> HasArguments(Values, 1) ? Math.exp(Values[0]) : 0;
             case "floor" -> HasArguments(Values, 1) ? Math.floor(Values[0]) : 0;
-            case "hermite_blend" -> HasArguments(Values, 1)
-                    ? Values[0] * Values[0] * (3 - 2 * Values[0])
-                    : 0;
-            case "inverse_lerp" -> HasArguments(Values, 3) && Values[1] != Values[0]
-                    ? (Values[2] - Values[0]) / (Values[1] - Values[0])
-                    : 0;
-            case "lerp" -> HasArguments(Values, 3)
-                    ? Values[0] + (Values[1] - Values[0]) * Values[2]
-                    : 0;
-            case "lerprotate" -> HasArguments(Values, 3)
-                    ? Values[0] + MinAngle(Values[1] - Values[0]) * Values[2]
-                    : 0;
+            case "hermite_blend" -> HasArguments(Values, 1) ? Values[0] * Values[0] * (3 - 2 * Values[0]) : 0;
+            case "inverse_lerp" -> HasArguments(Values, 3) && Values[1] != Values[0] ? (Values[2] - Values[0]) / (Values[1] - Values[0]) : 0;
+            case "lerp" -> HasArguments(Values, 3) ? Values[0] + (Values[1] - Values[0]) * Values[2] : 0;
+            case "lerprotate" -> HasArguments(Values, 3) ? Values[0] + MinAngle(Values[1] - Values[0]) * Values[2] : 0;
             case "ln", "log" -> HasArguments(Values, 1) ? Math.log(Values[0]) : 0;
             case "max" -> HasArguments(Values, 2) ? Math.max(Values[0], Values[1]) : 0;
             case "min" -> HasArguments(Values, 2) ? Math.min(Values[0], Values[1]) : 0;
             case "min_angle" -> HasArguments(Values, 1) ? MinAngle(Values[0]) : 0;
             case "mod" -> HasArguments(Values, 2) && Values[1] != 0 ? Values[0] % Values[1] : 0;
             case "pow" -> HasArguments(Values, 2) ? Math.pow(Values[0], Values[1]) : 0;
-            case "random" -> HasArguments(Values, 2)
-                    ? RandomBetween(Values[0], Values[1])
-                    : 0;
-            case "random_integer" -> HasArguments(Values, 2)
-                    ? RandomInteger(Values[0], Values[1])
-                    : 0;
+            case "random" -> HasArguments(Values, 2) ? RandomBetween(Values[0], Values[1]) : 0;
+            case "random_integer" -> HasArguments(Values, 2) ? RandomInteger(Values[0], Values[1]) : 0;
             case "round" -> HasArguments(Values, 1) ? Math.floor(Values[0] + 0.5) : 0;
             case "sign" -> HasArguments(Values, 1) ? Values[0] > 0 ? 1 : -1 : 0;
             case "sin" -> HasArguments(Values, 1) ? Math.sin(Math.toRadians(Values[0])) : 0;
@@ -133,6 +119,7 @@ public final class MolangMathParser {
             case "trunc" -> HasArguments(Values, 1) ? (long) Values[0] : 0;
             case "die_roll" -> DieRoll(Values, false);
             case "die_roll_integer" -> DieRoll(Values, true);
+
             default -> 0;
         };
     }

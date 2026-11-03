@@ -18,17 +18,9 @@ import net.minecraft.world.entity.Entity;
 import java.util.regex.Pattern;
 
 public class GenericReplacedEntityPassRenderer<R extends LivingEntityRenderState & GeoRenderState> extends GeoReplacedEntityRenderer<GenericReplacedEntity, Entity, R> {
-
     private final EntityRenderPass Pass;
 
-    public GenericReplacedEntityPassRenderer(
-            EntityRendererProvider.Context Context,
-            EntityRenderPass Pass,
-            GenericReplacedEntity Animatable,
-            GeoModel<GenericReplacedEntity> AnimationModel,
-            float ScaleWidth,
-            float ScaleHeight
-    ) {
+    public GenericReplacedEntityPassRenderer(EntityRendererProvider.Context Context, EntityRenderPass Pass, GenericReplacedEntity Animatable, GeoModel<GenericReplacedEntity> AnimationModel, float ScaleWidth, float ScaleHeight) {
         super(Context, new BedrockGeoModel(Pass, AnimationModel), Animatable);
 
         this.Pass = Pass;
@@ -51,11 +43,7 @@ public class GenericReplacedEntityPassRenderer<R extends LivingEntityRenderState
         }
     }
 
-    private void ApplyVisibility(
-            GeoBone Bone,
-            BoneSnapshots Snapshots,
-            EntityRenderPass.PartVisibility Part
-    ) {
+    private void ApplyVisibility(GeoBone Bone, BoneSnapshots Snapshots, EntityRenderPass.PartVisibility Part) {
         if (MatchesBonePattern(Bone.name(), Part.BonePattern())) {
             Snapshots.ifPresent(Bone.name(), Snapshot -> {
                 Snapshot.skipRender(!Part.Visible());
@@ -69,9 +57,7 @@ public class GenericReplacedEntityPassRenderer<R extends LivingEntityRenderState
     }
 
     private static boolean MatchesBonePattern(String BoneName, String Pattern) {
-        if (BoneName == null || Pattern == null) {
-            return false;
-        }
+        if (BoneName == null || Pattern == null) {return false;}
 
         StringBuilder Regex = new StringBuilder();
 
@@ -87,7 +73,5 @@ public class GenericReplacedEntityPassRenderer<R extends LivingEntityRenderState
     }
 
     @Override
-    public void postRenderPass(RenderPassInfo<R> RenderPassInfo, SubmitNodeCollector RenderTasks) {
-
-    }
+    public void postRenderPass(RenderPassInfo<R> RenderPassInfo, SubmitNodeCollector RenderTasks) {}
 }

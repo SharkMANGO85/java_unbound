@@ -14,6 +14,8 @@ import net.minecraft.world.entity.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.terraformersmc.modmenu.ModMenu.LOGGER;
+
 public class GetRenderingData {
     public static List<EntityRenderPass> GetRenderingData(Entity Entity) {
         List<EntityRenderPass> RenderPasses = new ArrayList<>();
@@ -34,7 +36,6 @@ public class GetRenderingData {
 
         for (RenderController.ResolvedRenderController Controller : ActiveRenderControllers) {
             String GeometryIdentifier = Controller.Geometry().replaceFirst("^Geometry\\.", "");
-
             EntityGeometryDefinition Geometry = Definition.Geometries.get(GeometryIdentifier);
 
             if (Geometry == null) {
@@ -53,9 +54,7 @@ public class GetRenderingData {
                 }
 
                 Identifier GeometryPath = Identifier.fromNamespaceAndPath("minecraft", Geometry.Identifier);
-
                 String TextureResourcePath = Texture.ResourcePath.endsWith(".png") ? Texture.ResourcePath : Texture.ResourcePath + ".png";
-
                 Identifier TexturePath = Identifier.fromNamespaceAndPath("minecraft", TextureResourcePath);
 
                 RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath, Controller.PartVisibility()));

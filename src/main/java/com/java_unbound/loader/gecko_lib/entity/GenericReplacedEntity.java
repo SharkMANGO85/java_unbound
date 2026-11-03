@@ -9,8 +9,7 @@ public final class GenericReplacedEntity implements GeoReplacedEntity {
     private final AnimatableInstanceCache Cache = GeckoLibUtil.createInstanceCache(this);
 
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar Controllers) {
-    }
+    public void registerControllers(AnimatableManager.ControllerRegistrar Controllers) {}
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

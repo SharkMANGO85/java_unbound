@@ -91,8 +91,6 @@ public class JavaUnboundClient implements ClientModInitializer {
         GeckoLibLogFilter.Initialize();
         EntityRendererRegistration.RegisterEntityRenderer();
 
-        MolangEntityParser.SetDebug(false);
-
         ClientEntityEvents.ENTITY_LOAD.register((Entity, World) -> {
             InitializeEntity.InitializeEntity(Entity);
         });
