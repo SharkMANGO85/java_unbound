@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin {
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
+   /* @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void entity_Effects$outline(Entity Entity, EntityRenderState State, float PartialTicks, CallbackInfo CI) {
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
         if (Definition == null) {return;}
@@ -23,5 +23,5 @@ public abstract class EntityRendererMixin {
         if (Definition.Scripts != null && Definition.Scripts.PreAnimation != null) {
             Definition.Scripts.PreAnimation.forEach(Script -> MolangParser.Evaluate(Entity, Script));
         }
-    }
+    }*/
 }

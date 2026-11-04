@@ -8,6 +8,7 @@ import com.java_unbound.loader.definitions.entity.types.geometry.EntityGeometryD
 import com.java_unbound.loader.definitions.entity.types.texture.EntityTextureDefinition;
 import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
 
+import com.java_unbound.molang.MolangParser;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
@@ -66,10 +67,32 @@ public class GetRenderingData {
 
                 Identifier TexturePath = Identifier.fromNamespaceAndPath("minecraft", TextureResourcePath);
 
-                RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath, Controller.PartVisibility()));
+                EntityRenderPass.EntityScale Scale = ResolveScale(Entity, Definition);
+
+                RenderPasses.add(new EntityRenderPass(GeometryPath, TexturePath, Controller.PartVisibility(), Scale));
             }
         }
 
         return RenderPasses;
+    }
+
+    private static EntityRenderPass.EntityScale ResolveScale(Entity Entity, EntityDefinition Definition) {
+        if (Definition.Scripts == null) {return EntityRenderPass.EntityScale.NONE;}
+
+        var Scripts = Definition.Scripts;
+
+        float Uniform = EvaluateFloat(Entity, Scripts.Scale, 1.0f);
+
+        return new EntityRenderPass.EntityScale(EvaluateFloat(Entity, Scripts.ScaleX, Uniform), EvaluateFloat(Entity, Scripts.ScaleY, Uniform), EvaluateFloat(Entity, Scripts.ScaleZ, Uniform));
+    }
+
+    private static float EvaluateFloat(Entity Entity, String Expression, float Default) {
+        if (Expression == null || Expression.isBlank()) {return Default;}
+
+        try {
+            return Float.parseFloat(MolangParser.Evaluate(Entity, Expression));
+        } catch (Exception Exception) {
+            return Default;
+        }
     }
 }

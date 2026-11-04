@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.cubemob.Slime;
 import net.minecraft.world.item.ItemStack;
 
 import java.lang.reflect.Method;
@@ -35,7 +36,14 @@ public final class MolangEntityQueries {
             case "is_item_name_any" -> IsItemNameAny(Entity, Arguments);
 
             // Variants are entity specific. Until each entity is mapped, read them from entity variables.
-            case "variant" -> VariableOrZero(Entity, "variant");
+            case "variant" -> {
+                if (Entity instanceof Slime Slime) {
+                    yield String.valueOf(Slime.getSize());
+                }
+
+                yield VariableOrZero(Entity, "variant");
+            }
+
             case "mark_variant" -> VariableOrZero(Entity, "mark_variant");
 
             // Entity specific booleans/numbers, read by method name (the game is unobfuscated in 26.x).

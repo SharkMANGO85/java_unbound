@@ -19,5 +19,7 @@ public final class ResourceMappings {
         Folder.SetIdentifier("textures/gui/title/minecraft.png", "subpacks/SP2/textures/ui/title.png");
 
         Folder.SetIdentifier("textures/misc/pumpkinblur.png", "subpacks/SP2/textures/misc/pumpkinblur.png");
+
+        Folder.SetIdentifier("geckolib/animations/animation.oreville_ans.qdpwhx.json", "subpacks/animation.oreville_ans.qdpwhx.json");
     }
 }

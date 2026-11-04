@@ -19,27 +19,28 @@ public class TransparencyConverter {
     }
     
     public static Runnable LoadTextureTransparencies(File TexturesRoot) {
-        for (Map.Entry<String, Double> Entry : Transparency.entrySet()) {
-            File File = new File(TexturesRoot, Entry.getKey());
-            if (!File.isFile()) {
-                JavaUnbound.LOGGER.error("[TransparencyConverter] Texture not found: " + File);
-                continue;
-            }
-
-            try {
-                BufferedImage Source = ImageIO.read(File);
-                if (Source == null) {
-                    JavaUnbound.LOGGER.error("[TransparencyConverter] Not a readable image: " + File);
+        return () -> {
+            for (Map.Entry<String, Double> Entry : Transparency.entrySet()) {
+                File File = new File(TexturesRoot, Entry.getKey());
+                if (!File.isFile()) {
+                    JavaUnbound.LOGGER.error("[TransparencyConverter] Texture not found: " + File);
                     continue;
                 }
 
-                BufferedImage Fixed = applyAlpha(Source, Entry.getValue());
-                ImageIO.write(Fixed, "png", File);
-            } catch (IOException e) {
-                JavaUnbound.LOGGER.error("[TransparencyConverter] Failed to convert " + File + ": " + e.getMessage());
+                try {
+                    BufferedImage Source = ImageIO.read(File);
+                    if (Source == null) {
+                        JavaUnbound.LOGGER.error("[TransparencyConverter] Not a readable image: " + File);
+                        continue;
+                    }
+
+                    BufferedImage Fixed = applyAlpha(Source, Entry.getValue());
+                    ImageIO.write(Fixed, "png", File);
+                } catch (IOException e) {
+                    JavaUnbound.LOGGER.error("[TransparencyConverter] Failed to convert " + File + ": " + e.getMessage());
+                }
             }
-        }
-        return null;
+        };
     }
     
     public static BufferedImage applyAlpha(BufferedImage Source, double AlphaValue) {

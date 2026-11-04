@@ -11,7 +11,17 @@
     "resourcepack.LogoRendererMixin",
     "resourcepack.SplashRendererMixin",
 
-    "ui.PumpkinBlurMixin"
+    "ui.PumpkinBlurMixin",
+
+    "mod_menu.YACLCategoryTabMixin",
+    "mod_menu.ControllerWidgetMixin",
+    "mod_menu.YACLCategoryTabAccessor",
+    "mod_menu.YACLScreenMixin",
+    "mod_menu.OptionListWidgetMixin",
+    "mod_menu.DropdownControllerMixin",
+    "mod_menu.DropdownOptionsMixin",
+    "mod_menu.DropdownControllerElementAccessor",
+    "mod_menu.DropdownWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1

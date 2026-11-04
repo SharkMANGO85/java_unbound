@@ -34,35 +34,36 @@ public final class TgaConverter {
     }
 
     public static Runnable ConvertAll(Path Root) {
-        Debug("ConvertAll root = " + Root);
+        return () -> {
+            Debug("ConvertAll root = " + Root);
 
-        if (Root == null || !Files.isDirectory(Root)) {
-            Debug("Root is null or not a directory, skipping");
-            return null;
-        }
+            if (Root == null || !Files.isDirectory(Root)) {
+                Debug("Root is null or not a directory, skipping");
+                return;
+            }
 
-        AtomicInteger Found = new AtomicInteger();
-        AtomicInteger Succeeded = new AtomicInteger();
-        AtomicInteger Failed = new AtomicInteger();
+            AtomicInteger Found = new AtomicInteger();
+            AtomicInteger Succeeded = new AtomicInteger();
+            AtomicInteger Failed = new AtomicInteger();
 
-        try (Stream<Path> FilesStream = Files.walk(Root)) {
-            FilesStream.filter(Files::isRegularFile).filter(File -> File.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".tga")).forEach(File -> {
-                Found.incrementAndGet();
+            try (Stream<Path> FilesStream = Files.walk(Root)) {
+                FilesStream.filter(Files::isRegularFile).filter(File -> File.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".tga")).forEach(File -> {
+                    Found.incrementAndGet();
 
-                try {
-                    Convert(File);
-                    Succeeded.incrementAndGet();
-                } catch (Exception Exception) {
-                    Failed.incrementAndGet();
-                    JavaUnbound.LOGGER.error("TGA convert failed: " + File + " -> " + Exception.getMessage());
-                }
-            });
-        } catch (IOException Exception) {
-            JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
-        }
+                    try {
+                        Convert(File);
+                        Succeeded.incrementAndGet();
+                    } catch (Exception Exception) {
+                        Failed.incrementAndGet();
+                        JavaUnbound.LOGGER.error("TGA convert failed: " + File + " -> " + Exception.getMessage());
+                    }
+                });
+            } catch (IOException Exception) {
+                JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
+            }
 
-        Debug("ConvertAll done: found =" + Found + ", converted =" + Succeeded + ", failed =" + Failed);
-        return null;
+            Debug("ConvertAll done: found =" + Found + ", converted =" + Succeeded + ", failed =" + Failed);
+        };
     }
 
     public static void Convert(Path TgaFile) throws IOException {

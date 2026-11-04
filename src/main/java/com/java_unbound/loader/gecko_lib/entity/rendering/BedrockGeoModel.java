@@ -28,13 +28,17 @@ public class BedrockGeoModel extends DefaultedEntityGeoModel<GenericReplacedEnti
     }
 
     @Override
-    public Identifier getAnimationResource(GenericReplacedEntity Animatable) {
-        return this.AnimationModel.getAnimationResource(Animatable);
+    public Identifier getAnimationResource(GenericReplacedEntity animatable) {
+        Identifier Id = Identifier.fromNamespaceAndPath("java_unbound", "animations/entity/oreville_ans.animation.json");
+
+        return Id;
     }
 
     @Override
-    public Identifier[] getAnimationResourceFallbacks(GenericReplacedEntity Animatable) {
-        return this.AnimationModel.getAnimationResourceFallbacks(Animatable);
+    public Identifier[] getAnimationResourceFallbacks(GenericReplacedEntity animatable) {
+        Identifier[] Fallback = this.AnimationModel.getAnimationResourceFallbacks(animatable);
+
+        return Fallback;
     }
 
     @Override

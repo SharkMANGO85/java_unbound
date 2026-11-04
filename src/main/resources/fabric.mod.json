@@ -23,6 +23,9 @@
     ],
     "client": [
       "com.java_unbound.JavaUnboundClient"
+    ],
+    "modmenu": [
+      "com.java_unbound.mod_menu.ModMenuIntegration"
     ]
   },
 

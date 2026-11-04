@@ -1,4 +1,4 @@
-package com.java_unbound.loader.definitions.entity.reolvers;
+package com.java_unbound.loader.definitions.entity.resolvers;
 
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;

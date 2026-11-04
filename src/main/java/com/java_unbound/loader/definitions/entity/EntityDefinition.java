@@ -1,19 +1,17 @@
 package com.java_unbound.loader.definitions.entity;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.loader.definitions.entity.reolvers.*;
+import com.java_unbound.loader.definitions.entity.resolvers.*;
+import com.java_unbound.loader.definitions.entity.types.animation.EntityAnimationDefinition;
+import com.java_unbound.loader.definitions.entity.types.animation.EntityAnimationReference;
+import com.java_unbound.loader.definitions.entity.types.animation_controller.EntityAnimationControllerDefinition;
+import com.java_unbound.loader.definitions.entity.types.animation_controller.EntityAnimationControllerReference;
 import com.java_unbound.loader.definitions.entity.types.geometry.EntityGeometryDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
-import com.java_unbound.loader.definitions.entity.types.scripts.EntityScriptsAnimate;
 import com.java_unbound.loader.definitions.entity.types.scripts.EntityScriptsDefinition;
-import com.java_unbound.loader.definitions.entity.types.scripts.EntityScriptsVariables;
 import com.java_unbound.loader.definitions.entity.types.spawn_egg.EntitySpawnEggDefinition;
 import com.java_unbound.loader.definitions.entity.types.texture.EntityTextureDefinition;
 import com.java_unbound.loader.resourcepack.Folder;
-import com.java_unbound.utils.functions.GetJsonValue;
 import com.java_unbound.utils.variables.HashMaps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
@@ -37,9 +35,9 @@ public class EntityDefinition {
     public HashMap<String, EntityTextureDefinition> Textures;
     public List<EntityRenderControllerReference> RenderControllers;
     public EntityScriptsDefinition Scripts;
-
-    public HashMap<String, String> Animations;
+    public List<EntityAnimationControllerReference> AnimationControllers;
     public HashMap<String, String> Materials;
+    public List<EntityAnimationReference> Animations;
 
     public HashMap<String, String> SoundEffects;
     public HashMap<String, String> ParticleEffects;
@@ -47,9 +45,14 @@ public class EntityDefinition {
 
     public static EntityDefinition ResolveEntity(Path JsonFile) {
         EntityDefinition Definition = new EntityDefinition();
+        String EntityIdentifer = EntityStringResolver.GetEntityString("identifier", JsonFile);
+
+        if (EntityIdentifer.equals("minecraft:villager_v2")) {
+            EntityIdentifer = "minecraft:villager";
+        }
 
         try {
-            Definition.Identifier = EntityStringResolver.GetEntityString("identifier", JsonFile);
+            Definition.Identifier = EntityIdentifer;
             Definition.Geometries = EntityGeometryResolver.GetEntityGeometries(JsonFile);
             Definition.Textures = EntityTextureResolver.GetEntityTextures(JsonFile);
             Definition.RenderControllers = EntityRenderControllerResolver.GetEntityRenderControllers(JsonFile);
@@ -58,6 +61,8 @@ public class EntityDefinition {
             Definition.EnableAttachables = EntityBooleanResolver.GetEntityBoolean("enable_attachables", JsonFile);
             Definition.HeldItemIgnoresLighting = EntityBooleanResolver.GetEntityBoolean("held_item_ignores_lighting", JsonFile);
             Definition.HideArmor = EntityBooleanResolver.GetEntityBoolean("hide_armor", JsonFile);
+            Definition.AnimationControllers = EntityAnimationControllerResolver.GetEntityAnimationControllers(JsonFile);
+            Definition.Animations = EntityAnimationResolver.GetEntityAnimations(JsonFile);
 
             return Definition;
         } catch (Exception Exception) {

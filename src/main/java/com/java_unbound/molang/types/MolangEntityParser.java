@@ -4,6 +4,7 @@ import com.java_unbound.JavaUnbound;
 import com.java_unbound.entities.interfaces.EntityBiomeInterface;
 import com.java_unbound.entities.interfaces.EntityTemporaryInterface;
 import com.java_unbound.entities.interfaces.EntityVariableInterface;
+import com.java_unbound.mod_menu.config.ConfigManager;
 import com.java_unbound.molang.MolangParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -21,10 +22,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class MolangEntityParser {
-    private static final Logger LOGGER = LoggerFactory.getLogger("JavaUnbound/Molang");
-    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
-
     private MolangEntityParser() {}
+
+    private static final Set<String> WARNED = ConcurrentHashMap.newKeySet();
 
     public static String Evaluate(Entity Entity, String Expression) {
         if (Expression == null || Expression.isBlank()) {return "0";}
@@ -60,7 +60,7 @@ public final class MolangEntityParser {
             return "0";
         } catch (Exception Exception) {
             if (WARNED.add("exception:" + Expression)) {
-                LOGGER.warn("Molang query failed for '{}'", Expression, Exception);
+                JavaUnbound.LOGGER.warn("Molang query failed for '{}'", Expression, Exception);
             }
 
             return "0";
@@ -164,8 +164,10 @@ public final class MolangEntityParser {
             case "is_swimming" -> Entity.isSwimming() ? "1" : "0";
             case "is_sleeping" -> Entity instanceof LivingEntity Living && Living.isSleeping() ? "1" : "0";
 
-            case "is_riding", "is_riding_any_entity", "is_passenger", "is_attached" -> Entity.isPassenger() ? "1" : "0";
+            case "is_riding", "is_riding_any_entity", "is_passenger" -> Entity.isPassenger() ? "1" : "0";
             case "is_vehicle" -> Entity.isVehicle() ? "1" : "0";
+
+            case "is_attached" -> Entity.isPassenger() || Entity.isVehicle() ? "1" : "0";
 
             case "is_jumping" -> Entity.getDeltaMovement().y > 0 && !Entity.onGround() ? "1" : "0";
             case "is_moving" -> Entity.getDeltaMovement().horizontalDistanceSqr() > 0.0001 ? "1" : "0";
@@ -265,11 +267,40 @@ public final class MolangEntityParser {
     }
 
     private static String IsPackSettingSelected(List<String> Arguments) {
-        return "1";
+        if (Arguments == null || Arguments.size() < 2) {return "0";}
+
+        String Key = Arguments.get(0).trim();
+        String ExpectedValue = Arguments.get(1).trim();
+
+        if (Key.length() >= 2 && ((Key.startsWith("'") && Key.endsWith("'")) || (Key.startsWith("\"") && Key.endsWith("\"")))) {
+            Key = Key.substring(1, Key.length() - 1);
+        }
+
+        if (ExpectedValue.length() >= 2 && ((ExpectedValue.startsWith("'") && ExpectedValue.endsWith("'")) || (ExpectedValue.startsWith("\"") && ExpectedValue.endsWith("\"")))) {
+            ExpectedValue = ExpectedValue.substring(1, ExpectedValue.length() - 1);
+        }
+
+        Object Value = ConfigManager.GetValue("SETTING", Key);
+        if (Value == null) {return "0";}
+
+        return String.valueOf(Value).equals(ExpectedValue) ? "1" : "0";
     }
 
     private static String IsPackSettingEnabled(List<String> Arguments) {
-        return "1";
+        if (Arguments == null || Arguments.isEmpty()) return "0";
+
+        String Key = Arguments.getFirst().trim();
+
+        if (Key.length() >= 2 && ((Key.startsWith("'") && Key.endsWith("'")) || (Key.startsWith("\"") && Key.endsWith("\"")))) {
+            Key = Key.substring(1, Key.length() - 1);
+        }
+
+        Object Value = ConfigManager.GetValue("SETTING", Key);
+
+        if (Value instanceof Boolean BooleanValue) return BooleanValue ? "1" : "0";
+        if (Value instanceof Number NumberValue) return String.valueOf(NumberValue.doubleValue());
+
+        return "0";
     }
 
     private static String IsInUI() {
@@ -329,10 +360,6 @@ public final class MolangEntityParser {
 
         String Result = MatchedValue != null ? "1" : "0";
 
-        /*if (Result.equals("1")) {
-            JavaUnbound.LOGGER.error("Matched Name: {}, List: {}, Result: {}", MatchedValue, Values, Result);
-        }*/
-
         return Result;
     }
 
@@ -340,7 +367,7 @@ public final class MolangEntityParser {
         if (!(Entity instanceof EntityBiomeInterface BiomeInterface)) {return "0";}
 
         String BiomeId = BiomeInterface.JavaUnbound$getBiome();
-        if (BiomeId == null) {return "0";}
+        if (BiomeId == null) {JavaUnbound.LOGGER.error("BiomeId is null"); return "0";}
 
         for (String Value : Values) {
             if (BiomeId.equals(MolangParser.Unquote(Value).trim())) {

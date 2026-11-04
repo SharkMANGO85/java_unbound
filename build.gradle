@@ -1,4 +1,3 @@
-
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
@@ -22,7 +21,6 @@ repositories {
 				url = "https://api.modrinth.com/maven"
 			}
 		}
-
 		filter {
 			includeGroup "maven.modrinth"
 		}
@@ -35,7 +33,6 @@ repositories {
 				url = "https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/"
 			}
 		}
-
 		filter {
 			includeGroupAndSubgroups "com.geckolib"
 		}
@@ -45,6 +42,23 @@ repositories {
 fabricApi {
 	configureDataGeneration {
 		client = true
+	}
+}
+
+loom {
+	runs {
+		client {
+			client()
+			name "Minecraft Client"
+			source sourceSets.main
+			vmArg "-Xmx16G"
+		}
+		server {
+			server()
+			name "Minecraft Server"
+			source sourceSets.main
+			vmArg "-Xmx4G"
+		}
 	}
 }
 
@@ -65,20 +79,8 @@ dependencies {
 	implementation 'ar.com.hjg:pngj:2.1.0'
 }
 
-loom {
-	runs {
-		client {
-			vmArg "-Xmx16G"
-		}
-		"server" {
-			vmArg "-Xmx4G"
-		}
-	}
-}
-
 processResources {
 	def version = project.version
-
 	inputs.property "version", version
 
 	filesMatching("fabric.mod.json") {
@@ -92,14 +94,12 @@ tasks.withType(JavaCompile).configureEach {
 
 java {
 	withSourcesJar()
-
 	sourceCompatibility = JavaVersion.VERSION_25
 	targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {
 	def projectName = project.name
-
 	inputs.property "projectName", projectName
 
 	from("LICENSE") {
@@ -112,9 +112,5 @@ publishing {
 		create("mavenJava", MavenPublication) {
 			from components.java
 		}
-	}
-
-	repositories {
-		// Add publishing repositories here if needed.
 	}
 }

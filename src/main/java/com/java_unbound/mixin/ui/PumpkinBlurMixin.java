@@ -2,6 +2,7 @@ package com.java_unbound.mixin.ui;
 
 import com.google.gson.JsonPrimitive;
 //import com.java_unbound.mod_menu.config.ConfigManager;
+import com.java_unbound.mod_menu.config.ConfigManager;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -23,7 +24,7 @@ public abstract class PumpkinBlurMixin {
     private void JavaUnbound$RenderPumpkinBlur(GuiGraphicsExtractor Graphics, Identifier Texture, float Alpha, CallbackInfo Callback) {
         if (!Texture.equals(PUMPKIN_BLUR_TEXTURE)) {return;}
 
-        Object ScaleValue = 1.5; //ConfigManager.GetValue("SETTING", "Pumpkin Blur Texture Scale");
+        Object ScaleValue = ConfigManager.GetValue("SETTING", "Pumpkin Blur Texture Scale");
 
         float Scale = ScaleValue instanceof JsonPrimitive Primitive ? Primitive.getAsFloat() : ScaleValue instanceof Number Number ? Number.floatValue() : 1.5F;
 

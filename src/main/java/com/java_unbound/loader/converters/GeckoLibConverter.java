@@ -4,8 +4,12 @@ package com.java_unbound.loader.converters;
 import com.google.gson.*;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
-import com.java_unbound.loader.definitions.entity.reolvers.EntityGeometryResolver;
+import com.java_unbound.loader.definitions.entity.resolvers.EntityAnimationResolver;
+import com.java_unbound.loader.definitions.entity.resolvers.EntityGeometryResolver;
+import com.java_unbound.loader.definitions.entity.types.animation.EntityAnimationDefinition;
 import com.java_unbound.loader.definitions.entity.types.geometry.EntityGeometryDefinition;
+import com.java_unbound.loader.definitions.entity.resolvers.EntityAnimationControllerResolver;
+import com.java_unbound.loader.definitions.entity.types.animation_controller.EntityAnimationControllerDefinition;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.utils.variables.HashMaps;
 
@@ -50,6 +54,8 @@ public class GeckoLibConverter {
         ClearResources();
 
         HashSet<String> ExportedGeometries = new HashSet<>();
+        HashSet<String> ExportedAnimationControllers = new HashSet<>();
+        HashSet<String> ExportedAnimations = new HashSet<>();
 
         for (EntityDefinition EntityRegistry : HashMaps.Entities.values()) {
             for (EntityGeometryDefinition Geometry : EntityRegistry.Geometries.values()) {
@@ -67,7 +73,6 @@ public class GeckoLibConverter {
 
                 JsonArray Geometries = new JsonArray();
                 Geometries.add(GeometryObject);
-
                 RootObject.add("minecraft:geometry", Geometries);
 
                 JsonObject Description = GeometryObject.getAsJsonObject("description");
@@ -78,23 +83,84 @@ public class GeckoLibConverter {
 
                 Path GeometryFolder = Folder.GetConfigFolder().resolve("assets").resolve("geckolib").resolve("resources").resolve("geometries");
                 Files.createDirectories(GeometryFolder);
+
                 Path GeometryFile = GeometryFolder.resolve(Identifier + ".geo.json");
                 Files.writeString(GeometryFile, FormatJson(RootObject));
+
                 Folder.SetIdentifier("geckolib/models/entity/" + Identifier + ".geo.json", "assets/geckolib/resources/geometries/" + Identifier + ".geo.json");
+            }
+
+            for (var AnimationControllerReference : EntityRegistry.AnimationControllers) {
+                EntityAnimationControllerDefinition Controller = AnimationControllerReference.Definition;
+                if (Controller == null || !ExportedAnimationControllers.add(Controller.Identifier)) {continue;}
+
+                JsonObject ControllerJson = EntityAnimationControllerResolver.GetAnimationControllerJson(Controller.Identifier);
+
+                if (ControllerJson == null) {
+                    JavaUnbound.LOGGER.error("Could not find animation controller JSON: {}", Controller.Identifier);
+                    continue;
+                }
+
+                Path Config = Folder.GetConfigsFolder();
+                if (Config == null) {continue;}
+
+                Path AnimationControllerFolder = Folder.GetConfigFolder().resolve("assets").resolve("geckolib").resolve("resources").resolve("animation_controllers");
+                Files.createDirectories(AnimationControllerFolder);
+
+                Path AnimationControllerFile = AnimationControllerFolder.resolve(Controller.Identifier + ".animation_controllers.json");
+                Files.writeString(AnimationControllerFile, FormatJson(ControllerJson));
+
+                Folder.SetIdentifier("geckolib/animation_controllers/" + Controller.Identifier + ".json", "assets/geckolib/resources/animation_controllers/" + Controller.Identifier + ".json");
+            }
+
+            for (var AnimationReference : EntityRegistry.Animations) {
+                EntityAnimationDefinition Animation = AnimationReference.Definition;
+                if (Animation == null || !ExportedAnimations.add(Animation.Identifier)) {continue;}
+
+                JsonObject AnimationJson = EntityAnimationResolver.GetAnimationJson(Animation.Identifier);
+
+                if (AnimationJson == null) {
+                    JavaUnbound.LOGGER.error("Could not find animation JSON: {}", Animation.Identifier);
+                    continue;
+                }
+
+                Path Config = Folder.GetConfigsFolder();
+                if (Config == null) {continue;}
+
+                JsonObject AnimationsObject = new JsonObject();
+                AnimationsObject.add(Animation.Identifier, AnimationJson);
+
+                JsonObject RootObject = new JsonObject();
+                RootObject.addProperty("format_version", "1.8.0");
+                RootObject.add("animations", AnimationsObject);
+
+                Path AnimationFolder = Folder.GetConfigFolder().resolve("assets").resolve("geckolib").resolve("resources").resolve("animations");
+                Files.createDirectories(AnimationFolder);
+
+                Path AnimationFile = AnimationFolder.resolve(Animation.Identifier + ".json");
+                Files.writeString(AnimationFile, FormatJson(RootObject));
+
+                Folder.SetIdentifier("geckolib/animations/" + Animation.Identifier + ".json", "assets/geckolib/resources/animations/" + Animation.Identifier + ".json");
             }
         }
     }
 
     public static void ClearResources() throws IOException {
-        Path Config = Folder.GetConfigsFolder();
+        Path Config = Folder.GetConfigFolder();
         if (Config == null) {return;}
 
-        Path GeometryFolder = Config.resolve("java_unbound_mod").resolve("assets").resolve("geckolib").resolve("resources").resolve("geometries");
+        Path ResourceFolder = Config.resolve("assets").resolve("geckolib").resolve("resources");
 
-        Files.createDirectories(GeometryFolder);
+        ClearResourceFolder(ResourceFolder.resolve("geometries"));
+        ClearResourceFolder(ResourceFolder.resolve("animation_controllers"));
+        ClearResourceFolder(ResourceFolder.resolve("animations"));
+    }
 
-        try (var Paths = Files.walk(GeometryFolder)) {
-            Paths.filter(Path -> !Path.equals(GeometryFolder))
+    private static void ClearResourceFolder(Path ResourceFolder) throws IOException {
+        Files.createDirectories(ResourceFolder);
+
+        try (var Paths = Files.walk(ResourceFolder)) {
+            Paths.filter(Path -> !Path.equals(ResourceFolder))
                     .sorted(Comparator.reverseOrder())
                     .forEach(Path -> {
                         try {

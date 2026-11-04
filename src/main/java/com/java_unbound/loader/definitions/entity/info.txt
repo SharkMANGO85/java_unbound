@@ -30,3 +30,15 @@
 | textures                                 | Object             | ✔️     |
 | textures (as String)                     | String             | ✔️     |
 +------------------------------------------+--------------------+--------+
+
+Animations
+
+An animation controller determines which animations an entity should play based on its current state and predefined Molang conditions.
+
+Each state can play one or more animations and contains transition conditions that determine when to switch to another state.
+
+The controller continuously evaluates these conditions and changes states when their requirements are met.
+
+Transitions can use blend durations to smoothly switch between animations.
+
+Multiple animation controllers can run simultaneously, allowing different animations to control different parts of an entity.

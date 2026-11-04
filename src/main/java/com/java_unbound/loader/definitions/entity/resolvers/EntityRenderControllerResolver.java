@@ -1,4 +1,4 @@
-package com.java_unbound.loader.definitions.entity.reolvers;
+package com.java_unbound.loader.definitions.entity.resolvers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,12 +14,10 @@ import com.java_unbound.loader.definitions.entity.types.render_controller.Entity
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerUvAnim;
 import com.java_unbound.loader.resourcepack.Folder;
-import com.java_unbound.molang.MolangParser;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

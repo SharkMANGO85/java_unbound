@@ -8,6 +8,7 @@ import net.minecraft.resources.Identifier;
 public class GenericReplacedEntityModel extends GeoModel<GenericReplacedEntity> {
     private static final Identifier EMPTY_MODEL = Identifier.fromNamespaceAndPath("minecraft", "empty");
     private static final Identifier EMPTY_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "textures/misc/unknown_server.png");
+    private static final Identifier ANIMATION = Identifier.fromNamespaceAndPath("minecraft", "animation.oreville_ans.aeakyu");
 
     @Override
     public Identifier getModelResource(GeoRenderState RenderState) {
@@ -21,6 +22,6 @@ public class GenericReplacedEntityModel extends GeoModel<GenericReplacedEntity> 
 
     @Override
     public Identifier getAnimationResource(GenericReplacedEntity Animatable) {
-        return null;
+        return ANIMATION;
     }
 }
