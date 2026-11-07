@@ -20,6 +20,6 @@ public final class ResourceMappings {
 
         Folder.SetIdentifier("textures/misc/pumpkinblur.png", "subpacks/SP2/textures/misc/pumpkinblur.png");
 
-        Folder.SetIdentifier("geckolib/animations/animation.oreville_ans.qdpwhx.json", "subpacks/animation.oreville_ans.qdpwhx.json");
+        Folder.SetIdentifier("geckolib/animations/animation.oreville_ans.test.json", "subpacks/animation.oreville_ans.test.json");
     }
 }

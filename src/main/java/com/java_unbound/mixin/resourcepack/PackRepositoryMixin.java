@@ -53,6 +53,6 @@ public abstract class PackRepositoryMixin {
         JavaUnbound.LOGGER.debug("[Java Unbound] ===== PACK RELOAD =====");
         JavaUnbound.LOGGER.debug("[Java Unbound] Available: " + Repository.getAvailableIds());
         JavaUnbound.LOGGER.debug("[Java Unbound] Selected: " + Repository.getSelectedIds());
-        JavaUnbound.LOGGER.debug("[Java Unbound] Java Unbound available: " + Repository.isAvailable("java_unbound"));
+        JavaUnbound.LOGGER.debug("[Java Unbound] Java Unbound available: " + Repository.isAvailable(PackLoader.PackID));
     }
 }

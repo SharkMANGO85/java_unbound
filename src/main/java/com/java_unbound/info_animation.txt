@@ -1,0 +1,56 @@
+implement own animation system, use molang, etc.
+
+com.java_unbound.loader.animation/
+│
+├── AnimationManager.java
+├── AnimationRegistry.java
+│
+├── definitions/
+│   ├── AnimationDefinition.java
+│   ├── BoneAnimationDefinition.java
+│   ├── AnimationChannelDefinition.java
+│   ├── KeyframeDefinition.java
+│   ├── AnimationControllerDefinition.java
+│   ├── ControllerStateDefinition.java
+│   ├── ControllerTransitionDefinition.java
+│   └── AnimationEventDefinition.java
+│
+├── loading/
+│   ├── BedrockAnimationReloadListener.java
+│   ├── BedrockAnimationParser.java
+│   └── AnimationValidator.java
+│
+├── runtime/
+│   ├── EntityAnimationRuntime.java
+│   ├── AnimationControllerInstance.java
+│   ├── ControllerStateInstance.java
+│   ├── AnimationInstance.java
+│   ├── AnimationTransition.java
+│   ├── AnimationMixer.java
+│   ├── AnimationPose.java
+│   └── BoneTransform.java
+│
+├── interpolation/
+│   ├── KeyframeInterpolator.java
+│   ├── LinearInterpolator.java
+│   ├── CatmullRomInterpolator.java
+│   ├── RotationInterpolator.java
+│   └── CurveEvaluator.java
+│
+├── molang/
+│   ├── MolangCompiler.java
+│   ├── MolangExpression.java
+│   ├── MolangContext.java
+│   ├── MolangVariableScope.java
+│   ├── MolangQueryRegistry.java
+│   └── PreAnimationScriptRunner.java
+│
+├── events/
+│   ├── AnimationTimelineDispatcher.java
+│   ├── AnimationEventHandler.java
+│   ├── SoundAnimationEventHandler.java
+│   └── ParticleAnimationEventHandler.java
+│
+└── rendering/
+    ├── AnimationDataTickets.java
+    └── AnimationPoseAdapter.java

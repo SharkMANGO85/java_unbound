@@ -4,5 +4,6 @@ public class EntityAnimationBone {
     public EntityAnimationChannel Rotation;
     public EntityAnimationChannel Position;
     public EntityAnimationChannel Scale;
-    public String RotationRelativeTo;
+
+    public String RelativeToRotation;
 }

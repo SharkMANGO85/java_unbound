@@ -68,19 +68,13 @@ public class EntityGeometryResolver {
                         .filter(File -> File.toString().endsWith(".json"))
                         .forEach(GeometryFile -> {
                             JsonObject Root = ReadJson(GeometryFile);
-                            if (Root == null) {
-                                return;
-                            }
+                            if (Root == null) {return;}
 
                             JsonElement GeometryElement = Root.get("minecraft:geometry");
-                            if (GeometryElement == null || !GeometryElement.isJsonArray()) {
-                                return;
-                            }
+                            if (GeometryElement == null || !GeometryElement.isJsonArray()) {return;}
 
                             for (JsonElement Element : GeometryElement.getAsJsonArray()) {
-                                if (!Element.isJsonObject()) {
-                                    continue;
-                                }
+                                if (!Element.isJsonObject()) {continue;}
 
                                 JsonObject GeometryObject = Element.getAsJsonObject();
                                 String Identifier = GetGeometryIdentifier(GeometryObject);

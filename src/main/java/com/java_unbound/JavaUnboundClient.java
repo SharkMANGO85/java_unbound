@@ -1,28 +1,34 @@
 package com.java_unbound;
 
-import com.java_unbound.entities.geckolib.EntityRendererRegistration;
+import com.geckolib.animatable.GeoItem;
+import com.geckolib.animatable.client.GeoRenderProvider;
+import com.geckolib.renderer.GeoItemRenderer;
+import com.google.common.base.Suppliers;
+import com.java_unbound.attachables.AttachableRegistry;
+import com.java_unbound.loader.definitions.entity.resolvers.EntityAnimationResolver;
+import com.java_unbound.geckolib.rendering.EntityRendererRegistration;
 import com.java_unbound.loader.converters.GeckoLibConverter;
 import com.java_unbound.loader.converters.MaterialToJsonConverter;
 import com.java_unbound.loader.converters.TgaConverter;
 import com.java_unbound.loader.converters.TransparencyConverter;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
-import com.java_unbound.loader.definitions.entity.resolvers.EntityAnimationControllerResolver;
 import com.java_unbound.loader.definitions.entity.resolvers.EntityGeometryResolver;
 import com.java_unbound.loader.definitions.entity.resolvers.EntityRenderControllerResolver;
-import com.java_unbound.loader.gecko_lib.GeckoLibLogFilter;
+import com.java_unbound.geckolib.utils.GeckoLibLogFilter;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
 import com.java_unbound.mod_menu.config.ConfigManager;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.commands.Commands;
 import com.java_unbound.entities.InitializeEntity;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 public class JavaUnboundClient implements ClientModInitializer {
     public static String Debug = "";
@@ -52,8 +58,7 @@ public class JavaUnboundClient implements ClientModInitializer {
     public static void Loading() {
         EntityGeometryResolver.ClearCache();
         EntityRenderControllerResolver.ClearCache();
-        EntityAnimationControllerResolver.ClearCache();
-        EntityGeometryResolver.ClearCache();
+        EntityAnimationResolver.ClearCache();
 
         DebugError("Material to Json Converter", MaterialToJsonConverter.Convert());
         DebugError("TGA Converter", TgaConverter.ConvertAll(Folder.GetConfigFolder()));
@@ -96,5 +101,6 @@ public class JavaUnboundClient implements ClientModInitializer {
             InitializeEntity.InitializeEntity(Entity);
         });
 
+        AttachableRegistry.RegisterItems();
     }
 }

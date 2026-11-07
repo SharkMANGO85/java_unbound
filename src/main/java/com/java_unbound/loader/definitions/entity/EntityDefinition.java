@@ -3,9 +3,6 @@ package com.java_unbound.loader.definitions.entity;
 import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.resolvers.*;
 import com.java_unbound.loader.definitions.entity.types.animation.EntityAnimationDefinition;
-import com.java_unbound.loader.definitions.entity.types.animation.EntityAnimationReference;
-import com.java_unbound.loader.definitions.entity.types.animation_controller.EntityAnimationControllerDefinition;
-import com.java_unbound.loader.definitions.entity.types.animation_controller.EntityAnimationControllerReference;
 import com.java_unbound.loader.definitions.entity.types.geometry.EntityGeometryDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
 import com.java_unbound.loader.definitions.entity.types.scripts.EntityScriptsDefinition;
@@ -35,12 +32,14 @@ public class EntityDefinition {
     public HashMap<String, EntityTextureDefinition> Textures;
     public List<EntityRenderControllerReference> RenderControllers;
     public EntityScriptsDefinition Scripts;
-    public List<EntityAnimationControllerReference> AnimationControllers;
     public HashMap<String, String> Materials;
-    public List<EntityAnimationReference> Animations;
+
+    public List<String> AnimationControllers;
+    public HashMap<String, EntityAnimationDefinition> Animations;
 
     public HashMap<String, String> SoundEffects;
     public HashMap<String, String> ParticleEffects;
+
     public EntitySpawnEggDefinition SpawnEgg;
 
     public static EntityDefinition ResolveEntity(Path JsonFile) {
@@ -61,7 +60,6 @@ public class EntityDefinition {
             Definition.EnableAttachables = EntityBooleanResolver.GetEntityBoolean("enable_attachables", JsonFile);
             Definition.HeldItemIgnoresLighting = EntityBooleanResolver.GetEntityBoolean("held_item_ignores_lighting", JsonFile);
             Definition.HideArmor = EntityBooleanResolver.GetEntityBoolean("hide_armor", JsonFile);
-            Definition.AnimationControllers = EntityAnimationControllerResolver.GetEntityAnimationControllers(JsonFile);
             Definition.Animations = EntityAnimationResolver.GetEntityAnimations(JsonFile);
 
             return Definition;

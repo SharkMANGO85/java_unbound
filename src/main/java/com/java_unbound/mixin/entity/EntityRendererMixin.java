@@ -1,8 +1,5 @@
 package com.java_unbound.mixin.entity;
 
-import com.java_unbound.JavaUnbound;
-import com.java_unbound.entities.geckolib.GetRenderingData;
-import com.java_unbound.entities.interfaces.EntityVariableInterface;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.molang.MolangParser;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -15,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin {
-   /* @Inject(method = "extractRenderState", at = @At("TAIL"))
+   /*@Inject(method = "extractRenderState", at = @At("TAIL"))
     private void entity_Effects$outline(Entity Entity, EntityRenderState State, float PartialTicks, CallbackInfo CI) {
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
         if (Definition == null) {return;}

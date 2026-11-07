@@ -1,21 +1,26 @@
 package com.java_unbound.loader.definitions.entity.types.animation;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class EntityAnimationDefinition {
     public String Identifier;
-    public EntityAnimationLoopMode Loop = EntityAnimationLoopMode.ONCE;
+
+    public boolean Loop = false;
+    public boolean HoldOnLastFrame = false;
     public Float AnimationLength;
+    public boolean OverridePreviousAnimation = false;
+
+    public String StartDelay;
+    public String LoopDelay;
     public String AnimTimeUpdate;
     public String BlendWeight;
-    public String LoopDelay;
-    public String StartDelay;
-    public boolean OverridePreviousAnimation;
 
-    public LinkedHashMap<String, EntityAnimationBone> Bones = new LinkedHashMap<>();
-    public LinkedHashMap<Float, List<String>> Timeline = new LinkedHashMap<>();
-    public LinkedHashMap<Float, List<EntityAnimationEffect>> ParticleEffects = new LinkedHashMap<>();
-    public LinkedHashMap<Float, List<EntityAnimationEffect>> SoundEffects = new LinkedHashMap<>();
+    public Map<String, EntityAnimationBone> Bones = new LinkedHashMap<>();
+
+    public TreeMap<Float, List<EntityAnimationParticleEffect>> ParticleEffects = new TreeMap<>();
+    public TreeMap<Float, List<EntityAnimationSoundEffect>> SoundEffects = new TreeMap<>();
+    public TreeMap<Float, List<String>> Timeline = new TreeMap<>();
 }

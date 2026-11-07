@@ -3,10 +3,13 @@
   "package": "com.java_unbound.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "entity.EntityMixin",
-    "entity.EntityRendererMixin"
+    "entity.EntityMixin"
   ],
   "client": [
+    "entity.EntityRendererMixin",
+
+    "attachable.ItemInHandRendererMixin",
+
     "resourcepack.PackRepositoryMixin",
     "resourcepack.LogoRendererMixin",
     "resourcepack.SplashRendererMixin",

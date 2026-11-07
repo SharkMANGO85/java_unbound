@@ -1,9 +1,8 @@
 package com.java_unbound.entities.rendering;
 
-import com.java_unbound.JavaUnbound;
 import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
-import com.java_unbound.loader.gecko_lib.entity.EntityRenderPass;
+import com.java_unbound.geckolib.entity.EntityRenderPass;
 import com.java_unbound.molang.MolangParser;
 import com.java_unbound.molang.types.MolangRenderControllerParser;
 

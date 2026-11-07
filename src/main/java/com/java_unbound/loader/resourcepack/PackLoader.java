@@ -20,8 +20,9 @@ import java.util.Optional;
 
 //creates the resourcepack with its info
 public final class PackLoader {
-    private PackLoader() {
-    }
+    public static final String PackID = "java_unbound_addon";
+
+    private PackLoader() {}
 
     public static String GetPackName(Path ResourcePack) {
         return ReadLang(ResourcePack, "pack.name", JavaUnbound.MOD_NAME);
@@ -67,7 +68,7 @@ public final class PackLoader {
     public static Pack Create(Path ResourcePack) {
         String Name = GetPackName(ResourcePack);
         String Description = GetDescription(ResourcePack);
-        PackLocationInfo Location = new PackLocationInfo("java_unbound", Component.literal(Name), PackSource.BUILT_IN, Optional.empty());
+        PackLocationInfo Location = new PackLocationInfo(PackID, Component.literal(Name), PackSource.BUILT_IN, Optional.empty());
 
         Pack.ResourcesSupplier Supplier = new Pack.ResourcesSupplier() {
             @Override
