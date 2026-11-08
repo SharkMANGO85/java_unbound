@@ -119,6 +119,7 @@ public final class MolangMathParser {
             case "trunc" -> HasArguments(Values, 1) ? (long) Values[0] : 0;
             case "die_roll" -> DieRoll(Values, false);
             case "die_roll_integer" -> DieRoll(Values, true);
+            case "pi" -> HasArguments(Values, 1) ? Math.PI : 0;
 
             default -> 0;
         };

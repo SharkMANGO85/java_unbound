@@ -29,6 +29,48 @@ public class EntityAnimationResolver {
         void Visit(String Identifier, JsonObject AnimationObject, Path AnimationFile);
     }
 
+    public static JsonObject AsObject(JsonElement Element) {
+        if (Element == null || Element.isJsonNull()) {return null;}
+        if (Element.isJsonObject()) {return Element.getAsJsonObject();}
+
+        if (Element.isJsonArray()) {
+            JsonObject Merged = null;
+
+            for (JsonElement Entry : Element.getAsJsonArray()) {
+                JsonObject Object = AsObject(Entry);
+                if (Object == null) {continue;}
+
+                if (Merged == null) {Merged = new JsonObject();}
+                for (Map.Entry<String, JsonElement> Property : Object.entrySet()) {
+                    Merged.add(Property.getKey(), Property.getValue());
+                }
+            }
+
+            return Merged;
+        }
+
+        return null;
+    }
+
+    public static List<JsonObject> AsObjectList(JsonElement Element) {
+        List<JsonObject> Result = new ArrayList<>();
+        if (Element == null || Element.isJsonNull()) {return Result;}
+
+        if (Element.isJsonArray()) {
+            for (JsonElement Entry : Element.getAsJsonArray()) {
+                Result.addAll(AsObjectList(Entry));
+            }
+        } else if (Element.isJsonObject()) {
+            Result.add(Element.getAsJsonObject());
+        }
+
+        return Result;
+    }
+
+    private static JsonObject ReadObject(JsonObject Parent, String Key) {
+        return AsObject(Parent.get(Key));
+    }
+
     public static List<Path> GetAnimationFolders() {
         Path ConfigFolder = Folder.GetConfigFolder();
         List<Path> Animations = new ArrayList<>();
@@ -46,7 +88,7 @@ public class EntityAnimationResolver {
 
     private static JsonObject ReadJson(Path JsonFile) {
         try {
-            return JsonParser.parseString(Files.readString(JsonFile)).getAsJsonObject();
+            return AsObject(JsonParser.parseString(Files.readString(JsonFile)));
         } catch (Exception Exception) {
             JavaUnbound.LOGGER.error("Failed to read JSON file: {}", JsonFile, Exception);
             return null;
@@ -72,12 +114,13 @@ public class EntityAnimationResolver {
                         if (AnimationsObject == null) {return;}
 
                         for (Map.Entry<String, JsonElement> Entry : AnimationsObject.entrySet()) {
-                            if (!Entry.getValue().isJsonObject()) {continue;}
+                            JsonObject AnimationObject = AsObject(Entry.getValue());
+                            if (AnimationObject == null) {continue;}
 
                             String Identifier = Entry.getKey();
                             if (Identifier == null || Identifier.isBlank()) {continue;}
 
-                            Visitor.Visit(Identifier, Entry.getValue().getAsJsonObject(), AnimationFile);
+                            Visitor.Visit(Identifier, AnimationObject, AnimationFile);
                         }
                     });
         } catch (IOException Exception) {
@@ -134,17 +177,18 @@ public class EntityAnimationResolver {
         JsonElement AnimationElement = Description.get("animations");
 
         if (AnimationElement == null) {
-            // Entities are allowed to have no animations at all.
             JavaUnbound.LOGGER.debug("No animation mappings found: {}", EntityFile);
             return null;
         }
 
-        if (!AnimationElement.isJsonObject()) {
+        JsonObject Mappings = AsObject(AnimationElement);
+
+        if (Mappings == null) {
             JavaUnbound.LOGGER.error("Invalid animation mappings: {}", EntityFile);
             return null;
         }
 
-        return AnimationElement.getAsJsonObject();
+        return Mappings;
     }
 
     private static EntityAnimationDefinition ParseAnimationDefinition(String Identifier, JsonObject Json) {
@@ -173,8 +217,10 @@ public class EntityAnimationResolver {
 
         if (BonesObject != null) {
             for (Map.Entry<String, JsonElement> Entry : BonesObject.entrySet()) {
-                if (!Entry.getValue().isJsonObject()) {continue;}
-                Definition.Bones.put(Entry.getKey(), ParseBone(Entry.getValue().getAsJsonObject()));
+                JsonObject BoneObject = AsObject(Entry.getValue());
+                if (BoneObject == null) {continue;}
+
+                Definition.Bones.put(Entry.getKey(), ParseBone(BoneObject));
             }
         }
 
@@ -204,11 +250,12 @@ public class EntityAnimationResolver {
         if (Json == null || Json.isJsonNull()) {return null;}
 
         EntityAnimationChannel Channel = new EntityAnimationChannel();
+        JsonObject KeyframeObject = AsObject(Json);
 
-        if (Json.isJsonObject()) {
+        if (KeyframeObject != null) {
             List<EntityAnimationKeyframe> Keyframes = new ArrayList<>();
 
-            for (Map.Entry<String, JsonElement> Entry : Json.getAsJsonObject().entrySet()) {
+            for (Map.Entry<String, JsonElement> Entry : KeyframeObject.entrySet()) {
                 EntityAnimationKeyframe Keyframe = ParseKeyframe(Entry.getKey(), Entry.getValue());
                 if (Keyframe != null) {Keyframes.add(Keyframe);}
             }
@@ -221,6 +268,7 @@ public class EntityAnimationResolver {
         }
 
         Channel.Value = ReadVector(Json);
+
         return Channel.Value != null ? Channel : null;
     }
 
@@ -236,9 +284,9 @@ public class EntityAnimationResolver {
         EntityAnimationKeyframe Keyframe = new EntityAnimationKeyframe();
         Keyframe.Time = Time;
 
-        if (Json.isJsonObject()) {
-            JsonObject Object = Json.getAsJsonObject();
+        JsonObject Object = AsObject(Json);
 
+        if (Object != null) {
             Keyframe.Pre = ReadVector(Object.get("pre"));
             Keyframe.Post = ReadVector(Object.get("post"));
             Keyframe.LerpMode = ReadString(Object, "lerp_mode", Keyframe.LerpMode);
@@ -259,9 +307,10 @@ public class EntityAnimationResolver {
     }
 
     private static void ParseParticleEffects(JsonElement Json, EntityAnimationDefinition Definition) {
-        if (Json == null || !Json.isJsonObject()) {return;}
+        JsonObject EventMap = AsObject(Json);
+        if (EventMap == null) {return;}
 
-        for (Map.Entry<String, JsonElement> Entry : Json.getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, JsonElement> Entry : EventMap.entrySet()) {
             Float Time = ParseTime(Entry.getKey());
             if (Time == null) {continue;}
 
@@ -335,26 +384,6 @@ public class EntityAnimationResolver {
             JavaUnbound.LOGGER.error("Invalid event time: {}", TimeKey);
             return null;
         }
-    }
-
-    private static List<JsonObject> AsObjectList(JsonElement Element) {
-        List<JsonObject> Result = new ArrayList<>();
-        if (Element == null) {return Result;}
-
-        if (Element.isJsonObject()) {
-            Result.add(Element.getAsJsonObject());
-        } else if (Element.isJsonArray()) {
-            for (JsonElement Entry : Element.getAsJsonArray()) {
-                if (Entry.isJsonObject()) {Result.add(Entry.getAsJsonObject());}
-            }
-        }
-
-        return Result;
-    }
-
-    private static JsonObject ReadObject(JsonObject Parent, String Key) {
-        JsonElement Element = Parent.get(Key);
-        return Element != null && Element.isJsonObject() ? Element.getAsJsonObject() : null;
     }
 
     private static String ReadString(JsonObject Parent, String Key, String Default) {

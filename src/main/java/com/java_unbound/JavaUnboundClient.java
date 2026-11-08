@@ -1,10 +1,7 @@
 package com.java_unbound;
 
-import com.geckolib.animatable.GeoItem;
-import com.geckolib.animatable.client.GeoRenderProvider;
-import com.geckolib.renderer.GeoItemRenderer;
-import com.google.common.base.Suppliers;
 import com.java_unbound.attachables.AttachableRegistry;
+import com.java_unbound.loader.definitions.attachable.AttachableDefinition;
 import com.java_unbound.loader.definitions.entity.resolvers.EntityAnimationResolver;
 import com.java_unbound.geckolib.rendering.EntityRendererRegistration;
 import com.java_unbound.loader.converters.GeckoLibConverter;
@@ -15,44 +12,46 @@ import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.resolvers.EntityGeometryResolver;
 import com.java_unbound.loader.definitions.entity.resolvers.EntityRenderControllerResolver;
 import com.java_unbound.geckolib.utils.GeckoLibLogFilter;
+import com.java_unbound.loader.definitions.global.materials.resolvers.MaterialResolver;
+import com.java_unbound.loader.files.AttachableGeometryLoader;
 import com.java_unbound.loader.resourcepack.Folder;
 import com.java_unbound.loader.resourcepack.LanguageLoader;
 import com.java_unbound.loader.resourcepack.ResourceMapper;
 import com.java_unbound.loader.resourcepack.ResourceMappings;
 import com.java_unbound.mod_menu.config.ConfigManager;
+import com.java_unbound.molang.types.MolangAttachableParser;
 import net.fabricmc.api.ClientModInitializer;
 import com.java_unbound.entities.InitializeEntity;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.Nullable;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 import java.io.IOException;
-import java.util.function.Supplier;
 
 public class JavaUnboundClient implements ClientModInitializer {
     public static String Debug = "";
 
     private static void DebugError(String Type, Runnable Function) {
-        StringBuilder DebugBuilder = new StringBuilder();
+        String LoadingMessage = "------------------Loading " + Type + "------------------";
+        String FinishedMessage = "------------------Finished " + Type + "------------------\n";
 
-        DebugBuilder.append("---------------------").append(Type).append("---------------------\n");
-        DebugBuilder.append("Loading ").append(Type).append("\n");
+        Debug += LoadingMessage + "\n\n";
 
-        long StartTime = System.nanoTime();
+        JavaUnbound.LOGGER.error("{}", LoadingMessage);
 
         try {
             Function.run();
         } catch (Exception Exception) {
-            DebugBuilder.append("Error while loading ").append(Type).append(": ").append(Exception).append("\n");
+            String ErrorMessage = "Error while loading " + Type + ": " + Exception;
+            Debug += ErrorMessage + "\n\n";
+
+            JavaUnbound.LOGGER.error(ErrorMessage);
+            Exception.printStackTrace();
         }
 
-        long LoadingTime = (System.nanoTime() - StartTime) / 1_000_000;
+        Debug += "\n\n" + FinishedMessage + "\n\n";
 
-        DebugBuilder.append("Finished Loading ").append(Type).append(" in ").append(LoadingTime).append(" ms\n");
-        DebugBuilder.append("--------------------------------------------------------------\n\n");
-
-        Debug += DebugBuilder;
+        JavaUnbound.LOGGER.error("{}\n\n", FinishedMessage);
     }
 
     public static void Loading() {
@@ -61,10 +60,13 @@ public class JavaUnboundClient implements ClientModInitializer {
         EntityAnimationResolver.ClearCache();
 
         DebugError("Material to Json Converter", MaterialToJsonConverter.Convert());
+        DebugError("Material Resolver", MaterialResolver::Load);
         DebugError("TGA Converter", TgaConverter.ConvertAll(Folder.GetConfigFolder()));
         DebugError("Transparency Converter", TransparencyConverter.LoadTextureTransparencies(Folder.GetConfigFolder().resolve("subpacks").resolve(JavaUnbound.SUB_PACK).resolve("textures").toFile()));
         DebugError("Languages", LanguageLoader::PreloadLanguage);
         DebugError("Entity Definitions", EntityDefinition::PreloadEntityFiles);
+        DebugError("Attachable Definitions", AttachableDefinition::PreloadAttachableFiles);
+        DebugError("Attachable Geometry Files", AttachableGeometryLoader::LoadAttachableGeometryFiles);
         DebugError("Config Manager", ConfigManager::Load);
 
         DebugError("GeckoLib Converter", () -> {
@@ -82,8 +84,6 @@ public class JavaUnboundClient implements ClientModInitializer {
                 EntityDefinitionDebugger.DebugEntity(Identifier);
             });
         });*/
-
-        JavaUnbound.LOGGER.error("\n\n\n\n\n{}" + "\n\n\n\n\n", Debug);
     }
 
     @Override
@@ -101,6 +101,6 @@ public class JavaUnboundClient implements ClientModInitializer {
             InitializeEntity.InitializeEntity(Entity);
         });
 
-        AttachableRegistry.RegisterItems();
+        //AttachableRegistry.RegisterItems();
     }
 }

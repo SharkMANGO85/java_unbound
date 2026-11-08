@@ -43,10 +43,10 @@ public class AttachableStringResolver {
         JsonObject Root = ReadJson(JsonFile);
         if (Root == null) {return null;}
 
-        JsonObject ClientAttachable = ReadObject(Root, "minecraft:client_Attachable");
+        JsonObject ClientAttachable = ReadObject(Root, "minecraft:attachable");
 
         if (ClientAttachable == null) {
-            JavaUnbound.LOGGER.error("No minecraft:client_Attachable found: {}", JsonFile);
+            JavaUnbound.LOGGER.error("No minecraft:attachable found: {}", JsonFile);
             return null;
         }
 

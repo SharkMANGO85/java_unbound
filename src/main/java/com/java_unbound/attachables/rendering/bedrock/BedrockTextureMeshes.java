@@ -1,7 +1,7 @@
-package com.java_unbound.attachables.rendering;
+package com.java_unbound.attachables.rendering.bedrock;
 
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.attachables.rendering.BedrockBone.ModelQuad;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.ModelQuad;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;

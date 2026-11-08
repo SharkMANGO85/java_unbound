@@ -4,7 +4,7 @@ import com.java_unbound.loader.definitions.entity.EntityDefinition;
 import com.java_unbound.loader.definitions.entity.types.render_controller.EntityRenderControllerReference;
 import com.java_unbound.geckolib.entity.EntityRenderPass;
 import com.java_unbound.molang.MolangParser;
-import com.java_unbound.molang.types.MolangRenderControllerParser;
+import com.java_unbound.molang.types.MolangEntityRenderControllerParser;
 
 import net.minecraft.world.entity.Entity;
 
@@ -51,9 +51,9 @@ public class RenderController {
     private static ResolvedRenderController ResolveRenderController(Entity Entity, EntityRenderControllerReference RenderController) {
         var Definition = RenderController.Definition;
 
-        String Geometry = MolangRenderControllerParser.ResolveGeometry(Entity, Definition.Geometry, Definition.Arrays);
-        List<String> Textures = MolangRenderControllerParser.ResolveTextures(Entity, Definition.Textures, Definition.Arrays);
-        List<Map<String, String>> Materials = MolangRenderControllerParser.ResolveMaterials(Entity, Definition.Materials, Definition.Arrays);
+        String Geometry = MolangEntityRenderControllerParser.ResolveGeometry(Entity, Definition.Geometry, Definition.Arrays);
+        List<String> Textures = MolangEntityRenderControllerParser.ResolveTextures(Entity, Definition.Textures, Definition.Arrays);
+        List<Map<String, String>> Materials = MolangEntityRenderControllerParser.ResolveMaterials(Entity, Definition.Materials, Definition.Arrays);
 
         List<EntityRenderPass.PartVisibility> PartVisibility = new ArrayList<>();
 

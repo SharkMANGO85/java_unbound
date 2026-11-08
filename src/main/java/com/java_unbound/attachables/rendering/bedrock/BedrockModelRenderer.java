@@ -1,7 +1,10 @@
-package com.java_unbound.attachables.rendering;
+package com.java_unbound.attachables.rendering.bedrock;
 
-import com.java_unbound.attachables.rendering.BedrockBone.ModelQuad;
-import com.java_unbound.attachables.rendering.BedrockBone.TextureMesh;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.ModelQuad;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.TextureMesh;
+import com.java_unbound.loader.definitions.global.materials.rendering.BedrockItemMaterials;
+import com.java_unbound.loader.definitions.global.materials.rendering.BedrockMaterial;
+import com.java_unbound.loader.definitions.global.materials.rendering.BedrockRenderMaterial;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -20,11 +23,20 @@ public final class BedrockModelRenderer {
     private BedrockModelRenderer() {}
 
     public static void Render(PoseStack PoseStack, SubmitNodeCollector SubmitNodeCollector, int LightCoords, BedrockModel Model, Identifier Texture, float Scale, boolean Center) {
-        Render(PoseStack, SubmitNodeCollector, LightCoords, Model, Texture, Scale, Center, null, null);
+        Render(PoseStack, SubmitNodeCollector, LightCoords, Model, Texture, Scale, Center, null, null, BedrockMaterial.TRANSLUCENT);
     }
 
     public static void Render(PoseStack PoseStack, SubmitNodeCollector SubmitNodeCollector, int LightCoords, BedrockModel Model, Identifier Texture, float Scale, boolean Center, BedrockPose AnimationPose, Function<String, Identifier> TextureResolver) {
+        Render(PoseStack, SubmitNodeCollector, LightCoords, Model, Texture, Scale, Center, AnimationPose, TextureResolver, BedrockMaterial.TRANSLUCENT);
+    }
+
+    public static void Render(PoseStack PoseStack, SubmitNodeCollector SubmitNodeCollector, int LightCoords, BedrockModel Model, Identifier Texture, float Scale, boolean Center, BedrockPose AnimationPose, Function<String, Identifier> TextureResolver, Identifier ItemId) {
+        Render(PoseStack, SubmitNodeCollector, LightCoords, Model, Texture, Scale, Center, AnimationPose, TextureResolver, BedrockItemMaterials.Get(ItemId));
+    }
+
+    public static void Render(PoseStack PoseStack, SubmitNodeCollector SubmitNodeCollector, int LightCoords, BedrockModel Model, Identifier Texture, float Scale, boolean Center, BedrockPose AnimationPose, Function<String, Identifier> TextureResolver, BedrockRenderMaterial Material) {
         float S = Scale / 16F;
+        final int Light = Material.IsFullBright() ? 0xF000F0 : LightCoords;
 
         Matrix4f[] Matrices = Model.ComputeBoneMatrices(AnimationPose);
         boolean[] Visible = new boolean[Matrices.length];
@@ -40,7 +52,7 @@ public final class BedrockModelRenderer {
             PoseStack.translate(-Model.CenterX(), -Model.CenterY(), -Model.CenterZ());
         }
 
-        RenderType MainType = RenderTypes.entityTranslucent(Texture);
+        RenderType MainType = Material.GetRenderType(Texture);
 
         SubmitNodeCollector.submitCustomGeometry(PoseStack, MainType, (PoseEntry, Buffer) -> {
             Vector3f Position = new Vector3f();
@@ -53,7 +65,7 @@ public final class BedrockModelRenderer {
                 Matrices[Bone.Index].normal(NormalMatrix);
 
                 for (ModelQuad Quad : Bone.Quads) {
-                    Emit(Buffer, PoseEntry, LightCoords, Quad, Matrices[Bone.Index], NormalMatrix, Position, Normal);
+                    Emit(Buffer, PoseEntry, Light, Quad, Matrices[Bone.Index], NormalMatrix, Position, Normal);
                 }
             }
         });
@@ -77,7 +89,7 @@ public final class BedrockModelRenderer {
                         Vector3f Normal = new Vector3f();
 
                         for (ModelQuad Quad : MeshQuads) {
-                            Emit(Buffer, PoseEntry, LightCoords, Quad, MeshMatrix, MeshNormalMatrix, Position, Normal);
+                            Emit(Buffer, PoseEntry, Light, Quad, MeshMatrix, MeshNormalMatrix, Position, Normal);
                         }
                     });
                 }

@@ -21,7 +21,7 @@ public class GetRenderingData {
         EntityDefinition Definition = EntityDefinition.GetEntityDefinition(Entity);
 
         if (Definition == null) {
-            JavaUnbound.LOGGER.error("Entity definition not found!");
+            JavaUnbound.LOGGER.error("Entity definition not found for {}!", Entity.getName());
             return RenderPasses;
         }
 

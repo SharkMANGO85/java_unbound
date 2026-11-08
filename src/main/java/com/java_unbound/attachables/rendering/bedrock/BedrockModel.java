@@ -1,13 +1,13 @@
-package com.java_unbound.attachables.rendering;
+package com.java_unbound.attachables.rendering.bedrock;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.attachables.rendering.BedrockBone.Locator;
-import com.java_unbound.attachables.rendering.BedrockBone.ModelQuad;
-import com.java_unbound.attachables.rendering.BedrockBone.TextureMesh;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.Locator;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.ModelQuad;
+import com.java_unbound.attachables.rendering.bedrock.BedrockBone.TextureMesh;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
@@ -16,6 +16,7 @@ import org.joml.Vector3f;
 
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +29,9 @@ public final class BedrockModel {
     private record Raw(String Id, String ParentId, JsonObject Desc, JsonObject Body) {}
 
     private static final boolean NegateXYRotation = true;
+
+    private static final boolean NormalizeNegativeSizes = false;
+    private static final boolean InsideOutForNegativeSizes = true;
 
     private static final String[] FaceNames = {"north", "south", "east", "west", "up", "down"};
     private static final float[][] FaceNormals = {{0, 0, -1}, {0, 0, 1}, {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}};
@@ -43,8 +47,7 @@ public final class BedrockModel {
     private final Vector3f Max;
     private final boolean PolyMeshes;
 
-    private BedrockModel(Description Info, List<BedrockBone> Bones, Map<String, BedrockBone> BonesByName,
-                         Vector3f Min, Vector3f Max, boolean PolyMeshes) {
+    private BedrockModel(Description Info, List<BedrockBone> Bones, Map<String, BedrockBone> BonesByName, Vector3f Min, Vector3f Max, boolean PolyMeshes) {
         this.Info = Info;
         this.Bones = Bones;
         this.BonesByName = BonesByName;
@@ -244,13 +247,21 @@ public final class BedrockModel {
 
             if (Json.has("cubes") && Json.get("cubes").isJsonArray()) {
                 for (JsonElement Cube : Json.getAsJsonArray("cubes")) {
-                    BakeCube(Cube.getAsJsonObject(), Bone, TexW, TexH);
+                    try {
+                        BakeCube(Cube.getAsJsonObject(), Bone, TexW, TexH);
+                    } catch (Exception Exception) {
+                        JavaUnbound.LOGGER.warn("Skipping invalid cube in bone '{}' of {}", Bone.Name, Selected.Id(), Exception);
+                    }
                 }
             }
 
             if (Json.has("poly_mesh") && Json.get("poly_mesh").isJsonObject()) {
-                BakePolyMesh(Json.getAsJsonObject("poly_mesh"), Bone, TexW, TexH);
-                PolyMeshes = true;
+                try {
+                    BakePolyMesh(Json.getAsJsonObject("poly_mesh"), Bone, TexW, TexH);
+                    PolyMeshes = true;
+                } catch (Exception Exception) {
+                    JavaUnbound.LOGGER.warn("Skipping invalid poly_mesh in bone '{}' of {}", Bone.Name, Selected.Id(), Exception);
+                }
             }
 
             if (Json.has("locators") && Json.get("locators").isJsonObject()) {
@@ -393,13 +404,33 @@ public final class BedrockModel {
         float Inflate = Cube.has("inflate") ? Cube.get("inflate").getAsFloat() : Bone.Inflate;
         boolean Mirror = Cube.has("mirror") ? Cube.get("mirror").getAsBoolean() : Bone.Mirror;
 
-        float X0 = Origin[0] - Inflate, Y0 = Origin[1] - Inflate, Z0 = Origin[2] - Inflate;
-        float X1 = Origin[0] + Size[0] + Inflate, Y1 = Origin[1] + Size[1] + Inflate, Z1 = Origin[2] + Size[2] + Inflate;
+        float X0, Y0, Z0, X1, Y1, Z1;
+        boolean InsideOut = false;
+
+        if (NormalizeNegativeSizes) {
+            X0 = Math.min(Origin[0], Origin[0] + Size[0]) - Inflate;
+            X1 = Math.max(Origin[0], Origin[0] + Size[0]) + Inflate;
+            Y0 = Math.min(Origin[1], Origin[1] + Size[1]) - Inflate;
+            Y1 = Math.max(Origin[1], Origin[1] + Size[1]) + Inflate;
+            Z0 = Math.min(Origin[2], Origin[2] + Size[2]) - Inflate;
+            Z1 = Math.max(Origin[2], Origin[2] + Size[2]) + Inflate;
+
+            InsideOut = InsideOutForNegativeSizes && ((Size[0] < 0F) ^ (Size[1] < 0F) ^ (Size[2] < 0F));
+        } else {
+            X0 = Origin[0] - Inflate;
+            Y0 = Origin[1] - Inflate;
+            Z0 = Origin[2] - Inflate;
+            X1 = Origin[0] + Size[0] + Inflate;
+            Y1 = Origin[1] + Size[1] + Inflate;
+            Z1 = Origin[2] + Size[2] + Inflate;
+        }
+
+        float SX = Math.abs(Size[0]), SY = Math.abs(Size[1]), SZ = Math.abs(Size[2]);
 
         Vector3f Vec = new Vector3f();
 
         for (int Face = 0; Face < 6; Face++) {
-            float[] Rect = FaceUv(Cube, Face, Mirror, Size[0], Size[1], Size[2]);
+            float[] Rect = FaceUv(Cube, Face, Mirror, SX, SY, SZ);
             if (Rect == null) {continue;}
 
             float[] Corners = Corners(Face, X0, Y0, Z0, X1, Y1, Z1);
@@ -435,6 +466,32 @@ public final class BedrockModel {
 
                 Uvs[Destination * 2] = Unrotated[Source * 2] / TexW;
                 Uvs[Destination * 2 + 1] = Unrotated[Source * 2 + 1] / TexH;
+            }
+
+            if (InsideOut) {
+                int[] Order = {0, 3, 2, 1};
+                float[] FlippedPositions = new float[12];
+                float[] FlippedNormals = new float[12];
+                float[] FlippedUvs = new float[8];
+
+                for (int I = 0; I < 4; I++) {
+                    int Source = Order[I];
+
+                    FlippedPositions[I * 3] = Positions[Source * 3];
+                    FlippedPositions[I * 3 + 1] = Positions[Source * 3 + 1];
+                    FlippedPositions[I * 3 + 2] = Positions[Source * 3 + 2];
+
+                    FlippedNormals[I * 3] = -Normals[Source * 3];
+                    FlippedNormals[I * 3 + 1] = -Normals[Source * 3 + 1];
+                    FlippedNormals[I * 3 + 2] = -Normals[Source * 3 + 2];
+
+                    FlippedUvs[I * 2] = Uvs[Source * 2];
+                    FlippedUvs[I * 2 + 1] = Uvs[Source * 2 + 1];
+                }
+
+                Positions = FlippedPositions;
+                Normals = FlippedNormals;
+                Uvs = FlippedUvs;
             }
 
             String Material = FaceMaterial(Cube, Face, Bone.Material);
@@ -582,7 +639,7 @@ public final class BedrockModel {
             boolean HaveNormals = true;
 
             for (int I = 0; I < 4 && Valid; I++) {
-                int[] Vertex = Face[Math.min(I, Face.length - 1)]; // triangles repeat their last vertex
+                int[] Vertex = Face[Math.min(I, Face.length - 1)];
 
                 if (!InRange(Vertex[0], Positions.length) || !InRange(Vertex[2], Uvs.length)) {
                     Valid = false;
@@ -681,7 +738,7 @@ public final class BedrockModel {
                 Result[I] = Array.get(I).getAsFloat();
             }
         } else if (Element.isJsonPrimitive()) {
-            java.util.Arrays.fill(Result, Element.getAsFloat());
+            Arrays.fill(Result, Element.getAsFloat());
         }
 
         return Result;

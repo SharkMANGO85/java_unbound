@@ -1,12 +1,10 @@
 package com.java_unbound.molang.types;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.java_unbound.molang.MolangParser;
-import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -14,124 +12,112 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public final class MolangRenderControllerParser {
-    private MolangRenderControllerParser() {}
+public final class MolangRenderControllerAttachableParser {
+    private MolangRenderControllerAttachableParser() {}
 
     private static final Gson GSON = new Gson();
     private static final int MAX_RESOLUTION_DEPTH = 16;
 
-
-    public static String ResolveGeometry(Entity Entity, String Expression, Object Arrays) {
-        return ResolveResource(Entity, Expression, Arrays);
+    public static String ResolveGeometry(MolangAttachableParser.Context Context, String Expression, Object Arrays) {
+        return ResolveResource(Context, Expression, Arrays);
     }
 
-    public static List<String> ResolveTextures(Entity Entity, Object Textures, Object Arrays) {
+    public static List<String> ResolveTextures(MolangAttachableParser.Context Context, Object Textures, Object Arrays) {
         List<String> Result = new ArrayList<>();
-
         JsonElement TextureElement = ToJsonElement(Textures);
 
-        if (TextureElement == null || TextureElement.isJsonNull()) {
-            return Result;
-        }
+        if (TextureElement == null || TextureElement.isJsonNull()) {return Result;}
 
         if (TextureElement.isJsonArray()) {
             for (JsonElement Texture : TextureElement.getAsJsonArray()) {
-                Result.add(ResolveResource(Entity, GetString(Texture), Arrays));
+                Result.add(ResolveResource(Context, GetString(Texture), Arrays));
             }
         } else if (TextureElement.isJsonPrimitive()) {
-            Result.add(ResolveResource(Entity, GetString(TextureElement), Arrays));
+            Result.add(ResolveResource(Context, GetString(TextureElement), Arrays));
         }
 
         return Result;
     }
 
-    public static String ResolveMaterial(Entity Entity, String Expression, Object Arrays) {
-        return ResolveResource(Entity, Expression, Arrays);
+    public static String ResolveMaterial(MolangAttachableParser.Context Context, String Expression, Object Arrays) {
+        return ResolveResource(Context, Expression, Arrays);
     }
 
-    public static List<Map<String, String>> ResolveMaterials(Entity Entity, Object Materials, Object Arrays) {
+    public static List<Map<String, String>> ResolveMaterials(MolangAttachableParser.Context Context, Object Materials, Object Arrays) {
         List<Map<String, String>> Result = new ArrayList<>();
-
         JsonElement MaterialElement = ToJsonElement(Materials);
 
-        if (MaterialElement == null || MaterialElement.isJsonNull()) {
-            return Result;
-        }
+        if (MaterialElement == null || MaterialElement.isJsonNull()) {return Result;}
 
         if (MaterialElement.isJsonArray()) {
             for (JsonElement Material : MaterialElement.getAsJsonArray()) {
-                AddMaterial(Entity, Result, Material, Arrays);
+                AddMaterial(Context, Result, Material, Arrays);
             }
         } else if (MaterialElement.isJsonObject()) {
-            AddMaterial(Entity, Result, MaterialElement, Arrays);
+            AddMaterial(Context, Result, MaterialElement, Arrays);
         }
 
         return Result;
     }
 
-    private static void AddMaterial(Entity Entity, List<Map<String, String>> Result, JsonElement Material, Object Arrays) {
+    private static void AddMaterial(MolangAttachableParser.Context Context, List<Map<String, String>> Result, JsonElement Material, Object Arrays) {
         if (!Material.isJsonObject()) {return;}
 
         Map<String, String> ResolvedMaterials = new LinkedHashMap<>();
 
         for (Map.Entry<String, JsonElement> Entry : Material.getAsJsonObject().entrySet()) {
-            String Expression = GetString(Entry.getValue());
-
-            ResolvedMaterials.put(Entry.getKey(), ResolveMaterial(Entity, Expression, Arrays));
+            ResolvedMaterials.put(Entry.getKey(), ResolveMaterial(Context, GetString(Entry.getValue()), Arrays));
         }
 
         Result.add(ResolvedMaterials);
     }
 
-    public static String ResolveResource(Entity Entity, String Expression, Object Arrays) {
-        if (Entity == null || Expression == null || Expression.isBlank()) {return "0";}
+    public static String ResolveResource(MolangAttachableParser.Context Context, String Expression, Object Arrays) {
+        if (Context == null || Expression == null || Expression.isBlank()) {return "0";}
 
-        JsonElement ArrayDefinitions = ToJsonElement(Arrays);
-
-        return ResolveResourceInternal(Entity, Expression.trim(), ArrayDefinitions, 0);
+        return ResolveResourceInternal(Context, Expression.trim(), ToJsonElement(Arrays), 0);
     }
 
-    private static String ResolveResourceInternal(Entity Entity, String Expression, JsonElement Arrays, int Depth) {
+    private static String ResolveResourceInternal(MolangAttachableParser.Context Context, String Expression, JsonElement Arrays, int Depth) {
         if (Depth > MAX_RESOLUTION_DEPTH || Expression == null || Expression.isBlank()) {return "0";}
 
-        String PreparedExpression = PrepareExpression(Entity, Expression, Arrays, Depth);
-        String Result = MolangParser.Evaluate(Entity, PreparedExpression);
+        String PreparedExpression = PrepareExpression(Context, Expression, Arrays, Depth);
+        String Result = MolangAttachableParser.Evaluate(Context, PreparedExpression);
 
         return Result != null ? Result.trim() : "0";
     }
 
-    private static String PrepareExpression(Entity Entity, String Expression, JsonElement Arrays, int Depth) {
+    private static String PrepareExpression(MolangAttachableParser.Context Context, String Expression, JsonElement Arrays, int Depth) {
         StringBuilder Result = new StringBuilder();
 
         char Quote = 0;
         boolean Escaped = false;
 
         for (int Index = 0; Index < Expression.length(); Index++) {
-            char Character = Expression.charAt(Index);
+            char Symbol = Expression.charAt(Index);
 
             if (Quote != 0) {
-                Result.append(Character);
+                Result.append(Symbol);
 
                 if (Escaped) {
                     Escaped = false;
-                } else if (Character == '\\') {
+                } else if (Symbol == '\\') {
                     Escaped = true;
-                } else if (Character == Quote) {
+                } else if (Symbol == Quote) {
                     Quote = 0;
                 }
 
                 continue;
             }
 
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
-                Result.append(Character);
+            if (Symbol == '\'' || Symbol == '"') {
+                Quote = Symbol;
+                Result.append(Symbol);
                 continue;
             }
 
             if (MatchesPrefix(Expression, Index, "Math.")) {
                 Result.append("math.");
-
                 Index += 4;
                 continue;
             }
@@ -141,20 +127,18 @@ public final class MolangRenderControllerParser {
                 int NameEnd = FindIdentifierEnd(Expression, NameStart);
 
                 if (NameEnd == NameStart) {
-                    Result.append(Character);
+                    Result.append(Symbol);
                     continue;
                 }
 
                 int OpenIndex = NameEnd;
 
-                while (OpenIndex < Expression.length()
-                        && java.lang.Character.isWhitespace(Expression.charAt(OpenIndex))) {
+                while (OpenIndex < Expression.length() && Character.isWhitespace(Expression.charAt(OpenIndex))) {
                     OpenIndex++;
                 }
 
                 if (OpenIndex >= Expression.length() || Expression.charAt(OpenIndex) != '[') {
                     Result.append(Expression, Index, NameEnd);
-
                     Index = NameEnd - 1;
                     continue;
                 }
@@ -168,43 +152,38 @@ public final class MolangRenderControllerParser {
 
                 String ArrayName = Expression.substring(Index, NameEnd);
                 String IndexExpression = Expression.substring(OpenIndex + 1, ClosingIndex);
-                String ArrayValue = ResolveArray(Entity, ArrayName, IndexExpression, Arrays, Depth);
+                String ArrayValue = ResolveArray(Context, ArrayName, IndexExpression, Arrays, Depth);
 
                 Result.append(QuoteResource(ArrayValue));
-
                 Index = ClosingIndex;
                 continue;
             }
 
-
-            if (MatchesPrefix(Expression, Index, "Geometry.") || MatchesPrefix(Expression, Index, "Texture.") || MatchesPrefix(Expression, Index, "Material.")) {
+            if (MatchesPrefix(Expression, Index, "Geometry.") ||
+                    MatchesPrefix(Expression, Index, "Texture.") ||
+                    MatchesPrefix(Expression, Index, "Material.")) {
 
                 int PrefixEnd = Expression.indexOf('.', Index) + 1;
                 int NameEnd = FindIdentifierEnd(Expression, PrefixEnd);
 
                 if (NameEnd > PrefixEnd) {
-                    String Resource = Expression.substring(Index, NameEnd);
-
-                    Result.append(QuoteResource(Resource));
-
+                    Result.append(QuoteResource(Expression.substring(Index, NameEnd)));
                     Index = NameEnd - 1;
                     continue;
                 }
             }
 
-            Result.append(Character);
+            Result.append(Symbol);
         }
 
         return Result.toString();
     }
 
-    private static String ResolveArray(Entity Entity, String ArrayName, String IndexExpression, JsonElement Arrays, int Depth) {
+    private static String ResolveArray(MolangAttachableParser.Context Context, String ArrayName, String IndexExpression, JsonElement Arrays, int Depth) {
         String NormalizedIndex = NormalizeMathPrefixes(IndexExpression);
-        String IndexValue = MolangParser.Evaluate(Entity, NormalizedIndex);
+        String IndexValue = MolangAttachableParser.Evaluate(Context, NormalizedIndex);
 
-        if (!MolangParser.IsNumber(IndexValue)) {
-            return "0";
-        }
+        if (!MolangParser.IsNumber(IndexValue)) {return "0";}
 
         double NumericIndex;
 
@@ -214,9 +193,7 @@ public final class MolangRenderControllerParser {
             return "0";
         }
 
-        if (!Double.isFinite(NumericIndex) || NumericIndex < Integer.MIN_VALUE || NumericIndex > Integer.MAX_VALUE) {
-            return "0";
-        }
+        if (!Double.isFinite(NumericIndex) || NumericIndex < Integer.MIN_VALUE || NumericIndex > Integer.MAX_VALUE) {return "0";}
 
         int Index = (int) Math.floor(NumericIndex);
 
@@ -224,11 +201,11 @@ public final class MolangRenderControllerParser {
         if (Values == null || Values.isEmpty()) {return "0";}
 
         Index = Math.floorMod(Index, Values.size());
-        String Value = Values.get(Index);
 
+        String Value = Values.get(Index);
         if (Value == null || Value.isBlank()) {return "0";}
 
-        return ResolveResourceInternal(Entity, Value, Arrays, Depth + 1);
+        return ResolveResourceInternal(Context, Value, Arrays, Depth + 1);
     }
 
     private static List<String> FindArrayValues(JsonElement Arrays, String ArrayName) {
@@ -236,7 +213,6 @@ public final class MolangRenderControllerParser {
 
         if (Arrays.isJsonObject()) {
             JsonObject Object = Arrays.getAsJsonObject();
-
             String ShortName = ArrayName.regionMatches(true, 0, "Array.", 0, 6) ? ArrayName.substring(6) : ArrayName;
 
             for (Map.Entry<String, JsonElement> Entry : Object.entrySet()) {
@@ -249,18 +225,12 @@ public final class MolangRenderControllerParser {
 
             for (Map.Entry<String, JsonElement> Entry : Object.entrySet()) {
                 List<String> Values = FindArrayValues(Entry.getValue(), ArrayName);
-
-                if (Values != null) {
-                    return Values;
-                }
+                if (Values != null) {return Values;}
             }
         } else if (Arrays.isJsonArray()) {
             for (JsonElement Element : Arrays.getAsJsonArray()) {
                 List<String> Values = FindArrayValues(Element, ArrayName);
-
-                if (Values != null) {
-                    return Values;
-                }
+                if (Values != null) {return Values;}
             }
         }
 
@@ -292,11 +262,9 @@ public final class MolangRenderControllerParser {
         int Index = Start;
 
         while (Index < Expression.length()) {
-            char Character = Expression.charAt(Index);
+            char Symbol = Expression.charAt(Index);
 
-            if (!java.lang.Character.isLetterOrDigit(Character) && Character != '_') {
-                break;
-            }
+            if (!Character.isLetterOrDigit(Symbol) && Symbol != '_') {break;}
 
             Index++;
         }
@@ -310,33 +278,31 @@ public final class MolangRenderControllerParser {
         boolean Escaped = false;
 
         for (int Index = OpenIndex; Index < Expression.length(); Index++) {
-            char Character = Expression.charAt(Index);
+            char Symbol = Expression.charAt(Index);
 
             if (Quote != 0) {
                 if (Escaped) {
                     Escaped = false;
-                } else if (Character == '\\') {
+                } else if (Symbol == '\\') {
                     Escaped = true;
-                } else if (Character == Quote) {
+                } else if (Symbol == Quote) {
                     Quote = 0;
                 }
 
                 continue;
             }
 
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
+            if (Symbol == '\'' || Symbol == '"') {
+                Quote = Symbol;
                 continue;
             }
 
-            if (Character == '[') {
+            if (Symbol == '[') {
                 Depth++;
-            } else if (Character == ']') {
+            } else if (Symbol == ']') {
                 Depth--;
 
-                if (Depth == 0) {
-                    return Index;
-                }
+                if (Depth == 0) {return Index;}
             }
         }
 
@@ -350,45 +316,42 @@ public final class MolangRenderControllerParser {
         boolean Escaped = false;
 
         for (int Index = 0; Index < Expression.length(); Index++) {
-            char Character = Expression.charAt(Index);
+            char Symbol = Expression.charAt(Index);
 
             if (Quote != 0) {
-                Result.append(Character);
+                Result.append(Symbol);
 
                 if (Escaped) {
                     Escaped = false;
-                } else if (Character == '\\') {
+                } else if (Symbol == '\\') {
                     Escaped = true;
-                } else if (Character == Quote) {
+                } else if (Symbol == Quote) {
                     Quote = 0;
                 }
 
                 continue;
             }
 
-            if (Character == '\'' || Character == '"') {
-                Quote = Character;
-                Result.append(Character);
+            if (Symbol == '\'' || Symbol == '"') {
+                Quote = Symbol;
+                Result.append(Symbol);
                 continue;
             }
 
             if (MatchesPrefix(Expression, Index, "Math.")) {
                 Result.append("math.");
-
                 Index += 4;
                 continue;
             }
 
-            Result.append(Character);
+            Result.append(Symbol);
         }
 
         return Result.toString();
     }
 
     private static String QuoteResource(String Value) {
-        if (Value == null) {
-            Value = "0";
-        }
+        if (Value == null) {Value = "0";}
 
         return "'" + Value.replace("\\", "\\\\").replace("'", "\\'") + "'";
     }
@@ -405,7 +368,6 @@ public final class MolangRenderControllerParser {
 
         if (Element.isJsonPrimitive()) {
             JsonPrimitive Primitive = Element.getAsJsonPrimitive();
-
             return Primitive.getAsString();
         }
 

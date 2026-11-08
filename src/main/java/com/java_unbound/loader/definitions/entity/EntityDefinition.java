@@ -46,8 +46,9 @@ public class EntityDefinition {
         EntityDefinition Definition = new EntityDefinition();
         String EntityIdentifer = EntityStringResolver.GetEntityString("identifier", JsonFile);
 
-        if (EntityIdentifer.equals("minecraft:villager_v2")) {
-            EntityIdentifer = "minecraft:villager";
+        switch (EntityIdentifer) {
+            case "minecraft:villager_v2" -> EntityIdentifer = "minecraft:villager";
+            case "minecraft:zombie_pigman" -> EntityIdentifer = "minecraft:zombified_piglin";
         }
 
         try {

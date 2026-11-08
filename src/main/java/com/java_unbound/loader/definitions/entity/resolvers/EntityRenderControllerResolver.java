@@ -88,7 +88,7 @@ public class EntityRenderControllerResolver {
         return ReferencesArray;
     }
 
-    private static List<EntityRenderControllerReference> ParseReferences(JsonArray ReferencesArray) {
+    public static List<EntityRenderControllerReference> ParseReferences(JsonArray ReferencesArray) {
         List<EntityRenderControllerReference> References = new ArrayList<>();
 
         for (JsonElement Element : ReferencesArray) {
@@ -375,7 +375,7 @@ public class EntityRenderControllerResolver {
         }
     }
 
-    private static synchronized HashMap<String, EntityRenderControllerDefinition> GetAvailableRenderControllers() {
+    public static synchronized HashMap<String, EntityRenderControllerDefinition> GetAvailableRenderControllers() {
         if (CachedAvailableRenderControllers == null) {
             JavaUnbound.LOGGER.debug("Loading render controller cache...");
 

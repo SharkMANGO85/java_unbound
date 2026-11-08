@@ -1,6 +1,7 @@
 package com.java_unbound.molang;
 
 import com.java_unbound.molang.enums.MolangExpression;
+import com.java_unbound.molang.types.MolangAttachableParser;
 import com.java_unbound.molang.types.MolangEntityParser;
 import com.java_unbound.molang.types.MolangMathParser;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +18,17 @@ public final class MolangParser {
 
     private static final ThreadLocal<Integer> EVALUATION_DEPTH = ThreadLocal.withInitial(() -> 0);
     private static final ThreadLocal<String> RETURN_VALUE = new ThreadLocal<>();
+
+    private static void ClearTemporaryValues(Entity Entity) {
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+
+        if (Attachable != null && !Attachable.ParentScope) {
+            Attachable.State.Temporaries.clear();
+            return;
+        }
+
+        MolangEntityParser.ClearTemporaries(Entity);
+    }
 
     public static MolangExpression Classify(String Expression) {
         if (Expression == null) {
@@ -48,7 +60,7 @@ public final class MolangParser {
         boolean IsRootEvaluation = EVALUATION_DEPTH.get() == 0;
 
         if (IsRootEvaluation) {
-            MolangEntityParser.ClearTemporaries(Entity);
+            ClearTemporaryValues(Entity);
             RETURN_VALUE.remove();
         }
 
@@ -62,7 +74,7 @@ public final class MolangParser {
             int Depth = EVALUATION_DEPTH.get() - 1;
 
             if (Depth <= 0) {
-                MolangEntityParser.ClearTemporaries(Entity);
+                ClearTemporaryValues(Entity);
                 RETURN_VALUE.remove();
                 EVALUATION_DEPTH.remove();
             } else {
@@ -77,7 +89,76 @@ public final class MolangParser {
         return MolangParser.IsTrue(MolangParser.Evaluate(Entity, Condition));
     }
 
+    private static void SetVariableValue(Entity Entity, String Name, String Value) {
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+
+        if (Attachable != null && !Attachable.ParentScope) {
+            Attachable.State.SetVariable(Name, Value);
+            return;
+        }
+
+        MolangEntityParser.SetVariable(Entity, Name, Value);
+    }
+
+    private static void SetTemporaryValue(Entity Entity, String Name, String Value) {
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+
+        if (Attachable != null && !Attachable.ParentScope) {
+            Attachable.State.SetTemporary(Name, Value);
+            return;
+        }
+
+        MolangEntityParser.SetTemporary(Entity, Name, Value);
+    }
+
+    private static String EvaluateArrow(String Target, String Remaining) {
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+        boolean IsOwner = Target.equals("c.owning_entity") || Target.equals("context.owning_entity");
+
+        if (Attachable == null || !IsOwner || Attachable.Owner == null) {return "0";}
+
+        // Right side is evaluated purely on the owner entity, so v.* hits the entity's variables.
+        MolangAttachableParser.Context Previous = MolangAttachableParser.Swap(null);
+
+        try {
+            return EvaluateInternal(Attachable.Owner, Remaining);
+        } finally {
+            MolangAttachableParser.Swap(Previous);
+        }
+    }
+
+    private static int FindArrow(String Expression) {
+        int Depth = 0;
+        char Quote = 0;
+
+        for (int Index = 0; Index < Expression.length() - 1; Index++) {
+            char Character = Expression.charAt(Index);
+
+            if (Quote != 0) {
+                if (Character == Quote && !IsEscaped(Expression, Index)) {
+                    Quote = 0;
+                }
+
+                continue;
+            }
+
+            if (Character == '\'' || Character == '"') {
+                Quote = Character;
+            } else if (Character == '(' || Character == '{' || Character == '[') {
+                Depth++;
+            } else if (Character == ')' || Character == '}' || Character == ']') {
+                Depth--;
+            } else if (Depth == 0 && Character == '-' && Expression.charAt(Index + 1) == '>') {
+                return Index;
+            }
+        }
+
+        return -1;
+    }
+
     private static String EvaluateInternal(Entity Entity, String Expression) {
+        if (Entity == null && MolangAttachableParser.Current() == null) {return "0";}
+
         if (Expression == null || Expression.isBlank()) {return "0";}
         if (Entity == null) {return "0";}
 
@@ -145,9 +226,9 @@ public final class MolangParser {
                 String VariableName = Left.substring(Left.indexOf('.') + 1).trim().toLowerCase(Locale.ROOT);
 
                 if (NormalizedLeft.startsWith("t.") || NormalizedLeft.startsWith("temp.")) {
-                    MolangEntityParser.SetTemporary(Entity, VariableName, Value);
+                    SetTemporaryValue(Entity, VariableName, Value);
                 } else {
-                    MolangEntityParser.SetVariable(Entity, VariableName, Value);
+                    SetVariableValue(Entity, VariableName, Value);
                 }
 
                 return Value;
@@ -292,6 +373,12 @@ public final class MolangParser {
             return EvaluateInternal(Entity, Expression.substring(1).trim());
         }
 
+        int ArrowIndex = FindArrow(Expression);
+
+        if (ArrowIndex >= 0) {
+            return EvaluateArrow(Expression.substring(0, ArrowIndex).trim().toLowerCase(Locale.ROOT), Expression.substring(ArrowIndex + 2).trim());
+        }
+
         if (IsNumber(Expression)) {
             return Expression;
         }
@@ -302,6 +389,13 @@ public final class MolangParser {
 
         if (MolangMathParser.IsMathExpression(Expression)) {
             return MolangMathParser.Evaluate(Entity, Expression);
+        }
+
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+
+        if (Attachable != null) {
+            String AttachableValue = MolangAttachableParser.EvaluateLeaf(Attachable, Expression);
+            if (AttachableValue != null) {return AttachableValue;}
         }
 
         String LowerExpression = Expression.toLowerCase(Locale.ROOT);
@@ -493,20 +587,23 @@ public final class MolangParser {
         Expression = StripOuterParentheses(Expression);
 
         String LowerExpression = Expression.toLowerCase(Locale.ROOT);
+        String Name = Expression.substring(Expression.indexOf('.') + 1);
+        MolangAttachableParser.Context Attachable = MolangAttachableParser.Current();
+        boolean Local = Attachable != null && !Attachable.ParentScope;
 
         if (LowerExpression.startsWith("v.") || LowerExpression.startsWith("variable.")) {
-            return MolangEntityParser.GetVariable(Entity, Expression.substring(Expression.indexOf('.') + 1));
+            return Local ? Attachable.State.GetVariable(Name) : MolangEntityParser.GetVariable(Entity, Name);
         }
 
         if (LowerExpression.startsWith("t.") || LowerExpression.startsWith("temp.")) {
-            return MolangEntityParser.GetTemporary(Entity, Expression.substring(Expression.indexOf('.') + 1));
+            return Local ? Attachable.State.GetTemporary(Name) : MolangEntityParser.GetTemporary(Entity, Name);
         }
 
         return null;
     }
 
     private static boolean IsWritableVariable(String Expression) {
-        return Expression.matches("(?:v|variable|t|temp)\\.[a-z0-9_]+");
+        return Expression.matches("(?:v|variable|t|temp)\\.[a-z0-9_.]+");
     }
 
     private static boolean IsStringLiteral(String Expression) {
@@ -842,6 +939,11 @@ public final class MolangParser {
                 continue;
             }
 
+            if (Character == '-' && Index + 1 < Expression.length() && Expression.charAt(Index + 1) == '>') {
+                Index++;
+                continue;
+            }
+
             if (Depth == 0 && Expression.startsWith(Operator, Index)) {
                 if (Operator.equals("+") || Operator.equals("-")) {
                     int PreviousIndex = PreviousNonWhitespaceIndex(Expression, Index);
@@ -889,6 +991,11 @@ public final class MolangParser {
             }
 
             if (Depth != 0) {
+                continue;
+            }
+
+            if (Character == '>' && Index > 0 && Expression.charAt(Index - 1) == '-') {
+                Index--;
                 continue;
             }
 
@@ -1083,8 +1190,14 @@ public final class MolangParser {
             return Index;
         }
 
+
         while (Index < Expression.length()) {
             char Current = Expression.charAt(Index);
+
+            if (Current == '-' && Index + 1 < Expression.length() && Expression.charAt(Index + 1) == '>') {
+                Index += 2;
+                continue;
+            }
 
             if (java.lang.Character.isWhitespace(Current) || "+-*/%<>=!&|?:,;{}[]()".indexOf(Current) >= 0) {
                 break;

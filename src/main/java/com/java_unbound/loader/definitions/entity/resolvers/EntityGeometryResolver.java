@@ -263,7 +263,6 @@ public class EntityGeometryResolver {
         return Cube;
     }
 
-    /** "uv" is either [u, v] (box UV) or an object with per-face entries. */
     private static EntityGeometryUvData ParseUvData(JsonElement Json) {
         if (Json == null || Json.isJsonNull()) {return null;}
 
@@ -303,7 +302,6 @@ public class EntityGeometryResolver {
         return Face;
     }
 
-    /** A locator is either [x, y, z] or an object with offset / rotation / ignore_inherited_scale. */
     private static EntityGeometryLocator ParseLocator(JsonElement Json) {
         if (Json == null || Json.isJsonNull()) {return null;}
 
@@ -337,7 +335,6 @@ public class EntityGeometryResolver {
         return PolyMesh;
     }
 
-    /** "polys" is either "tri_list" / "quad_list" or an explicit [polygon][vertex][position, normal, uv] index array. */
     private static EntityGeometryPolyMeshPolys ParsePolyMeshPolys(JsonElement Json) {
         if (Json == null || Json.isJsonNull()) {return null;}
 
@@ -401,8 +398,6 @@ public class EntityGeometryResolver {
 
         return Transform;
     }
-
-    // ----------------------------- JSON readers -----------------------------
 
     private static JsonObject ReadObject(JsonObject Parent, String Key) {
         JsonElement Element = Parent.get(Key);
@@ -470,7 +465,6 @@ public class EntityGeometryResolver {
         }
     }
 
-    /** Returns null if the element is not an array or any entry is not a number. */
     private static float[] ReadFloatArray(JsonElement Element) {
         if (Element == null || !Element.isJsonArray()) {return null;}
 
@@ -692,6 +686,11 @@ public class EntityGeometryResolver {
 
     public static synchronized HashMap<String, EntityGeometryDefinition> GetEntityGeometries(Path EntityFile) {
         return new HashMap<>(ResolveEntityGeometries(EntityFile));
+    }
+
+    public static synchronized EntityGeometryDefinition GetGeometry(String GeometryIdentifier) {
+        if (GeometryIdentifier == null || GeometryIdentifier.isBlank()) {return null;}
+        return GetAvailableGeometries().get(GeometryIdentifier);
     }
 
     public static synchronized EntityGeometryDefinition GetEntityGeometry(Path EntityFile, String GeometryAlias) {

@@ -1,4 +1,4 @@
-package com.java_unbound.attachables.rendering;
+package com.java_unbound.attachables.rendering.bedrock;
 
 import org.joml.Matrix4f;
 
