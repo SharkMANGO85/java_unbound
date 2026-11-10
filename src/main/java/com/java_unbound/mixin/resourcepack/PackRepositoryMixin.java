@@ -1,8 +1,8 @@
 package com.java_unbound.mixin.resourcepack;
 
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.loader.resourcepack.Folder;
-import com.java_unbound.loader.resourcepack.PackLoader;
+import com.java_unbound.shared.resourcepack.Folder;
+import com.java_unbound.shared.resourcepack.PackLoader;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.RepositorySource;
@@ -18,7 +18,6 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-//add the java unbound resoucepack to the game
 @Mixin(PackRepository.class)
 public abstract class PackRepositoryMixin {
     @Shadow
@@ -34,8 +33,8 @@ public abstract class PackRepositoryMixin {
             try {
                 Folder.EnsureExists();
 
-                Path ResourcePack = Folder.GetConfigFolder();
-                Pack Pack = PackLoader.Create(ResourcePack);
+                Path ConfigFolder = Folder.GetConfigFolder();
+                Pack Pack = PackLoader.Create(ConfigFolder);
 
                 Consumer.accept(Pack);
             } catch (Exception Exception) {
@@ -48,11 +47,11 @@ public abstract class PackRepositoryMixin {
 
     @Inject(method = "reload", at = @At("TAIL"))
     private void JavaUnbound$AfterReload(CallbackInfo Callback) {
-        PackRepository Repository = (PackRepository)(Object)this;
+        PackRepository Repository = (PackRepository)(Object) this;
 
         JavaUnbound.LOGGER.debug("[Java Unbound] ===== PACK RELOAD =====");
         JavaUnbound.LOGGER.debug("[Java Unbound] Available: " + Repository.getAvailableIds());
         JavaUnbound.LOGGER.debug("[Java Unbound] Selected: " + Repository.getSelectedIds());
-        JavaUnbound.LOGGER.debug("[Java Unbound] Java Unbound available: " + Repository.isAvailable(PackLoader.PackID));
+        JavaUnbound.LOGGER.debug("[Java Unbound] Java Unbound available: " + Repository.isAvailable(JavaUnbound.PACK_ID));
     }
 }

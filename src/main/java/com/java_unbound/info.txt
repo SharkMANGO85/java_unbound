@@ -1,0 +1,4 @@
+• No full replacement: It never overrides everything automatically.
+• Targeted priority: Only files inside the subpack folder replace base pack files.
+• Automatic fallback: Missing subpack files automatically load from the base pack.
+• Layered merging: The subpack acts as a top layer over the base pack.
