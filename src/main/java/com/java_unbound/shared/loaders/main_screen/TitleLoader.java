@@ -17,8 +17,6 @@ public class TitleLoader {
 
         TitleAvailable = true;
 
-        JavaUnbound.LOGGER.debug(TitleResource);
-
         Folder.SetIdentifier("textures/gui/title/minecraft.png", TitleResource);
     }
 }

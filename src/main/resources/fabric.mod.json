@@ -18,15 +18,9 @@
   "environment": "*",
 
   "entrypoints": {
-    "main": [
-      "com.java_unbound.JavaUnbound"
-    ],
-    "client": [
-      "com.java_unbound.JavaUnboundClient"
-    ],
-    "modmenu": [
-      "com.java_unbound.mod_menu.ModMenuIntegration"
-    ]
+    "main": ["com.java_unbound.JavaUnbound"],
+    "client": ["com.java_unbound.JavaUnboundClient"],
+    "modmenu": ["com.java_unbound.mods.mod_menu.ModMenuIntegration"]
   },
 
   "mixins": [

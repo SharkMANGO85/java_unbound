@@ -13,6 +13,7 @@ import java.util.Comparator;
 public final class Folder {
     private Folder() {}
 
+    public static Path GetAddonFolder() {
         return GetConfigsFolder().resolve("java_unbound_addon");
     }
 
@@ -29,10 +30,11 @@ public final class Folder {
     }
 
     public static void EnsureExists() throws IOException {
+        Files.createDirectories(GetAddonFolder());
     }
 
     public static void SetIdentifier(String MinecraftPath, String ResourcePath) {
-       Path AbsolutePath = GetAddonFolder().resolve(ResourcePath);
+        Path AbsolutePath = GetAddonFolder().resolve(ResourcePath);
         Path DesiredPath = GetDebugFolder().resolve("assets").resolve(MinecraftPath);
 
         try {
@@ -80,6 +82,7 @@ public final class Folder {
     }
 
     public static void ClearResourcePack() {
+        Path ResourcePack = GetAddonFolder().resolve("assets").resolve("minecraft");
 
         try {
             if (Files.exists(ResourcePack)) {

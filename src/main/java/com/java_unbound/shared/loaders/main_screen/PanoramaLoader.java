@@ -16,8 +16,6 @@ public class PanoramaLoader {
                 continue;
             }
 
-            JavaUnbound.LOGGER.debug(PanoramaResource + " -> " + MinecraftPath);
-
             Folder.SetIdentifier(MinecraftPath, PanoramaResource);
         }
     }

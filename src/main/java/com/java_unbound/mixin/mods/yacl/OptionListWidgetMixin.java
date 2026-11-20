@@ -1,4 +1,4 @@
-package com.java_unbound.mixin.mod_menu;
+package com.java_unbound.mixin.mods.yacl;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.isxander.yacl3.gui.OptionListWidget;

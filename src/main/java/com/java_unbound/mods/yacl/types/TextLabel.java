@@ -1,8 +1,6 @@
+package com.java_unbound.mods.yacl.types;
 
-package com.java_unbound.mod_menu.types;
-
-import com.java_unbound.mod_menu.ModMenuIntegration;
-
+import com.java_unbound.mods.yacl.ModScreen;
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
@@ -14,7 +12,7 @@ import dev.isxander.yacl3.gui.YACLScreen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
-public class TextLabelController {
+public class TextLabel {
     public static void CreateTextLabel(String Tab, String Text) {
         Option<String> LabelOption = Option.<String>createBuilder().name(Component.empty()).description(OptionDescription.of(Component.empty())).binding(Text, () -> Text, Value -> {})
                 .controller(Option -> (ControllerBuilder<String>) () -> new Controller<String>() {
@@ -35,7 +33,7 @@ public class TextLabelController {
                 })
                 .build();
 
-        ModMenuIntegration.GetCategory(Tab).option(LabelOption);
+        ModScreen.GetCategory(Tab).option(LabelOption);
     }
 
     private static class TextLabelWidget extends AbstractWidget {

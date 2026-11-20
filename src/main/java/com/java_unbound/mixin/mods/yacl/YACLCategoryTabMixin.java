@@ -1,4 +1,4 @@
-package com.java_unbound.mixin.mod_menu;
+package com.java_unbound.mixin.mods.yacl;
 
 import dev.isxander.yacl3.gui.OptionListWidget;
 import dev.isxander.yacl3.gui.WidgetAndType;
@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 @Mixin(targets = "dev.isxander.yacl3.gui.YACLScreen$CategoryTab")
 public abstract class YACLCategoryTabMixin {
     @Shadow
-    @Final
     private WidgetAndType<OptionListWidget> optionList;
 
     @Shadow

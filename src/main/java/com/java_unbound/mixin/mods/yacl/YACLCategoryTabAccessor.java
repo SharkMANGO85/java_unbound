@@ -1,5 +1,5 @@
 
-package com.java_unbound.mixin.mod_menu;
+package com.java_unbound.mixin.mods.yacl;
 
 import dev.isxander.yacl3.gui.OptionListWidget;
 import dev.isxander.yacl3.gui.WidgetAndType;

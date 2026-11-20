@@ -1,4 +1,4 @@
-package com.java_unbound.mixin.mod_menu;
+package com.java_unbound.mixin.mods.yacl;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import dev.isxander.yacl3.api.utils.Dimension;

@@ -78,6 +78,7 @@ public class TitleRendererMixin {
 
     @Inject(method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IFI)V", at = @At("HEAD"), cancellable = true)
     private void ExtractRenderState(final GuiGraphicsExtractor Graphics, final int Width, final float Alpha, final int HeightOffset, final CallbackInfo CallbackInfo) {
+        if (!JavaUnbound.TITLE_VISIBLE) {
             CallbackInfo.cancel();
             return;
         }

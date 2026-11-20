@@ -5,20 +5,19 @@
   "mixins": [],
   "client": [
     "resourcepack.PackRepositoryMixin",
-    "resourcepack.LogoRendererMixin",
-    "resourcepack.SplashRendererMixin",
 
-    "ui.PumpkinBlurMixin",
+    "main_screen.splash.SplashRendererMixin",
+    "main_screen.title.TitleRendererMixin",
 
-    "mod_menu.YACLCategoryTabMixin",
-    "mod_menu.ControllerWidgetMixin",
-    "mod_menu.YACLCategoryTabAccessor",
-    "mod_menu.YACLScreenMixin",
-    "mod_menu.OptionListWidgetMixin",
-    "mod_menu.DropdownControllerMixin",
-    "mod_menu.DropdownOptionsMixin",
-    "mod_menu.DropdownControllerElementAccessor",
-    "mod_menu.DropdownWidgetMixin"
+    "mods.yacl.YACLCategoryTabMixin",
+    "mods.yacl.ControllerWidgetMixin",
+    "mods.yacl.YACLCategoryTabAccessor",
+    "mods.yacl.YACLScreenMixin",
+    "mods.yacl.OptionListWidgetMixin",
+    "mods.yacl.DropdownControllerMixin",
+    "mods.yacl.DropdownOptionsMixin",
+    "mods.yacl.DropdownControllerElementAccessor",
+    "mods.yacl.DropdownWidgetMixin"
   ],
   "injectors": {
     "defaultRequire": 1
