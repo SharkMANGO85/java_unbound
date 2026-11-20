@@ -1,8 +1,6 @@
 package com.java_unbound.shared.resourcepack;
 
 import com.java_unbound.JavaUnbound;
-import com.java_unbound.shared.loaders.language.LanguageLoader;
-import com.java_unbound.shared.loaders.manifest.ManifestLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
@@ -24,11 +22,44 @@ public final class PackLoader {
     private PackLoader() {}
 
     public static String GetPackName(Path ResourcePack) {
-        return ManifestLoader.Manifest.Header.Name;
+        return ReadLang(ResourcePack, "pack.name", JavaUnbound.MOD_NAME);
     }
 
     public static String GetDescription(Path ResourcePack) {
-        return "§6■ " + ManifestLoader.Manifest.Header.Name + "\n§e■ " + ManifestLoader.Manifest.Header.Description + "\n";
+        return ReadLang(ResourcePack, "pack.description", JavaUnbound.MOD_NAME);
+    }
+
+    public static String ReadLang(Path Root, String Key, String Fallback) {
+        Path LangFile = Root.resolve("texts").resolve("en_US.lang");
+
+        if (!Files.isRegularFile(LangFile)) {
+            return Fallback;
+        }
+
+        try (BufferedReader Reader = Files.newBufferedReader(LangFile, StandardCharsets.UTF_8)) {
+            String Line;
+
+            while ((Line = Reader.readLine()) != null) {
+                Line = Line.trim();
+
+                if (Line.isEmpty() || Line.startsWith("#")) {continue;}
+                if (!Line.startsWith(Key + "=")) {continue;}
+
+                String Value = Line.substring((Key + "=").length()).trim();
+
+                int Hash = Value.indexOf('#');
+
+                if (Hash >= 0) {
+                    Value = Value.substring(0, Hash).trim();
+                }
+
+                return Value;
+            }
+        } catch (IOException Exception) {
+            return Fallback;
+        }
+
+        return Fallback;
     }
 
     public static Pack Create(Path ResourcePack) {

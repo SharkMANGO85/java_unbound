@@ -1,4 +1,4 @@
-package com.java_unbound.shared.converters;
+package com.java_unbound.loader.converters;
 
 import com.java_unbound.JavaUnbound;
 
@@ -33,35 +33,37 @@ public final class TgaConverter {
         return Builder.toString().trim();
     }
 
-    public static void ConvertAll(Path Root) {
-        Debug("ConvertAll root = " + Root);
+    public static Runnable ConvertAll(Path Root) {
+        return () -> {
+            Debug("ConvertAll root = " + Root);
 
-        if (Root == null || !Files.isDirectory(Root)) {
-            Debug("Root is null or not a directory, skipping");
-            return;
-        }
+            if (Root == null || !Files.isDirectory(Root)) {
+                Debug("Root is null or not a directory, skipping");
+                return;
+            }
 
-        AtomicInteger Found = new AtomicInteger();
-        AtomicInteger Succeeded = new AtomicInteger();
-        AtomicInteger Failed = new AtomicInteger();
+            AtomicInteger Found = new AtomicInteger();
+            AtomicInteger Succeeded = new AtomicInteger();
+            AtomicInteger Failed = new AtomicInteger();
 
-        try (Stream<Path> FilesStream = Files.walk(Root)) {
-            FilesStream.filter(Files::isRegularFile).filter(File -> File.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".tga")).forEach(File -> {
-                Found.incrementAndGet();
+            try (Stream<Path> FilesStream = Files.walk(Root)) {
+                FilesStream.filter(Files::isRegularFile).filter(File -> File.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".tga")).forEach(File -> {
+                    Found.incrementAndGet();
 
-                try {
-                    Convert(File);
-                    Succeeded.incrementAndGet();
-                } catch (Exception Exception) {
-                    Failed.incrementAndGet();
-                    JavaUnbound.LOGGER.error("TGA convert failed: " + File + " -> " + Exception.getMessage());
-                }
-            });
-        } catch (IOException Exception) {
-            JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
-        }
+                    try {
+                        Convert(File);
+                        Succeeded.incrementAndGet();
+                    } catch (Exception Exception) {
+                        Failed.incrementAndGet();
+                        JavaUnbound.LOGGER.error("TGA convert failed: " + File + " -> " + Exception.getMessage());
+                    }
+                });
+            } catch (IOException Exception) {
+                JavaUnbound.LOGGER.error("TGA scan failed: " + Root + " -> " + Exception.getMessage());
+            }
 
-        Debug("ConvertAll done: found = " + Found + ", converted = " + Succeeded + ", failed = " + Failed);
+            Debug("ConvertAll done: found =" + Found + ", converted =" + Succeeded + ", failed =" + Failed);
+        };
     }
 
     public static void Convert(Path TgaFile) throws IOException {
@@ -96,7 +98,15 @@ public final class TgaConverter {
     }
 
     private static boolean IsPng(byte[] Data) {
-        return Data.length >= 8 && (Data[0] & 0xFF) == 0x89 && Data[1] == 'P' && Data[2] == 'N' && Data[3] == 'G' && Data[4] == 0x0D && Data[5] == 0x0A && Data[6] == 0x1A && Data[7] == 0x0A;
+        return Data.length >= 8
+                && (Data[0] & 0xFF) == 0x89
+                && Data[1] == 'P'
+                && Data[2] == 'N'
+                && Data[3] == 'G'
+                && Data[4] == 0x0D
+                && Data[5] == 0x0A
+                && Data[6] == 0x1A
+                && Data[7] == 0x0A;
     }
 
     private static boolean IsOtherKnownImage(byte[] Data) {
@@ -138,7 +148,10 @@ public final class TgaConverter {
         int PixelDepth = U8(Data, 16);
         int ImageDescriptor = U8(Data, 17);
 
-        Debug("  TGA header: idLen=" + IdLength + ", colorMapType=" + ColorMapType + ", imageType=" + ImageType + ", cmFirst=" + ColorMapFirst + ", cmLen=" + ColorMapLength + ", cmDepth=" + ColorMapDepth + ", origin=" + XOrigin + "," + YOrigin + ", size=" + Width + "x" + Height + ", depth=" + PixelDepth + ", descriptor=0x" + Integer.toHexString(ImageDescriptor));
+        Debug("  TGA header: idLen=" + IdLength + ", colorMapType=" + ColorMapType + ", imageType=" + ImageType
+                + ", cmFirst=" + ColorMapFirst + ", cmLen=" + ColorMapLength + ", cmDepth=" + ColorMapDepth
+                + ", origin=" + XOrigin + "," + YOrigin + ", size=" + Width + "x" + Height
+                + ", depth=" + PixelDepth + ", descriptor=0x" + Integer.toHexString(ImageDescriptor));
 
         if (Width <= 0 || Height <= 0) {throw new IOException("Invalid TGA dimensions: " + Width + "x" + Height);}
         if (PixelDepth != 8 && PixelDepth != 15 && PixelDepth != 16 && PixelDepth != 24 && PixelDepth != 32) {throw new IOException("Unsupported TGA color depth: " + PixelDepth + " (image type " + ImageType + ", descriptor " + ImageDescriptor + ")");}
@@ -177,7 +190,6 @@ public final class TgaConverter {
 
             for (int X = 0; X < Width; X++) {
                 int TargetX = RightOrigin ? Width - 1 - X : X;
-
                 Image.setRGB(TargetX, TargetY, Pixels.get(Index++));
             }
         }

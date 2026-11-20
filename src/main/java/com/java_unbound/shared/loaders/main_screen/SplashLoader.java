@@ -20,11 +20,8 @@ public class SplashLoader {
     public static boolean SplashesAvailable = false;
 
     private static Path GetSplashResource() {
-        Path SplashResource = Folder.GetAddonFolder().resolve("splashes.json");
-        SplashResource = ResolvePath(Folder.GetAddonFolder(), SplashResource);
 
         if (SplashResource == null || !Files.isRegularFile(SplashResource)) {
-            JavaUnbound.LOGGER.error("Splash file doesn't exist");
             return null;
         }
 
@@ -35,7 +32,6 @@ public class SplashLoader {
         Path SplashResource = GetSplashResource();
 
         if (SplashResource == null) {
-            JavaUnbound.LOGGER.error("Splash file doesn't exist");
             return null;
         }
 
@@ -44,7 +40,6 @@ public class SplashLoader {
             JsonArray Splashes = GetSplashes(Object);
 
             if (Splashes == null) {
-                JavaUnbound.LOGGER.error("Splash array doesn't exist");
                 return null;
             }
 
@@ -90,7 +85,6 @@ public class SplashLoader {
             Current = ResolvePart(Current, Part.toString());
 
             if (Current == null) {
-                JavaUnbound.LOGGER.error("Failed to resolve splash resource path");
                 return null;
             }
         }

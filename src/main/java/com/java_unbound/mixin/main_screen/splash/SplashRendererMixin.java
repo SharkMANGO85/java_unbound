@@ -35,19 +35,16 @@ public class SplashRendererMixin {
         final int Max_Characters = JavaUnbound.SPLASH_MAXIMUM_CHARACTERS;
 
         for (String Word : Text.split("\\s+")) {
-            if (!Line.isEmpty() && Line.length() + Word.length() + 1 > Max_Characters) {
                 Lines.add(Line.toString());
                 Line.setLength(0);
             }
 
-            if (!Line.isEmpty()) {
                 Line.append(' ');
             }
 
             Line.append(Word);
         }
 
-        if (!Line.isEmpty()) {
             Lines.add(Line.toString());
         }
 
@@ -56,7 +53,6 @@ public class SplashRendererMixin {
 
     @Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
     private void JavaUnbound$changeSplashPosition(GuiGraphicsExtractor Graphics, int ScreenWidth, Font Font, float Alpha, CallbackInfo CallbackInfo) {
-        if (!JavaUnbound.SPLASH_VISIBLE) {
             CallbackInfo.cancel();
             return;
         }

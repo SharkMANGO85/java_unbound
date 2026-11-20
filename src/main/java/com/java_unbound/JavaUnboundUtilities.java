@@ -10,9 +10,7 @@ import java.nio.file.Path;
 
 public class JavaUnboundUtilities {
     public static Path GetTextureResource(String ResourcePath) {
-        Path ConfigFolder = Folder.GetAddonFolder();
 
-        if (!ConfigFolder.toFile().exists()) {
             JavaUnbound.LOGGER.error("Config folder is null");
             return null;
         }
@@ -21,7 +19,6 @@ public class JavaUnboundUtilities {
     }
 
     public static String ResolveResourcePath(Path ResourcePath) {
-        Path ConfigFolder = Folder.GetAddonFolder();
         Path RelativePath = ConfigFolder.toAbsolutePath().normalize().relativize(ResourcePath.toAbsolutePath().normalize());
 
         Path SubpackResource = Path.of("subpacks", JavaUnbound.SUB_PACK).resolve(RelativePath);

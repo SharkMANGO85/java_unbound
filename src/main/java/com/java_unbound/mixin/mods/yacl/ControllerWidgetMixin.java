@@ -1,4 +1,6 @@
-package com.java_unbound.mixin.mods.yacl;
+package com.java_unbound.mixin.mod_menu;
+
+import com.java_unbound.mod_menu.types.Scrollbar;
 
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
@@ -17,7 +19,7 @@ public abstract class ControllerWidgetMixin {
     @Final
     protected Controller<?> control;
 
-    /*@ModifyVariable(method = "extractRenderState", at = @At("STORE"), ordinal = 0)
+    @ModifyVariable(method = "extractRenderState", at = @At("STORE"), ordinal = 0)
     private Component JavaUnbound$UpdateSubpackTitle(Component Name) {
         if (!this.control.option().name().getString().equalsIgnoreCase("Subpack")) {return Name;}
 
@@ -27,5 +29,5 @@ public abstract class ControllerWidgetMixin {
         String SubpackName = Scrollbar.GetSubpackName(SubpackValue);
 
         return Component.literal(SubpackName).setStyle(Name.getStyle());
-    }*/
+    }
 }

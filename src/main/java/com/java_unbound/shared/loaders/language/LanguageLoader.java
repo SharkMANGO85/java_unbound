@@ -11,15 +11,14 @@ import com.java_unbound.shared.resourcepack.Folder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class LanguageLoader {
     private static final LanguageResourceDefinition Resource = new LanguageResourceDefinition();
 
     private static Path GetLanguageFolder() {
-        Path LanguageFolder = Folder.GetAddonFolder().resolve("texts");
 
         if (!Files.exists(LanguageFolder)) {
-            JavaUnbound.LOGGER.error("Language folder doesn't exist");
             return null;
         }
 
@@ -27,17 +26,8 @@ public class LanguageLoader {
     }
 
     private static Path GetLanguageResource() {
-        Path LanguageResource = GetLanguageFolder();
-
-        if (LanguageResource == null) {
-            JavaUnbound.LOGGER.error("Language resource folder doesn't exist");
-            return null;
-        }
-
-        LanguageResource = LanguageResource.resolve("languages.json");
 
         if (!Files.exists(LanguageResource)) {
-            JavaUnbound.LOGGER.error("Language resource doesn't exist");
             return null;
         }
 
@@ -45,17 +35,8 @@ public class LanguageLoader {
     }
 
     private static Path GetLanguageFile(String Language) {
-        Path LanguageResource = GetLanguageFolder();
-
-        if (LanguageResource == null) {
-            JavaUnbound.LOGGER.error("Language resource folder doesn't exist");
-            return null;
-        }
-
-        Path LanguageFile = LanguageResource.resolve(Language + ".lang");
 
         if (!Files.exists(LanguageFile)) {
-            JavaUnbound.LOGGER.error("Language file doesn't exist");
             return null;
         }
 
@@ -66,7 +47,6 @@ public class LanguageLoader {
         Path LanguageFile = GetLanguageFile(Language);
 
         if (LanguageFile == null) {
-            JavaUnbound.LOGGER.error("Language file doesn't exist");
             return;
         }
 
@@ -91,6 +71,7 @@ public class LanguageLoader {
 
     public static void LoadLanguages() throws IOException {
         Path LanguageResource = GetLanguageResource();
+        assert LanguageResource != null;
 
         if (LanguageResource == null) {
             JavaUnbound.LOGGER.error("Language resource folder doesn't exist");
@@ -110,6 +91,5 @@ public class LanguageLoader {
 
         String Text = Language.GetText(Key);
 
-        return Text != null ? Text : JavaUnbound.UNKNOWN;
     }
 }
