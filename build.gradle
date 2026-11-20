@@ -67,14 +67,8 @@ dependencies {
 
 	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+	implementation "maven.modrinth:mOgUt4GM:${project.modmenu_version}"
 	implementation "maven.modrinth:1eAoo2KR:${project.yacl_version}"
-	implementation "maven.modrinth:WKwQAwke:${project.libjf_version}"
-	implementation "maven.modrinth:TiF5QWZY:${project.respackopts_version}"
-	implementation "com.geckolib:geckolib-fabric-26.2:${project.geckolib_version}"
-
-	compileOnlyApi "maven.modrinth:YL57xq9U:${project.iris_version}"
-	implementation "maven.modrinth:YL57xq9U:${project.iris_version}"
 
 	implementation 'ar.com.hjg:pngj:2.1.0'
 }

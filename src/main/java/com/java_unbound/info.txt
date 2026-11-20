@@ -1,0 +1,21 @@
+Subpacks:
+
+• No full replacement: It never overrides everything automatically.
+• Targeted priority: Only files inside the subpack folder replace base pack files.
+• Automatic fallback: Missing subpack files automatically load from the base pack.
+• Layered merging: The subpack acts as a top layer over the base pack.
+
+Fixes:
+
+java/com/java_unbound/mixin/mods/yacl/ControllerWidgetMixin.java
+-Fix the Scrollbar
+
+
+Info:
+
+flipbook_textures.json = texture_animations
+terrain_texture.json = texture_variations, etc.
+
+Future:
+
+change block_texture_loader to texture loader, make that global and block_texture_manual_mapping seperate
