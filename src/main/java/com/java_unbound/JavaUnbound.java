@@ -10,6 +10,8 @@ public class JavaUnbound implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final String PACK_ID = "java_unbound_addon";
 
+    public static final boolean DEBUG = true;
+
     public static String UNKNOWN = "N/V";
 
     ///Change Later to mod_menu setting

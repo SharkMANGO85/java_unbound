@@ -20,7 +20,9 @@ public final class TgaConverter {
     private TgaConverter() {}
 
     private static void Debug(String Message) {
-        if (DEBUG) {JavaUnbound.LOGGER.info("[TgaConverter] " + Message);}
+        if (DEBUG) {
+            JavaUnbound.LOGGER.debug("[TgaConverter] " + Message);
+        }
     }
 
     private static String Hex(byte[] Data, int Count) {

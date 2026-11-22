@@ -21,6 +21,14 @@ public final class Folder {
         return GetConfigsFolder().resolve("java_unbound_debug");
     }
 
+    public static Path GetDevelopmentDebugFolder() {
+        if (!JavaUnbound.DEBUG) {
+            return null;
+        }
+
+        return GetConfigsFolder().resolve("java_unbound_debug_development");
+    }
+
     public static Path GetManifest() {
         return GetConfigsFolder().resolve("manifest.json");
     }
@@ -56,12 +64,12 @@ public final class Folder {
         Path Source = GetAddonFolder().resolve("assets");
         Path Destination = GetDebugFolder().resolve("assets");
 
-        try {
-            if (!Files.exists(Source)) {
-                JavaUnbound.LOGGER.error("Source folder does not exist");
-                return;
-            }
+        if (!Source.toFile().exists()) {
+            JavaUnbound.LOGGER.debug("Source folder does not exist");
+            return;
+        }
 
+        try {
             Files.walk(Source).forEach(Path -> {
                 try {
                     Path Target = Destination.resolve(Source.relativize(Path));
