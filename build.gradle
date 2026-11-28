@@ -71,10 +71,6 @@ dependencies {
 	implementation "maven.modrinth:1eAoo2KR:${project.yacl_version}"
 	implementation "maven.modrinth:WKwQAwke:${project.libjf_version}"
 	implementation "maven.modrinth:TiF5QWZY:${project.respackopts_version}"
-	implementation "com.geckolib:geckolib-fabric-26.2:${project.geckolib_version}"
-
-	compileOnlyApi "maven.modrinth:YL57xq9U:${project.iris_version}"
-	implementation "maven.modrinth:YL57xq9U:${project.iris_version}"
 
 	implementation 'ar.com.hjg:pngj:2.1.0'
 }

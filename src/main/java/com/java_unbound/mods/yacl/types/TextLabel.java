@@ -1,6 +1,6 @@
 package com.java_unbound.mods.yacl.types;
 
-import com.java_unbound.mods.yacl.ModScreen;
+import com.java_unbound.mods.yacl.resource_pack.ResourcePackScreen;
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
@@ -33,7 +33,7 @@ public class TextLabel {
                 })
                 .build();
 
-        ModScreen.GetCategory(Tab).option(LabelOption);
+        ResourcePackScreen.GetCategory(Tab).option(LabelOption);
     }
 
     private static class TextLabelWidget extends AbstractWidget {

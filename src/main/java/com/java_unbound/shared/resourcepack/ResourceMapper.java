@@ -5,32 +5,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class ResourceMapper {
-    private static final Map<String, String> Mappings = new HashMap<>();
+    private final Map<String, String> Mappings = new HashMap<>();
 
-    private ResourceMapper() {
+    public void SetIdentifier(String MinecraftPath, String ResourcePath) {
+        Mappings.put(Normalize(MinecraftPath), Normalize(ResourcePath));
     }
 
-    public static void SetIdentifier(String MinecraftPath, String ResourcePath) {
-        String target = Normalize(MinecraftPath);
-        String source = Normalize(ResourcePath);
-
-        Mappings.put(target, source);
+    public void RemoveIdentifier(String MinecraftPath) {
+        Mappings.remove(Normalize(MinecraftPath));
     }
 
-    public static String GetIdentifier(String MinecraftPath) {
+    public String GetIdentifier(String MinecraftPath) {
         return Mappings.get(Normalize(MinecraftPath));
     }
 
-    public static boolean HasIdentifier(String MinecraftPath) {
+    public boolean HasIdentifier(String MinecraftPath) {
         return Mappings.containsKey(Normalize(MinecraftPath));
     }
 
-    public static void Clear() {
+    public void Clear() {
         Mappings.clear();
-        VirtualResources.Clear();
     }
 
-    public static Map<String, String> GetMappings() {
+    public Map<String, String> GetMappings() {
         return Collections.unmodifiableMap(Mappings);
     }
 

@@ -35,6 +35,10 @@ public final class TgaConverter {
         return Builder.toString().trim();
     }
 
+    public static BufferedImage DecodeTga(byte[] Data) throws IOException {
+        return Decode(Data);
+    }
+
     public static void ConvertAll(Path Root) {
         Debug("ConvertAll root = " + Root);
 

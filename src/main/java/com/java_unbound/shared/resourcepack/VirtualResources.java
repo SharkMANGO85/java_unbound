@@ -1,6 +1,7 @@
 package com.java_unbound.shared.resourcepack;
 
 import com.java_unbound.JavaUnbound;
+import com.java_unbound.shared.definitions.resource_pack.ResourcePackDefinition;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,36 +12,40 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class VirtualResources {
-    private static final Map<String, byte[]> Resources = new LinkedHashMap<>();
+    private final ResourcePackDefinition Definition;
+    private final Map<String, byte[]> Resources = new LinkedHashMap<>();
 
-    private VirtualResources() {}
+    public VirtualResources(ResourcePackDefinition Definition) {
+        this.Definition = Definition;
+    }
 
-    public static void Set(String MinecraftPath, String Content) {
+    public void Set(String MinecraftPath, String Content) {
         String Normalized = Normalize(MinecraftPath);
         byte[] Bytes = Content.getBytes(StandardCharsets.UTF_8);
 
         Resources.put(Normalized, Bytes);
+
         WriteDebugFile(Normalized, Bytes);
     }
 
-    public static byte[] Get(String MinecraftPath) {
+    public byte[] Get(String MinecraftPath) {
         return Resources.get(Normalize(MinecraftPath));
     }
 
-    public static boolean Has(String MinecraftPath) {
+    public boolean Has(String MinecraftPath) {
         return Resources.containsKey(Normalize(MinecraftPath));
     }
 
-    public static Map<String, byte[]> GetResources() {
+    public Map<String, byte[]> GetResources() {
         return Collections.unmodifiableMap(Resources);
     }
 
-    public static void Clear() {
+    public void Clear() {
         Resources.clear();
     }
 
-    private static void WriteDebugFile(String MinecraftPath, byte[] Bytes) {
-        Path DesiredPath = Folder.GetDebugFolder().resolve("assets").resolve(MinecraftPath);
+    private void WriteDebugFile(String MinecraftPath, byte[] Bytes) {
+        Path DesiredPath = PackFolders.GetDebugFolder(Definition).resolve("assets").resolve(MinecraftPath);
 
         try {
             Files.createDirectories(DesiredPath.getParent());

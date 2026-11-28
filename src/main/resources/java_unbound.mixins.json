@@ -4,10 +4,13 @@
   "compatibilityLevel": "JAVA_25",
   "mixins": [],
   "client": [
-    "resourcepack.PackRepositoryMixin",
+    "resourcepacks.PackRepositoryMixin",
+    "resourcepacks.PackEntryMixin",
+    "resourcepacks.MinecraftMixin",
+    "resourcepacks.OptionsMixin",
 
-    "main_screen.splash.SplashRendererMixin",
-    "main_screen.title.TitleRendererMixin",
+    "textures.main_screen.TitleRendererMixin",
+    "textures.main_screen.SplashRendererMixin",
 
     "mods.yacl.YACLCategoryTabMixin",
     "mods.yacl.ControllerWidgetMixin",

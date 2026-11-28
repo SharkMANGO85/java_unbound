@@ -1,10 +1,11 @@
 package com.java_unbound.mixin.mods.yacl;
 
+import com.java_unbound.JavaUnbound;
+import com.java_unbound.mods.yacl.types.Scrollbar;
 import dev.isxander.yacl3.api.Controller;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
 
 import net.minecraft.network.chat.Component;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -17,9 +18,9 @@ public abstract class ControllerWidgetMixin {
     @Final
     protected Controller<?> control;
 
-    /*@ModifyVariable(method = "extractRenderState", at = @At("STORE"), ordinal = 0)
+    @ModifyVariable(method = "extractRenderState", at = @At("STORE"), ordinal = 0)
     private Component JavaUnbound$UpdateSubpackTitle(Component Name) {
-        if (!this.control.option().name().getString().equalsIgnoreCase("Subpack")) {return Name;}
+        if (!this.control.option().name().getString().equalsIgnoreCase(JavaUnbound.UNKNOWN)) {return Name;}
 
         Object Value = this.control.option().pendingValue();
         if (!(Value instanceof Double SubpackValue)) {return Name;}
@@ -27,5 +28,5 @@ public abstract class ControllerWidgetMixin {
         String SubpackName = Scrollbar.GetSubpackName(SubpackValue);
 
         return Component.literal(SubpackName).setStyle(Name.getStyle());
-    }*/
+    }
 }

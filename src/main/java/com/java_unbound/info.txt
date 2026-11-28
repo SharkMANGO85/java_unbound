@@ -19,3 +19,13 @@ terrain_texture.json = texture_variations, etc.
 Future:
 
 change block_texture_loader to texture loader, make that global and block_texture_manual_mapping seperate
+
+
+#######################################################
+
+texture info:
+
+toggle_off.png = toggle button for resource pack
+toggle_off_hover.png = toggle button for resource pack
+toggle_on.png = toggle button for resource pack
+toggle_on_hover.png = toggle button for resource pack

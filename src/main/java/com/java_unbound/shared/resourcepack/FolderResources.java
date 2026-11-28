@@ -1,13 +1,22 @@
 package com.java_unbound.shared.resourcepack;
 
-import com.java_unbound.shared.loaders.main_screen.SplashLoader;
+import com.java_unbound.JavaUnbound;
+//import com.java_unbound.fallback.FallbackUtilities;
+import com.java_unbound.fallback.FallbackUtilities;
+import com.java_unbound.shared.definitions.resource_pack.ResourcePackDefinition;
+//import com.java_unbound.shared.loaders.main_screen.SplashLoader;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
 import net.minecraft.server.packs.resources.IoSupplier;
+import org.jspecify.annotations.Nullable;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -19,30 +28,43 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public final class FolderResources implements PackResources {
-    public final Path ResourcePack;
+public class FolderResources implements PackResources {
+    private final ResourcePackDefinition Definition;
+    private final Path Root;
     private final PackLocationInfo Location;
 
-    public FolderResources(Path ResourcePack, PackLocationInfo Location) {
-        this.ResourcePack = ResourcePack;
+    public FolderResources(ResourcePackDefinition Definition, PackLocationInfo Location) {
+        this.Definition = Definition;
+        this.Root = Definition.Path;
         this.Location = Location;
     }
 
-    public Path GetResourcePack() {
-        return ResourcePack;
-    }
-
     @Override
-    public IoSupplier<InputStream> getRootResource(String... Paths) {
+    public @Nullable IoSupplier<InputStream> getRootResource(String... Paths) {
         if (Paths.length == 1 && "pack.png".equals(Paths[0])) {
-            Path PackIcon = ResolvePath(ResourcePack.resolve("pack_icon.png"));
+            Path PackIcon = ResolvePath(Root.resolve("pack_icon.png"));
 
-            if (PackIcon != null && Files.isRegularFile(PackIcon, new LinkOption[0])) {
+            if (PackIcon != null && Files.isRegularFile(PackIcon)) {
                 return IoSupplier.create(PackIcon);
             }
+
+            BufferedImage Texture = FallbackUtilities.GetFallbackImage("/pack_icon.png");
+
+            if (Texture == null) {
+                JavaUnbound.LOGGER.error("Texture is null");
+                return null;
+            }
+
+            return () -> {
+                ByteArrayOutputStream OutputStream = new ByteArrayOutputStream();
+
+                ImageIO.write(Texture, "png", OutputStream);
+
+                return new ByteArrayInputStream(OutputStream.toByteArray());
+            };
         }
 
-        Path File = ResourcePack;
+        Path File = Root;
 
         for (String PathPart : Paths) {
             File = File.resolve(PathPart);
@@ -58,22 +80,24 @@ public final class FolderResources implements PackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getResource(PackType Type, Identifier Identifier) {
+    public @Nullable IoSupplier<InputStream> getResource(PackType Type, Identifier Identifier) {
         if (Type != PackType.CLIENT_RESOURCES) {return null;}
 
-        if (Identifier.getNamespace().equals("minecraft") && Identifier.getPath().equals("texts/splashes.txt")) {
-            try {
-                return SplashLoader.LoadSplashes();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         if (Identifier.getNamespace().equals("minecraft")) {
-            byte[] Virtual = VirtualResources.Get(Identifier.getPath());
+            if (Identifier.getPath().equals("texts/splashes.txt")) {
+                /*try {
+                    return null; SplashLoader.LoadSplashes();
+                } catch (IOException Exception) {
+                    throw new RuntimeException(Exception);
+                }*/
+
+                return null;
+            }
+
+            byte[] Virtual = Definition.Virtual.Get(Identifier.getPath());
 
             if (Virtual != null) {
-                return () -> new java.io.ByteArrayInputStream(Virtual);
+                return () -> new ByteArrayInputStream(Virtual);
             }
         }
 
@@ -91,22 +115,26 @@ public final class FolderResources implements PackResources {
         if (Type != PackType.CLIENT_RESOURCES) {return;}
 
         if (Namespace.equals("minecraft")) {
-            for (Map.Entry<String, byte[]> Entry : VirtualResources.GetResources().entrySet()) {
+            for (Map.Entry<String, byte[]> Entry : Definition.Virtual.GetResources().entrySet()) {
                 String ResourcePath = Entry.getKey();
 
-                if (!ResourcePath.startsWith(Prefix)) {continue;}
+                if (!ResourcePath.startsWith(Prefix)) {
+                    continue;
+                }
 
                 Identifier ResourceIdentifier = Identifier.tryParse("minecraft:" + ResourcePath);
 
-                if (ResourceIdentifier == null) {continue;}
+                if (ResourceIdentifier == null) {
+                    continue;
+                }
 
                 byte[] Data = Entry.getValue();
 
-                Output.accept(ResourceIdentifier, () -> new java.io.ByteArrayInputStream(Data));
+                Output.accept(ResourceIdentifier, () -> new ByteArrayInputStream(Data));
             }
         }
 
-        Path NamespaceFolder = ResolvePath(ResourcePack.resolve("assets").resolve(Namespace));
+        Path NamespaceFolder = ResolvePath(Root.resolve("assets").resolve(Namespace));
 
         if (NamespaceFolder != null && Files.isDirectory(NamespaceFolder)) {
             Path SearchFolder = ResolvePath(NamespaceFolder.resolve(Prefix));
@@ -114,8 +142,7 @@ public final class FolderResources implements PackResources {
             if (SearchFolder != null && Files.isDirectory(SearchFolder)) {
                 try (Stream<Path> FilesStream = Files.walk(SearchFolder)) {
                     FilesStream.filter(Files::isRegularFile).forEach(File -> {
-                        Path RelativePath = NamespaceFolder.relativize(File);
-                        String ResourcePath = RelativePath.toString().replace('\\', '/').toLowerCase(Locale.ROOT);
+                        String ResourcePath = NamespaceFolder.relativize(File).toString().replace('\\', '/').toLowerCase(Locale.ROOT);
                         Identifier ResourceIdentifier = Identifier.tryParse(Namespace + ":" + ResourcePath);
 
                         if (ResourceIdentifier != null) {
@@ -123,25 +150,33 @@ public final class FolderResources implements PackResources {
                         }
                     });
                 } catch (IOException Exception) {
-                    Exception.printStackTrace();
+                    JavaUnbound.LOGGER.error("Failed to list resources in " + SearchFolder, Exception);
                 }
             }
         }
 
-        if (!Namespace.equals("minecraft")) {return;}
+        if (!Namespace.equals("minecraft")) {
+            return;
+        }
 
-        for (Map.Entry<String, String> Mapping : ResourceMapper.GetMappings().entrySet()) {
+        for (Map.Entry<String, String> Mapping : Definition.Mapper.GetMappings().entrySet()) {
             String MinecraftPath = Mapping.getKey();
 
-            if (!MinecraftPath.startsWith(Prefix)) {continue;}
+            if (!MinecraftPath.startsWith(Prefix)) {
+                continue;
+            }
 
-            Path File = ResolvePath(ResourcePack.resolve(Mapping.getValue()));
+            Path File = ResolvePath(Root.resolve(Mapping.getValue()));
 
-            if (File == null || !Files.isRegularFile(File)) {continue;}
+            if (File == null || !Files.isRegularFile(File)) {
+                continue;
+            }
 
             Identifier ResourceIdentifier = Identifier.tryParse("minecraft:" + MinecraftPath);
 
-            if (ResourceIdentifier == null) {continue;}
+            if (ResourceIdentifier == null) {
+                continue;
+            }
 
             Output.accept(ResourceIdentifier, IoSupplier.create(File));
         }
@@ -149,18 +184,20 @@ public final class FolderResources implements PackResources {
 
     @Override
     public Set<String> getNamespaces(PackType Type) {
-        if (Type != PackType.CLIENT_RESOURCES) {return Set.of();}
+        if (Type != PackType.CLIENT_RESOURCES) {
+            return Set.of();
+        }
 
         Set<String> Namespaces = new HashSet<>();
         Namespaces.add("minecraft");
 
-        Path Assets = ResolvePath(ResourcePack.resolve("assets"));
+        Path Assets = ResolvePath(Root.resolve("assets"));
 
         if (Assets != null && Files.isDirectory(Assets)) {
             try (Stream<Path> FilesStream = Files.list(Assets)) {
                 FilesStream.filter(Files::isDirectory).map(Path::getFileName).map(Path::toString).map(Value -> Value.toLowerCase(Locale.ROOT)).forEach(Namespaces::add);
             } catch (IOException Exception) {
-                Exception.printStackTrace();
+                JavaUnbound.LOGGER.error("Failed to list namespaces in " + Assets, Exception);
             }
         }
 
@@ -168,7 +205,7 @@ public final class FolderResources implements PackResources {
     }
 
     @Override
-    public <T> T getMetadataSection(MetadataSectionType<T> Type) {
+    public @Nullable <T> T getMetadataSection(MetadataSectionType<T> MetadataSerializer) throws IOException {
         return null;
     }
 
@@ -188,33 +225,33 @@ public final class FolderResources implements PackResources {
 
     private Path ResolveResource(Identifier Identifier) {
         String Namespace = Identifier.getNamespace();
-        String Path = Identifier.getPath();
+        String ResourcePath = Identifier.getPath();
 
         if (Namespace.equals("minecraft")) {
-            String MappedPath = ResourceMapper.GetIdentifier(Path);
+            String MappedPath = Definition.Mapper.GetIdentifier(ResourcePath);
 
             if (MappedPath != null) {
-                Path Resolved = ResolvePath(ResourcePack.resolve(MappedPath));
-
-                return Resolved;
+                return ResolvePath(Root.resolve(MappedPath));
             }
         }
 
-        return ResolvePath(ResourcePack.resolve("assets").resolve(Namespace).resolve(Path));
+        return ResolvePath(Root.resolve("assets").resolve(Namespace).resolve(ResourcePath));
     }
 
-    public Path ResolvePath(Path File) {if (Files.exists(File, new LinkOption[0])) {return File;
+    public Path ResolvePath(Path File) {
+        if (Files.exists(File, new LinkOption[0])) {
+            return File;
         }
 
         Path RelativePath;
 
         try {
-            RelativePath = ResourcePack.relativize(File);
+            RelativePath = Root.relativize(File);
         } catch (IllegalArgumentException Exception) {
             return null;
         }
 
-        Path Current = ResourcePack;
+        Path Current = Root;
 
         for (Path Part : RelativePath) {
             String Name = Part.toString();
@@ -233,7 +270,9 @@ public final class FolderResources implements PackResources {
                 return null;
             }
 
-            if (Match == null) {return null;}
+            if (Match == null) {
+                return null;
+            }
 
             Current = Match;
         }
